@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>مشتريات البيت</title>
+<title>Aylin Market</title>
+<meta name="theme-color" content="#0e6e69">
+<meta name="apple-mobile-web-app-title" content="Aylin Market">
+<link rel="icon" id="fav" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230e6e69'/%3E%3Ctext x='32' y='46' font-size='38' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'%3EA%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap">
 <style>
 :root{--bg:#eef3f1;--sf:#fff;--ink:#16282b;--mu:#5e7377;--ac:#0e6e69;--acf:#fff;--ln:#d6e0dd;--hi:#fff3cf;--hit:#8a5a00;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -39,6 +42,21 @@ label{display:block;font-size:13px;color:var(--mu);margin:12px 0 4px}
 .empty{color:var(--mu);text-align:center;padding:32px 8px}
 .top{display:flex;justify-content:space-between;align-items:center}
 [hidden]{display:none!important}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0 16px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.lgo{flex:none;width:48px;height:48px;border-radius:50%;object-fit:cover;background:var(--ac);color:var(--acf);display:grid;place-items:center;font-weight:600;font-size:22px;box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--ln)}
+.bn{font-size:21px;font-weight:600;line-height:1.15}
+.bs{font-size:13px;color:var(--mu)}
+.mnb{flex:none;width:44px;height:44px;border-radius:12px;border:1px solid var(--ln);background:var(--sf);font-size:20px;cursor:pointer}
+.in{border-radius:12px;padding:13px}
+.in:focus{border-color:var(--ac);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 25%,transparent)}
+.row{border-radius:14px;box-shadow:0 1px 2px rgba(16,40,43,.07)}
+.hit{border-color:var(--ac)}
+.pr{font-size:17px}
+.btn{border-radius:14px;padding:15px}
+.stat{border-radius:14px}
+.stat b{font-size:20px}
+h1{font-size:20px}
 :focus-visible{outline:2px solid var(--ac);outline-offset:2px}
 </style>
 </head>
@@ -78,7 +96,7 @@ label{display:block;font-size:13px;color:var(--mu);margin:12px 0 4px}
 </div></div>
 
 <div class="sheet" id="cm" style="background:#000;z-index:20"><video id="vid" autoplay playsinline muted style="width:100%;max-height:70vh;object-fit:cover"></video><div class="wrap"><button class="btn" id="snap" type="button">التقاط</button><button class="btn g" id="cmx" type="button">إلغاء</button></div></div>
-<div class="sheet on" id="lg" style="z-index:30"><div class="wrap"><h1>مشتريات البيت</h1>
+<div class="sheet on" id="lg" style="z-index:30"><div class="wrap"><div class="hd" style="padding:24px 0"><div class="brand" id="lgBrand"></div></div>
 <label for="lE">البريد الإلكتروني</label><input class="in" id="lE" type="email" autocomplete="username">
 <label for="lP">كلمة المرور</label><input class="in" id="lP" type="password" autocomplete="current-password">
 <p class="err" id="lErr"></p>
@@ -93,6 +111,8 @@ label{display:block;font-size:13px;color:var(--mu);margin:12px 0 4px}
 <button class="btn g" id="vO" type="button">خروج</button></div></div>
 <div class="sheet" id="mu" style="z-index:20"><div class="wrap"><h1>القائمة</h1>
 <button class="btn g" id="muMb" type="button" hidden>المشاركة مع الآخرين</button>
+<button class="btn g" id="muLg" type="button" hidden>تغيير صورة Aylin Market</button>
+<input type="file" id="lgF" accept="image/*" hidden>
 <button class="btn g" id="exCsv" type="button">تصدير المشتريات (Excel / CSV)</button>
 <button class="btn g" id="exJs" type="button">نسخة احتياطية كاملة بالصور</button>
 <p class="sub" id="muMsg"></p>
@@ -121,7 +141,10 @@ const CFG={apiKey:"AIzaSyC7IbGGD_94sU-cDKV7Rfq47WmyGQDJrY4",authDomain:"aylin-ma
 const OWNER='faragm100@gmail.com';
 firebase.initializeApp(CFG);
 const auth=firebase.auth();
-let db=firebase.firestore(),P=[],cur=null,q='',edit=null,photo=null,unsub=null;const PC={};
+let db=firebase.firestore(),P=[],cur=null,q='',edit=null,photo=null,unsub=null,unsub2=null;const PC={};
+let LOGO='';try{LOGO=localStorage.getItem('brandLogo')||''}catch(e){}
+const brandHtml=()=>(LOGO?`<img class="lgo" src="${LOGO}" alt="">`:'<div class="lgo">A</div>')+'<div><div class="bn">Aylin Market</div><div class="bs">مشتريات البيت</div></div>';
+function paintBrand(){document.querySelectorAll('.brand').forEach(b=>b.innerHTML=brandHtml());if(LOGO)$('fav').href=LOGO}
 const isOwner=()=>!!auth.currentUser&&(auth.currentUser.email||'').toLowerCase()===OWNER;
 const who=()=>((auth.currentUser&&auth.currentUser.email)||'').split('@')[0];
 
@@ -133,21 +156,33 @@ function groups(){
 }
 const thumb=p=>p.photo?`<img class="th" alt="" data-ph="${esc(p.id)}">`:'<div class="th"></div>';
 
+const nz=v=>String(v==null?'':v).toLowerCase().replace(/[\u064B-\u0652\u0640]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي');
+const FL=[['item','البند'],['brand','الماركة'],['store','المكان'],['note','ملاحظة'],['by','أضافها'],['price','السعر'],['qty','الوزن'],['date','التاريخ']];
+function matchP(p,ws){const t=nz([p.item,p.brand,p.store,p.note,p.by,p.date,fd(p.date),p.price,p.qty,U[p.unit][0]].join(' '));return ws.every(w=>t.includes(w))}
+function whyP(p,w){for(const [k,l] of FL){const v=k==='date'?fd(p.date):p[k];if(nz(v).includes(w))return l+': '+(k==='qty'?num(v)+' '+U[p.unit][0]:v)}return ''}
 function homeList(m){
-  const ks=[...m.keys()].filter(k=>k.includes(q.trim())).sort((a,b)=>(m.get(b)[0].date||'').localeCompare(m.get(a)[0].date||''));
   if(!m.size)return '<p class="empty">لا توجد مشتريات بعد. ابدأ بتسجيل أول مشترى من الزر بالأسفل.</p>';
-  if(!ks.length)return '<p class="empty">لا يوجد بند بهذا الاسم.</p>';
-  return ks.map(k=>{const r=m.get(k),l=r[0];
-    return `<button class="row" data-item="${esc(k)}">${thumb(l)}<div><div>${esc(k)}</div><div class="sub">${r.length} مرة · آخر شراء ${fd(l.date)}</div></div><div class="pr">${num(l.price)} ر.س<div class="sub">${esc(l.brand)}</div></div></button>`}).join('');
+  const ws=nz(q).split(/\s+/).filter(Boolean);
+  const ents=[...m.entries()].map(([k,r])=>{
+    if(!ws.length)return{k,r,why:''};
+    const hp=r.find(p=>matchP(p,ws));if(!hp)return null;
+    const rest=ws.find(w=>!nz(k).includes(w));
+    return{k,r,why:rest?whyP(hp,rest):''};
+  }).filter(Boolean);
+  if(!ents.length)return '<p class="empty">لا توجد نتائج مطابقة.</p>';
+  ents.sort((a,b)=>(b.r[0].date||'').localeCompare(a.r[0].date||''));
+  return ents.map(({k,r,why})=>{const l=r[0];
+    return `<button class="row" data-item="${esc(k)}">${thumb(l)}<div><div>${esc(k)}</div><div class="sub">${r.length} مرة · آخر شراء ${fd(l.date)}</div>${why?`<div class="sub" style="color:var(--ac)">${esc(why)}</div>`:''}</div><div class="pr">${num(l.price)} ر.س<div class="sub">${esc(l.brand)}</div></div></button>`}).join('');
 }
 
 function itemView(rows){
   const b=U[rows[0].unit][1],same=rows.filter(p=>U[p.unit][1]===b);
   const pp=same.map(ppu),min=Math.min(...pp),avg=pp.reduce((a,c)=>a+c,0)/pp.length;
   const best=same.find(p=>ppu(p)===min),l=rows[0],u=BL[b];
+  const ws=nz(q).split(/\s+/).filter(Boolean);
   const list=rows.map(p=>{
     const isBest=same.length>1&&U[p.unit][1]===b&&ppu(p)===min;
-    return `<button class="row${isBest?' best':''}" data-id="${esc(p.id)}">${thumb(p)}<div><div>${esc(p.brand)||'بدون ماركة'}${isBest?'<span class="tag">الأرخص</span>':''}</div><div class="sub">${num(p.qty)} ${U[p.unit][0]} · ${fd(p.date)}${p.store?' · '+esc(p.store):''}${p.by?' · '+esc(p.by):''}</div>${p.note?`<div class="sub">${esc(p.note)}</div>`:''}</div><div class="pr">${num(p.price)} ر.س<div class="sub">${num(ppu(p))} / ${BL[U[p.unit][1]]}</div></div></button>`}).join('');
+    return `<button class="row${isBest?' best':''}${ws.length&&matchP(p,ws)?' hit':''}" data-id="${esc(p.id)}">${thumb(p)}<div><div>${esc(p.brand)||'بدون ماركة'}${isBest?'<span class="tag">الأرخص</span>':''}</div><div class="sub">${num(p.qty)} ${U[p.unit][0]} · ${fd(p.date)}${p.store?' · '+esc(p.store):''}${p.by?' · '+esc(p.by):''}</div>${p.note?`<div class="sub">${esc(p.note)}</div>`:''}</div><div class="pr">${num(p.price)} ر.س<div class="sub">${num(ppu(p))} / ${BL[U[p.unit][1]]}</div></div></button>`}).join('');
   return `<button class="link" id="back">‹ كل البنود</button><h1>${esc(l.item)}</h1>
   <div class="stats"><div class="stat"><span class="sub">آخر سعر</span><b>${num(l.price)}</b><span class="sub">${num(ppu(l))} / ${u}</span></div>
   <div class="stat"><span class="sub">أرخص سعر</span><b>${num(min)}</b><span class="sub">/ ${u} · ${esc(best.brand)||'—'}</span></div>
@@ -162,7 +197,7 @@ function render(){
   if(cur&&!m.has(cur))cur=null;
   if(cur){$('app').innerHTML=itemView(m.get(cur))}
   else{
-    if(!$('list'))$('app').innerHTML=`<div class="top"><h1>مشتريات البيت</h1><button class="link" id="mn" type="button">القائمة</button></div><input class="in" id="q" placeholder="ابحث عن بند" value="${esc(q)}" style="margin-bottom:12px"><div id="list"></div>`;
+    if(!$('list'))$('app').innerHTML=`<header class="hd"><div class="brand">${brandHtml()}</div><button class="mnb" id="mn" type="button" aria-label="القائمة">☰</button></header><input class="in" id="q" placeholder="ابحث بالبند أو الماركة أو المكان..." value="${esc(q)}" style="margin-bottom:12px"><div id="list"></div>`;
     $('list').innerHTML=homeList(m);
   }
   document.querySelectorAll('img[data-ph]').forEach(im=>{
@@ -279,12 +314,13 @@ $('lN').onclick=async()=>{$('lErr').textContent='';try{const c=await auth.create
 $('lF').onclick=async()=>{const m=$('lE').value.trim();if(!m){$('lErr').textContent='اكتب إيميلك أولا.';return}try{await auth.sendPasswordResetEmail(m);$('lErr').textContent='تم إرسال رابط إعادة تعيين كلمة المرور.'}catch(e){$('lErr').textContent=authMsg(e)}};
 $('vR').onclick=async()=>{try{await auth.currentUser.sendEmailVerification();$('vErr').textContent='تم إرسال الرابط مرة أخرى.'}catch(e){$('vErr').textContent=authMsg(e)}};
 $('vB').onclick=async()=>{try{await auth.currentUser.reload();await auth.currentUser.getIdToken(true);if(auth.currentUser.emailVerified)enter();else $('vErr').textContent='لم يتم التأكيد بعد.'}catch(e){$('vErr').textContent=authMsg(e)}};
-const out=()=>{if(unsub){unsub();unsub=null}P=[];cur=null;$('ban').innerHTML='';['mu','mb'].forEach(x=>$(x).classList.remove('on'));render();auth.signOut()};
+const out=()=>{if(unsub){unsub();unsub=null}if(unsub2){unsub2();unsub2=null}P=[];cur=null;$('ban').innerHTML='';['mu','mb'].forEach(x=>$(x).classList.remove('on'));render();auth.signOut()};
 $('vO').onclick=out;$('muOut').onclick=out;
 
 function enter(){
-  show(null);$('muMb').hidden=!isOwner();
+  show(null);$('muMb').hidden=!isOwner();$('muLg').hidden=!isOwner();
   if(unsub)return;
+  unsub2=db.doc('config/brand').onSnapshot(s=>{if(s.exists&&s.data().logo){LOGO=s.data().logo;try{localStorage.setItem('brandLogo',LOGO)}catch(e){}paintBrand()}},()=>{});
   unsub=db.collection('purchases').onSnapshot(s=>{
     $('ban').innerHTML='';P=s.docs.map(d=>Object.assign({id:d.id},d.data()));render();
   },e=>{
@@ -333,7 +369,19 @@ $('exJs').onclick=async()=>{
     $('muMsg').textContent='تم تحميل الملف.';
   }catch(e){$('muMsg').textContent='تعذر تجهيز النسخة.'}
 };
-render();
+$('muLg').onclick=()=>$('lgF').click();
+$('lgF').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;$('muMsg').textContent='جاري رفع الصورة...';
+  try{
+    const im=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(f)});
+    const m=Math.min(im.width,im.height),c=document.createElement('canvas');c.width=c.height=256;
+    c.getContext('2d').drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,256,256);
+    await db.doc('config/brand').set({logo:c.toDataURL('image/jpeg',.85)});
+    $('muMsg').textContent='تم تغيير الصورة.';
+  }catch(x){$('muMsg').textContent='تعذر رفع الصورة. تأكد من تحديث قواعد Firestore.'}
+  e.target.value='';
+};
+paintBrand();render();
 </script>
 </body>
 </html>
