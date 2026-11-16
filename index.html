@@ -2,82 +2,320 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Aylin Market</title>
-<meta name="theme-color" content="#0e6e69">
+<meta name="theme-color" content="#5e1442" id="metaTheme">
 <meta name="apple-mobile-web-app-title" content="Aylin Market">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" id="fav" type="image/png" href="icon-192.png">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
 <style>
-:root{--bg:#eef3f1;--sf:#fff;--ink:#16282b;--mu:#5e7377;--ac:#0e6e69;--acf:#fff;--ln:#d6e0dd;--hi:#fff3cf;--hit:#8a5a00;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1b1d;--sf:#172629;--ink:#e6efed;--mu:#93a9ad;--ac:#4fc1b9;--acf:#0b1a1b;--ln:#27393c;--hi:#3a2f10;--hit:#f1c35a;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0f1b1d;--sf:#172629;--ink:#e6efed;--mu:#93a9ad;--ac:#4fc1b9;--acf:#0b1a1b;--ln:#27393c;--hi:#3a2f10;--hit:#f1c35a;color-scheme:dark}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 'IBM Plex Sans Arabic',system-ui,sans-serif;padding-bottom:88px}
-.wrap{max-width:560px;margin:0 auto;padding:16px}
-h1{font-size:22px;margin:8px 0 12px}
-input,select,button{font:inherit;color:inherit}
-.in{width:100%;box-sizing:border-box;padding:12px;border:1px solid var(--ln);border-radius:10px;background:var(--sf)}
-.row{display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:center;width:100%;box-sizing:border-box;text-align:start;background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:10px;margin-bottom:8px;cursor:pointer}
-.th{width:52px;height:52px;border-radius:8px;background:var(--ln);object-fit:cover;display:block}
-.pr{font-weight:600;text-align:end}
-.sub{color:var(--mu);font-size:13px}
-.best{border-color:var(--hit);background:var(--hi)}
-.tag{display:inline-block;font-size:12px;color:var(--hit);font-weight:600;margin-inline-start:6px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
-.stat{background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:10px}
-.stat b{display:block;font-size:18px}
-.bar{position:fixed;inset:auto 0 0 0;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:var(--bg);z-index:5}
-.btn{display:block;width:100%;padding:14px;border:0;border-radius:12px;background:var(--ac);color:var(--acf);font-weight:600;cursor:pointer}
-.btn.g{background:transparent;color:var(--mu);border:1px solid var(--ln);margin-top:8px}
-.btn:disabled{opacity:.5}
-.link{background:none;border:0;color:var(--ac);padding:8px 0;font-weight:600;cursor:pointer}
-.sheet{position:fixed;inset:0;background:var(--bg);overflow:auto;padding:calc(8px + env(safe-area-inset-top,0px)) 0 calc(24px + env(safe-area-inset-bottom,0px));display:none;z-index:10}
-.sheet.on{display:block}
-label{display:block;font-size:13px;color:var(--mu);margin:12px 0 4px}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.prev{max-width:100%;max-height:200px;border-radius:10px;margin-top:8px}
-.banner{background:var(--hi);color:var(--hit);padding:10px 12px;border-radius:10px;margin-bottom:10px}
-.err{color:#c0392b;min-height:20px}
-.empty{color:var(--mu);text-align:center;padding:32px 8px}
-.top{display:flex;justify-content:space-between;align-items:center}
-[hidden]{display:none!important}
-.hd{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0 16px}
-.brand{display:flex;align-items:center;gap:12px;min-width:0}
-.lgo{flex:none;width:48px;height:48px;border-radius:50%;object-fit:cover;background:var(--ac);color:var(--acf);display:grid;place-items:center;font-weight:600;font-size:22px;box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--ln)}
-.bn{font-size:21px;font-weight:600;line-height:1.15}
-.bs{font-size:13px;color:var(--mu)}
-.mnb{flex:none;width:44px;height:44px;border-radius:12px;border:1px solid var(--ln);background:var(--sf);font-size:20px;cursor:pointer}
-.in{border-radius:12px;padding:13px}
-.in:focus{border-color:var(--ac);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 25%,transparent)}
-.row{border-radius:14px;box-shadow:0 1px 2px rgba(16,40,43,.07)}
-.hit{border-color:var(--ac)}
-.pr{font-size:17px}
-.btn{border-radius:14px;padding:15px}
-.stat{border-radius:14px}
-.stat b{font-size:20px}
-h1{font-size:20px}
-:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+:root {
+  --bg: #faf5f8;
+  --sf: #ffffff;
+  --sf2: #f3eaf0;
+  --ink: #24111d;
+  --mu: #785a6d;
+  --ac: #7b1e58;
+  --ac2: #4a0e34;
+  --acf: #ffffff;
+  --ln: #eadce5;
+  --hi: #fff8e6;
+  --hit: #b46900;
+  --gold: #e5b84b;
+  --shd: 0 8px 24px -4px rgba(94, 20, 66, 0.08), 0 2px 6px -1px rgba(94, 20, 66, 0.04);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --bg: #130910;
+  --sf: #1f101a;
+  --sf2: #2c1725;
+  --ink: #f7edf3;
+  --mu: #b597aa;
+  --ac: #d44c9e;
+  --ac2: #3d0d2b;
+  --acf: #ffffff;
+  --ln: #382030;
+  --hi: #332409;
+  --hit: #fbbf24;
+  --gold: #f59e0b;
+  --shd: 0 10px 28px -6px rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.55 'IBM Plex Sans Arabic', system-ui, -apple-system, sans-serif;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  transition: background-color .3s ease, color .3s ease;
+  overflow-x: hidden;
+}
+.wrap { max-width: 560px; margin: 0 auto; padding: 0 16px; }
+h1 { font-size: 20px; font-weight: 700; margin: 8px 0 14px; }
+input, select, button { font: inherit; color: inherit; }
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 2px var(--gold), 0 0 16px rgba(229, 184, 75, 0.45); }
+  50% { box-shadow: 0 0 0 3px var(--gold), 0 0 26px rgba(229, 184, 75, 0.8); }
+}
+@keyframes floatIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Luxury Hero Header */
+.hero {
+  background: radial-gradient(circle at 15% 20%, rgba(229, 184, 75, 0.18), transparent 45%),
+              linear-gradient(135deg, #7b1e58 0%, #420b2d 100%);
+  color: #fff;
+  padding: calc(16px + env(safe-area-inset-top, 0px)) 0 28px;
+  border-radius: 0 0 28px 28px;
+  box-shadow: 0 12px 30px rgba(74, 14, 52, 0.25);
+  margin-bottom: -18px;
+  position: relative;
+  z-index: 2;
+}
+.hd { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 14px; }
+.brand { display: flex; align-items: center; gap: 13px; min-width: 0; }
+.lgo {
+  flex: none; width: 56px; height: 56px; border-radius: 50%; object-fit: cover;
+  background: linear-gradient(135deg, var(--ac), var(--ac2));
+  color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 24px;
+  animation: pulseGlow 3.5s infinite ease-in-out;
+  border: 2px solid #fff;
+}
+.bn { font-size: 21px; font-weight: 700; line-height: 1.2; letter-spacing: -0.2px; color: #fff; }
+.bs { font-size: 13px; color: rgba(255, 255, 255, 0.82); display: flex; align-items: center; gap: 6px; }
+.bs::before { content: "✦"; color: var(--gold); font-size: 11px; }
+.hdr-btns { display: flex; gap: 8px; }
+.mnb {
+  flex: none; width: 42px; height: 42px; border-radius: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  color: #fff; font-size: 18px; cursor: pointer;
+  display: grid; place-items: center;
+  transition: transform .15s var(--ease), background .2s;
+}
+.mnb:active { transform: scale(0.92); background: rgba(255, 255, 255, 0.22); }
+
+/* Search Bar */
+.search-box {
+  position: relative; z-index: 3; margin: 0 0 14px;
+}
+.search-box .in {
+  padding-inline-start: 42px;
+  background: var(--sf);
+  border: 1px solid var(--ln);
+  box-shadow: var(--shd);
+  border-radius: 16px;
+  height: 50px;
+}
+.search-ic {
+  position: absolute; inset-inline-start: 14px; top: 50%; transform: translateY(-50%);
+  color: var(--mu); pointer-events: none; font-size: 17px;
+}
+
+/* Dashboard Summary Pills */
+.dash {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px;
+  animation: floatIn .35s var(--ease) both;
+}
+.d-card {
+  background: var(--sf); border: 1px solid var(--ln); border-radius: 16px;
+  padding: 10px 12px; box-shadow: var(--shd); text-align: center;
+}
+.d-card span { font-size: 11.5px; color: var(--mu); display: block; }
+.d-card b { font-size: 17px; font-weight: 700; color: var(--ac); display: block; margin-top: 2px; }
+
+/* Inputs */
+.in {
+  width: 100%; padding: 13px 14px; border: 1.5px solid var(--ln);
+  border-radius: 14px; background: var(--sf);
+  transition: border-color .2s, box-shadow .2s, transform .15s;
+}
+.in:focus {
+  border-color: var(--ac); outline: none;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--ac) 18%, transparent);
+}
+
+/* Product Cards & Rows */
+.row {
+  display: grid; grid-template-columns: 56px 1fr auto; gap: 13px; align-items: center;
+  width: 100%; text-align: start; background: var(--sf);
+  border: 1px solid var(--ln); border-radius: 18px;
+  padding: 12px; margin-bottom: 10px; cursor: pointer;
+  box-shadow: var(--shd);
+  animation: fadeUp .35s var(--ease) both;
+  transition: transform .18s var(--ease), border-color .2s, box-shadow .2s;
+  position: relative; overflow: hidden;
+}
+.row:hover { border-color: color-mix(in srgb, var(--ac) 40%, var(--ln)); }
+.row:active { transform: scale(0.975); }
+.th {
+  width: 56px; height: 56px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--sf2), var(--ln));
+  object-fit: cover; display: grid; place-items: center;
+  color: var(--ac); font-weight: 700; font-size: 20px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.05);
+}
+.item-title { font-weight: 700; font-size: 16px; margin-bottom: 2px; }
+.pr { font-weight: 700; font-size: 17px; text-align: end; color: var(--ac); }
+.sub { color: var(--mu); font-size: 12.5px; }
+.pill {
+  display: inline-block; background: var(--sf2); color: var(--ink);
+  padding: 2px 8px; border-radius: 8px; font-size: 11.5px; font-weight: 500; margin-top: 3px;
+}
+.best {
+  border: 1.5px solid var(--gold);
+  background: linear-gradient(to left, var(--hi), var(--sf) 65%);
+}
+.tag {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 11px; background: var(--hi); color: var(--hit);
+  border: 1px solid color-mix(in srgb, var(--hit) 30%, transparent);
+  padding: 2px 8px; border-radius: 99px; font-weight: 700; margin-inline-start: 6px;
+}
+.hit { border-color: var(--ac); }
+
+/* Detail View Stats */
+.detail-hd {
+  padding: calc(14px + env(safe-area-inset-top, 0px)) 0 6px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.back-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--sf); border: 1px solid var(--ln); color: var(--ink);
+  padding: 8px 14px; border-radius: 12px; font-weight: 600; cursor: pointer;
+  box-shadow: var(--shd); transition: transform .15s;
+}
+.back-btn:active { transform: scale(0.95); }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin: 12px 0 18px; }
+.stat {
+  background: var(--sf); border: 1px solid var(--ln); border-radius: 18px;
+  padding: 12px 10px; box-shadow: var(--shd); position: relative; overflow: hidden;
+  animation: floatIn .3s var(--ease) both;
+}
+.stat::after {
+  content: ""; position: absolute; inset: auto 0 0 0; height: 3px;
+  background: var(--ac); opacity: .7;
+}
+.stat.st-best::after { background: var(--gold); opacity: 1; }
+.stat b { display: block; font-size: 20px; font-weight: 700; margin: 2px 0; color: var(--ink); }
+
+/* Bottom Floating Action Bar */
+.bar {
+  position: fixed; inset: auto 0 0 0;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(to top, var(--bg) 65%, transparent);
+  backdrop-filter: blur(6px);
+  z-index: 5; pointer-events: none;
+}
+.bar .btn { pointer-events: auto; max-width: 528px; margin: 0 auto; box-shadow: 0 10px 25px rgba(123, 30, 88, 0.38); }
+
+/* Buttons */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 15px; border: 0; border-radius: 16px;
+  background: linear-gradient(135deg, var(--ac), #521039);
+  color: var(--acf); font-weight: 700; font-size: 15.5px; cursor: pointer;
+  transition: transform .15s var(--ease), opacity .2s, box-shadow .2s;
+}
+.btn:active { transform: scale(0.97); }
+.btn.g {
+  background: var(--sf); color: var(--ink);
+  border: 1.5px solid var(--ln); margin-top: 9px; box-shadow: none; font-weight: 600;
+}
+.btn.danger { color: #e11d48; border-color: rgba(225, 29, 72, 0.25); }
+.btn:disabled { opacity: .5; pointer-events: none; }
+.link { background: none; border: 0; color: var(--ac); padding: 8px 0; font-weight: 600; cursor: pointer; }
+
+/* Animated Bottom Sheets & Modals */
+.sheet {
+  position: fixed; inset: 0;
+  background: rgba(15, 5, 12, 0.55);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 10; opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .28s var(--ease), visibility .28s;
+}
+.sheet.on { opacity: 1; visibility: visible; pointer-events: auto; }
+.sheet > .wrap {
+  width: 100%; max-width: 560px; max-height: 92vh; overflow-y: auto;
+  background: var(--bg);
+  border-radius: 28px 28px 0 0;
+  padding: 12px 18px calc(28px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.28);
+  transform: translateY(100%);
+  transition: transform .34s var(--ease);
+}
+.sheet.on > .wrap { transform: translateY(0); }
+.sheet > .wrap::before {
+  content: ""; display: block; width: 42px; height: 5px;
+  background: var(--ln); border-radius: 99px; margin: 4px auto 14px;
+}
+
+/* Fullscreen Login Screen */
+#lg.sheet { align-items: stretch; background: linear-gradient(155deg, #5e1442 0%, #240619 100%); }
+#lg > .wrap {
+  max-height: none; border-radius: 0; background: transparent; color: #fff;
+  display: flex; flex-direction: column; justify-content: center;
+  transform: scale(0.96); box-shadow: none;
+}
+#lg.on > .wrap { transform: scale(1); }
+#lg > .wrap::before { display: none; }
+.lg-card {
+  background: var(--sf); color: var(--ink);
+  padding: 22px 18px; border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+}
+.lg-hero { text-align: center; margin-bottom: 22px; }
+.lg-hero .brand { flex-direction: column; gap: 10px; }
+.lg-hero .lgo { width: 92px; height: 92px; font-size: 34px; }
+.lg-hero .bn { font-size: 26px; }
+
+label { display: block; font-size: 13px; font-weight: 600; color: var(--mu); margin: 12px 0 5px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.prev { width: 100%; max-height: 210px; object-fit: cover; border-radius: 14px; margin-top: 10px; border: 1px solid var(--ln); }
+.banner { background: var(--hi); color: var(--hit); padding: 12px 14px; border-radius: 14px; margin: 12px 0; font-weight: 600; border: 1px solid color-mix(in srgb, var(--hit) 30%, transparent); }
+.err { color: #e11d48; min-height: 20px; font-size: 13.5px; font-weight: 600; margin: 8px 0; }
+.empty {
+  color: var(--mu); text-align: center; padding: 44px 16px;
+  background: var(--sf); border: 1px dashed var(--ln); border-radius: 20px; margin-top: 12px;
+}
+.empty-ic { font-size: 40px; display: block; margin-bottom: 8px; }
+[hidden] { display: none !important; }
 </style>
 </head>
 <body>
-<div class="wrap"><div id="ban"></div><div id="app"></div></div>
-<div class="bar"><button class="btn" id="add">تسجيل مشترى</button></div>
+<div id="app"></div>
+<div class="wrap"><div id="ban"></div></div>
+<div class="bar"><button class="btn" id="add"><span>＋</span> تسجيل مشترى جديد</button></div>
 
+<!-- نافذة إضافة / تعديل مشترى -->
 <div class="sheet" id="sh"><div class="wrap">
 <h1 id="shT"></h1>
 <label for="fItem">البند</label>
 <input class="in" id="fItem" list="dItems" placeholder="مثال: حلاوة طحينية" autocomplete="off">
 <datalist id="dItems"></datalist>
 <label for="fBrand">الماركة</label>
-<input class="in" id="fBrand" list="dBrands" autocomplete="off">
+<input class="in" id="fBrand" list="dBrands" placeholder="مثال: الرشيدي الميزان" autocomplete="off">
 <datalist id="dBrands"></datalist>
 <div class="two">
-<div><label for="fQty">الوزن / الكمية</label><input class="in" id="fQty" type="number" inputmode="decimal" min="0" step="any"></div>
+<div><label for="fQty">الوزن / الكمية</label><input class="in" id="fQty" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></div>
 <div><label for="fUnit">الوحدة</label><select class="in" id="fUnit"><option value="g">جرام</option><option value="kg">كيلو</option><option value="ml">مل</option><option value="L">لتر</option><option value="pc">حبة</option></select></div>
 </div>
 <div class="two">
@@ -85,50 +323,64 @@ h1{font-size:20px}
 <div><label for="fDate">التاريخ</label><input class="in" id="fDate" type="date"></div>
 </div>
 <label for="fStore">المكان (اختياري)</label>
-<input class="in" id="fStore" list="dStores" autocomplete="off">
+<input class="in" id="fStore" list="dStores" placeholder="مثال: بندة / الدانوب" autocomplete="off">
 <datalist id="dStores"></datalist>
 <label for="fNote">ملاحظة (اختياري)</label>
-<input class="in" id="fNote" autocomplete="off">
-<label>صورة (اختياري)</label>
-<div class="two"><button class="btn g" id="cam" type="button" style="margin:0">التقاط صورة</button><button class="btn g" id="gal" type="button" style="margin:0">من المعرض</button></div>
+<input class="in" id="fNote" placeholder="عرض خاص أو ملاحظة..." autocomplete="off">
+<label>صورة المنتج (اختياري)</label>
+<div class="two"><button class="btn g" id="cam" type="button" style="margin:0">📷 التقاط صورة</button><button class="btn g" id="gal" type="button" style="margin:0">🖼️ من المعرض</button></div>
 <input id="fPhoto" type="file" accept="image/*" hidden>
 <img id="fPrev" class="prev" alt="" hidden>
 <p class="err" id="err"></p>
-<button class="btn" id="save">حفظ</button>
-<button class="btn g" id="del" hidden>حذف</button>
+<button class="btn" id="save">حفظ المشترى</button>
+<button class="btn g danger" id="del" hidden>حذف المشترى</button>
 <button class="btn g" id="cancel">إلغاء</button>
 </div></div>
 
-<div class="sheet" id="cm" style="background:#000;z-index:20"><video id="vid" autoplay playsinline muted style="width:100%;max-height:70vh;object-fit:cover"></video><div class="wrap"><button class="btn" id="snap" type="button">التقاط</button><button class="btn g" id="cmx" type="button">إلغاء</button></div></div>
-<div class="sheet on" id="lg" style="z-index:30"><div class="wrap"><div class="hd" style="padding:24px 0"><div class="brand" id="lgBrand"></div></div>
-<label for="lE">البريد الإلكتروني</label><input class="in" id="lE" type="email" autocomplete="username">
-<label for="lP">كلمة المرور</label><input class="in" id="lP" type="password" autocomplete="current-password">
+<!-- الكاميرا -->
+<div class="sheet" id="cm" style="background:#000;z-index:25"><div class="wrap" style="background:#111;color:#fff"><video id="vid" autoplay playsinline muted style="width:100%;max-height:65vh;object-fit:cover;border-radius:16px"></video><button class="btn" id="snap" type="button" style="margin-top:12px">📸 التقاط</button><button class="btn g" id="cmx" type="button" style="background:#222;color:#fff;border-color:#333">إلغاء</button></div></div>
+
+<!-- شاشة تسجيل الدخول -->
+<div class="sheet on" id="lg" style="z-index:30"><div class="wrap">
+<div class="lg-hero"><div class="brand" id="lgBrand"></div></div>
+<div class="lg-card">
+<label for="lE" style="margin-top:0">البريد الإلكتروني</label><input class="in" id="lE" type="email" autocomplete="username" placeholder="name@example.com">
+<label for="lP">كلمة المرور</label><input class="in" id="lP" type="password" autocomplete="current-password" placeholder="••••••••">
 <p class="err" id="lErr"></p>
-<button class="btn" id="lB" type="button">دخول</button>
+<button class="btn" id="lB" type="button">تسجيل الدخول</button>
 <button class="btn g" id="lN" type="button">حساب جديد (لمن تمت دعوته)</button>
-<button class="link" id="lF" type="button">نسيت كلمة المرور؟</button></div></div>
-<div class="sheet" id="vf" style="z-index:30"><div class="wrap"><h1>تأكيد الإيميل</h1>
-<p>أرسلنا رابط تأكيد إلى <b id="vMail"></b>. افتح الرابط (راجع الرسائل غير المرغوبة لو لم يصل) ثم اضغط الزر.</p>
+<div style="text-align:center;margin-top:8px"><button class="link" id="lF" type="button">نسيت كلمة المرور؟</button></div>
+</div></div></div>
+
+<!-- تأكيد الإيميل -->
+<div class="sheet" id="vf" style="z-index:30"><div class="wrap"><h1>تأكيد البريد الإلكتروني</h1>
+<p>أرسلنا رابط تأكيد إلى <b id="vMail"></b>. افتح الرابط (راجع الرسائل غير المرغوبة لو لم يصل) ثم اضغط الزر بالأسفل.</p>
 <p class="err" id="vErr"></p>
-<button class="btn" id="vB" type="button">تم التأكيد</button>
+<button class="btn" id="vB" type="button">تم التأكيد، دخول</button>
 <button class="btn g" id="vR" type="button">إعادة إرسال الرابط</button>
-<button class="btn g" id="vO" type="button">خروج</button></div></div>
-<div class="sheet" id="mu" style="z-index:20"><div class="wrap"><h1>القائمة</h1>
-<button class="btn g" id="muMb" type="button" hidden>المشاركة مع الآخرين</button>
-<button class="btn g" id="muLg" type="button" hidden>تغيير صورة Aylin Market</button>
+<button class="btn g" id="vO" type="button">تسجيل خروج</button></div></div>
+
+<!-- القائمة والإعدادات -->
+<div class="sheet" id="mu" style="z-index:20"><div class="wrap"><h1>القائمة والإعدادات</h1>
+<button class="btn g" id="muMb" type="button" hidden>👨‍👩‍👧 المشاركة مع العائلة</button>
+<button class="btn g" id="muLg" type="button" hidden>🖼️ تغيير صورة ولوجو Aylin Market</button>
+<button class="btn g" id="dlIcons" type="button" hidden>📲 تحميل أيقونات التثبيت (192 & 512)</button>
 <input type="file" id="lgF" accept="image/*" hidden>
-<button class="btn g" id="exCsv" type="button">تصدير المشتريات (Excel / CSV)</button>
-<button class="btn g" id="exJs" type="button">نسخة احتياطية كاملة بالصور</button>
-<p class="sub" id="muMsg"></p>
-<button class="btn g" id="muOut" type="button">تسجيل خروج</button>
-<button class="btn" id="muX" type="button" style="margin-top:16px">إغلاق</button></div></div>
-<div class="sheet" id="mb" style="z-index:25"><div class="wrap"><h1>المشاركة</h1>
+<button class="btn g" id="exCsv" type="button">📊 تصدير المشتريات (Excel / CSV)</button>
+<button class="btn g" id="exJs" type="button">📦 نسخة احتياطية كاملة بالصور</button>
+<p class="sub" id="muMsg" style="margin-top:8px;text-align:center"></p>
+<button class="btn g danger" id="muOut" type="button">تسجيل خروج</button>
+<button class="btn" id="muX" type="button" style="margin-top:14px">إغلاق</button></div></div>
+
+<!-- إدارة المشاركة -->
+<div class="sheet" id="mb" style="z-index:25"><div class="wrap"><h1>المشاركة العائلية</h1>
 <p class="sub">أضف إيميلات من تريد مشاركتهم. كل شخص يفتح الرابط ويضغط «حساب جديد» بنفس الإيميل ثم يؤكده.</p>
-<div id="mbList"></div>
-<label for="mbE">إيميل جديد</label><input class="in" id="mbE" type="email" autocomplete="off">
+<div id="mbList" style="margin:12px 0"></div>
+<label for="mbE">إضافة إيميل جديد</label><input class="in" id="mbE" type="email" placeholder="example@gmail.com" autocomplete="off">
 <p class="err" id="mbErr"></p>
-<button class="btn" id="mbAdd" type="button">إضافة</button>
+<button class="btn" id="mbAdd" type="button">إضافة للقائمة</button>
 <button class="btn g" id="mbX" type="button">رجوع</button></div></div>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -146,9 +398,25 @@ const OWNER='faragm100@gmail.com';
 firebase.initializeApp(CFG);
 const auth=firebase.auth();
 let db=firebase.firestore(),P=[],cur=null,q='',edit=null,photo=null,unsub=null,unsub2=null;const PC={};
-let LOGO='';try{LOGO=localStorage.getItem('brandLogo')||''}catch(e){}
-const brandHtml=()=>(LOGO?`<img class="lgo" src="${LOGO}" alt="">`:'<div class="lgo">A</div>')+'<div><div class="bn">Aylin Market</div><div class="bs">مشتريات البيت</div></div>';
-function paintBrand(){document.querySelectorAll('.brand').forEach(b=>b.innerHTML=brandHtml());if(LOGO)$('fav').href=LOGO}
+
+// إدارة الثيم (فاتح / داكن)
+let theme=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme',theme);
+  $('metaTheme').content=theme==='dark'?'#130910':'#5e1442';
+  const tb=$('thBtn');if(tb)tb.textContent=theme==='dark'?'☀️':'🌙';
+}
+applyTheme();
+
+// اللوجو الجديد مدمج مباشرة ليعمل فوراً
+const DEFAULT_LOGO="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUEBAQEAwUEBAQGBQUGCA0ICAcHCBALDAkNExAUExIQEhIUFx0ZFBYcFhISGiMaHB4fISEhFBkkJyQgJh0gISD/2wBDAQUGBggHCA8ICA8gFRIVICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICD/wAARCADwAPADASIAAhEBAxEB/8QAHQAAAAcBAQEAAAAAAAAAAAAAAgMEBQYHCAEACf/EAEEQAAIBAwIEBAMFBQYGAgMAAAECAwAEEQUhBhIxQQcTUWEicYEUMkKRoRUjUrHBCCQzQ2LRFhdyguHwNJKiwvH/xAAbAQABBQEBAAAAAAAAAAAAAAACAQMEBQYAB//EADERAAIBAwMCBAUEAgMBAAAAAAABAgMEERIhMRMiBUFRcTJhgZGhFLHB4dHwIyQzQ//aAAwDAQACEQMRAD8A06DSDVBm2NLhSPUx/dT8qlXazRl7BW//AKRI5QJHVBzN0oWaLmQSIUPesEjUsknD9jpF+/NPySMBlVJ60DWrGytb5ktSAuMlQc8p9KrzUIrqzT9xcNGCeoOKedMMjWaNJIXY9ST1qTUrZioKKx6kSFKSk5uX0F+MGirqYwwGQDOKM71yRBJGVYZBoFyPsdeHeMtF02zMN65iLtzBgucn0r17q9tqNzJPboQjnbIqvLu0iW77n0FSnTlUWaY9KflUqy2z2kaFGEO7zFLdKLHWjX6UV3pvA/k9KP7u/wAqYNKONRkB9adby+WG2c5TlAyWduUD61Xc/F1vZ3EjxTEPzYHlhWB9smnowbAbLOJHNjvQScDJX9aqS48SLu5BhhiYkbHlHNn67Y/Om/8A5gakzBIbZ0w2MgNID69aeVNgZLnaaJUZmkVQBk57Cs2eJPGUmram0Yc/ZYSVjRG3xnr/ACqVX/Gd7Pp84ktiRJEV8zGMZ229NqprU7tTqEisqsgY8wJ39Ku/DaKinUfPBd+G00lKq+eEOXCnGl3wvq63em3biJiPOtXOY5/Y+h9+orUXDfEWncT6JFqumyZjf4XjY/FE46qf/d+tYnv7SeGUXNmGmi+8VX7y/Tv9Ksfwd4yOl8YW1o0uLXUCttMmPxE4RvmCevoTT15bRqxcl8S/J11CNTKxiS/JqvO1J5jgUf0yDsRSefcVmWUyYlJoDMMV5tjvtRTGmwwqWQcwqVaW2bUfKodM/wAQqV6S/wDdRVz4X8TK6++FDpmvZosczNhQSaX2+mXMxHw8oq9KgSZr1Pkeg/xsTStNGgUYOKTKOEwpJqX/AMVvlShTRF/vat8q64WaUvYOi8TRGB1rj13vXn6V59g1Yy6xA8yBVOKcbCJoLRI26036wJ/LUw7mnGxaV7RGm+9ipb6fRWH3ZGe7qPPAprxPwmvHr0rh3BpgdIyZYX1dopW3zgCpPbRrFCFU5AqHT2X2nXwQ2CDUvtkMNuFY5xU5yp9KKit/MjaZa229g1ycHaonxBxRaaYvlNiWY/5UbZP1xQ9b16V5207TULPj95L0C+1QK7t7LTbeW81KQeY+TzNuT7KP9qSFNyeMbj0YSlshDqOoaxxA2UC2luWwoHcfOmRrTTbCcS6lcgFTvzvuwx2Ub0za/wAeQ2R8qCV7YKMKq/FK39F/nTJp2i8acTTebZ2q6VAw5jPcf4rj1AO5/SrmNpGms15Y+S5JX6aFNZrPHy8yX6hxbo8UDx2OmycpwOdyIh+u9MLcey2ieTCbNFIOQXLA/lT3b+D1kbeCTUdSu7uZ/ikBbkUj0AG/r3p8Hh/wVYwMo0a1cIPiacF9/Xf6UfVto7Rhn3OdSjHaNPPuyAXviQL6xOjPHZ4mYL5qKQV32wSfWopqMKySuqMeZtwS2RnuP51ZWu8LcEm28peHLcIzFmmhyrj3BU1XupS2lo9yisfs4bKK27H/AN/pU22r05ZhFYJVrcKTdNx0rkizX81tLyNz8ynGAM70sR5XDXf2WWGcDKzIArZ9SO9Dlk0+7+JZCsgH3u/1pLd30EcCwCbmkzgcvYVK2W7Y43py5S28i5uE/FjWdIijs7+c6lbRqq8k+TJ78r+3vmgcTeKmoalclbe7a2hzkQwuUKr25j3NU/DekY5SMnc0fJcLMhmaFLiNPvqy4Kj1BG+KBUqWrWorI5FUk9aisk4tfEHXdPuVij1mYIN1YsXA36EHqKvrg/X14o4dhvEZZLpP3c6xjYP647AjesowQaRdL8FxLbOezfGv59RVx+COpNw34kWFvdXKT6dqrfY5Ap6M3+G2PZsfQmmLm1jXj6P1Grqm6lGU4pZW/wDRdn7F1OfBS3OPepXomi32FjmTlHep4lpAmwiAxRyoq7KoFM29vChvHcxFWvKqsMQW2lW8IHw5NOGEjGFAFeZhGpPek6uXfOdqlbsjCgt8OaBz570F3AosNnYCuSEGdetFXozbN8qMRhQbr/4zfKnqqzBi033Iih615jtXG++fnXH+7XnprUETYOARSmLAjAFJJTuDSmI/uxSxOkHGijkUMtQD86MEYIQP2+SfWjta1Jlk+x28vIFXnlcen8I9zSS7lNrqMk6rnlUkZ2GajOoara2NjNdO6zSocgt1kkx09gBk+1TKNJzaS5Z0Yuc9KO6rrFnoOmtK+GuZgXSJjjHqzHsBVN3Oo8Rcda0bHh6MzuTySXzgiOEE9FPYfLc0ss7LVfFLiibT7W6eDSYjz3t8o6nsq/0H1NaG4T4Z0zRdLi07TrJbeCIgJtkttuxPcn1q5coWa0U95+b/AMFjKSt1ph8Xm/8ABV/DPhLp2iMl7ODqOo84555RnB78o7fzqwZdG/eW00fKpZhlsYzjtU5i06Py0YDADH4vU02X0Eggby4iGVtl9vaq+Um+6TK/OpkT1K5jNuIYIclCQyEb1CtWjkjjIgyVOfmM9c1YN9pRuJI7iM8knr/vSSTR3dg5iDOOvcNTDm8jqgsFWRwy3TiCVTGp2DgbH501avwAL2BkMRQHdZFHSrst9Et+fIiMLHqAMginGHSbZFKGIAHsOh+lKpyTyjtMfMyt/wArpo5SJ5ZmU9DzHBFItV8JpBaG5sQyTrtyA/e961fNw7A2QigA9MdqQScPLG3xpkdMjqBTqr1PNjU6UJcmILuw1LSrlYLxCImPL5mMYPofQ06adcLHIqucFd0JPX1BrR/GnhzbajbStHACSN9vve/zrOmsaHe6Ffvb3EZZA2FYjGf/ADVta3Sl2vkdt3KlLnIG40qS2Zrq0Ja2Y5wPwH0NPnDupXNvf28qNyyxSpIjH8LAgg/pTNa6pPaBWfLQd5MfoRVk+HHDP/G/G2lafZRJ5UswkndVyI4lwzk47Y2+ZFWkWvItIdOCck8Jbs3zHKZokkyCXUMSOm4zRpIRcmuKEQfCoUdgOw9KSzzZ2FMJZPOmwqaUu2BRsCHlyaSoDJJTmi8ib0TeBAAiyctQsIvQV5uZulc5AOpoRSMxSAih3Bzbt8qLS3kQUKZWEByKl1F2sCHxIjD/AOI3zoDdKHL/AIrfOiya85l8TNhHhBEnajoz8AoiXp9aNhP7ulSObDSa8OlAJ3r0jiOF39BmjSBZXnGOrNFO9uj8oL8vIOrY6k1S3EepalqtxZ8PaeWe8v25VUH7inqfrjf2FTPi65nOpmSRyI1DEt/CPX+dNng9pbavxJqXFl0gYBxBbFuoHfH0AFX9tijRdbz4RMt/+ODq+b2X8lz8HcJ2XDehRaNZR4jVVDv3kcjLsfc7/TAqdwwch67LsBSPT4isXM27ElqcgcD51WttvLIzeRchj8vDfd7A0hukjJ7nvk0VJdlBnNNtxfsdyaNzWMAxg85DZBFggAe9J3SIDPKAaTfaCzV5pCepoVgPDDQBk96EOm1JhJg4oQkz0NcLgUkiuMQV3pOZWFcEmRkmkbFwGS26SwlGHMCOlVbx1wLa6nA5aHmzt71asbHHWiryBJ4irDINFF75QGcGO9P006FxTNo2qQpLCSAwdcrJGejfP/zWyfBfhjhPQeGpbnh7TRaXFzgXEjSGQtjoFJ+6vfA7/Ks/eMmiLapY63AmGtpfLcgb8jdP1/nV8eBd99s4JDluYodm9jsR+Yq+ozdRKf0fuMeItytlNPzwy2pGGMA0ldRn3NHMBneuxR878x6VM4MuCtoAi8xG5o846mvMwVaSSz5OAaDkUNkmCjakrSSOdgaCHBb1pUgwucUeMCDF9thzgEUGe4RoTjFV1ZatMZSXc4p7j1VWUKW61OnDEWxI8o5NvMx96LIytdZw55vWudq82n8bNbH4UJ5jhKHA2Y6KnPwGu2x/dn51yFYeSKLmOYWT+IYo1Y5JWCxqWJ9KkFhwzJNbmSYfHjYds1LoW9Ss+1EarWhTXczKvincG0sLth8Ls/lDHcMf9gasnw20c6ZwZpUJjUO0SyPgfiOT/Wof4/aQqcfaLodmgKzGPm+eN8/LNWlw3G8emWUPKcRxcpOPQDFWl5HpU4Uiw1qVKnj0z9yY27AIKNkf0oi3U+VkdxQpFPLmq5oYT3EN1KdxTdIxJ3NK7kNvtTa7jJJoMMeiw0Gu8xzRAcdjQ1banYnNBmD1ro+HJoBJ6V7OKViIGWzuK8p7Une4SMbsKIGpWyvhpRmm8B4HdDRjbr1pNbTwzEBZAfaljRMM+lGkRpMrrxM0k6hwfqUSbv5DOu2d13FPv9mmQv4cySZ5itw8TAHONlI/rSniCAPp8oYZDIVI+Yon+zbYfYuCNU8xlVzqckfKNsAKuMj86t/D5fFH6jF0/wDqzXt+5eABY7DalAxGm9A5lSk08rMcdqs+TNAZ5yxwDtSYsc4715jR1tFzNzsNhSih0EAA52ox222rrt2HSiS29cIZ5i1NSvwKxPyopNUuzqEcaxScpPpVsw8J6ZGo/dLke1KH0HTY4+YQrkdDirGpKMoOKBi2pJkat2LWyE9cUZnah3QWOdkUYUUUitKwRFLE9AK80qRaqOPzNbF5imETfcNOui6Nc3y8zKUjz6daetF4aMjeddrn0B7VMYLeK2j5Y1Aq5tfD9tVb7FZcXmO2n9xv0/Q7ezQEqOanPmCDCgACuO56CgcpPU1eRiorC4KqUnJ5Zmzxr0pz4vcLahytKGgZuUdEIZtz+e1Tfh+ImxAbqNjXPGbSvNg0bXerWF15bkHHKj46/UD86V8OrlE5TzB0DVU+I5dWPsaW3nqtoP0WPsx8jt8R4XtQp0igty8p7ZxTisYRQCKj2s3KoGx271CawjovVIY9XvmMTLbqAexNRWSS5DZlm3PoabOJONbHTZHjLNLIOoHQfM9BVbXXik7zyIixIBuoLEnH0pI05T3RJdSFLZsua3mOw5s/WneHJTeqn4Y4zXUzHzhcSHCSI2VJ9D6H51a+mutzACB8Xeh0yi8MLWnuHL3/AEomeTl3x0pYYCrb7U3atJ9ntjyjLHaiw2gHNJjReXSBsM4XHrSFLi1mb45hjPY1VHGXF8kerHTozKZDnEaHlyB1LN2FQePXtSkuY2tgk0DME8yKfIyTgenenoWs5rUhid5CD0tmrLGKLkBjlO/vUltHlkQJKM46NWdOGeOrm0vvsF1cEyxsEaGYgEH/AEt0b61fug3631msyZ3GcEU1pcJYY5JqcdSDtWtxJZS7dRTp4T2H7M4PnjMahri8muQQOoLY/wD1ojUsDSZ3x0XNA4Z16Sx0u0sLez5UjQc7zHdnO5wB0GTUq2qwozbm9sEOvCpVpaILzLK+9uaSyEc1csL1L6y81V5SDhl9DQZNzV5GSktSKCUXF6XycVedwKXgCNAoou2h5V5mr00oGwpRDzGi9qKMhrqiR+gohCOLe8z7NRd1qiRxFSRmo9HfAKd+tI5bfVNRu0iton5WO7EbAVYSjsAuRwSOW/u+WFSxY/lU40bh6O1RZZhzP1yaO0HQ4dOs0Lrl8ZJPUmn0kAZO1ZyjaRpzc3vJ/gsatzKcVCOyPAKigAYAoppMnAouSUscCupEx3PSpyWN2QgSnJ6Ul1a9TTtLlu5CQiDcjsKXAKgpo15Ptei3dvy8wZDsKarOXTk4c4Y9QUerFT4yivr3WdJ4jtns7iBZkcbxyLjnH9aV6DaLaSRxRnMSZCjuB2H0qC6RAVv7pJMoIVxv23xUv0DVIW1tNM8xpZVjL85HX2+dZK3qyqJSmba8oRpZhT4RMp2wp37VB+JLLV9Sie30q0kY43kJCLj5n+lTWTc+1NeoTzuvlw4A7VNnvyVlLZ7Gb9a8LeIby5Ml9fQhAG5bdVIVSe+c7n3qHzeFuoQXESR6j9kSAhg0SZ58djv371pTUNP1shnSIketRqfSdRuTy3EnKPanadzOCwthypa06vdMq/R+DprbUTN+0kSWSZZSyQ4yAACmM9D61eWkQYYmMFV9Ka7DQIbfGBzH+I9alunWo8xYkIyeppJ1HN5YipxprTHgFJGBgNuP50y6vbc4DKuR1qWXtvaxHlSXOB1NNM8A8rJxynvQttbHJZWSi9c4L0Z9UN1PpzysxZvMZ2I+I5I2o3SuB+G4ABBYW0MRPMUUbZ+tWzNp8cgK4V196SfsKyf/ACsH2ourPGMhxp03vjcYLThjh1ERWs4ZVznlKDGamGkaZZWi5sg0Qx9wMSv0Hag2ugWgGApz8zTilkbTHJnlFM5beWFNLGEw26XzdOkRuhGDUO1i7mith5DNHGxKnGxNSrW5Hg4avbmNuVkj5gR23qNWMcuvW9mrrlpbleX3AH/8pq4y1pjyPWSUX1JcJlk8C2strwhB57lnkJbfsP8A3NSWGLnfJG1et7VLe1htoxhI1Cj6UezCNOVetamhS6VKNP0Rj7ir1qsqvq8gZ5Qi8q0jCPK21KFhLnmejGdIxhRT5HAJbogy/Wh86rsoogyM5oap3NccRnReDI7eNJLsl5B61LobG1gUckQyO+KOMijqaD5y0kqk5nJJAycb0SxeRsDpQvNU9aEJF7UC2COJEq9dzQmcLQWZiPhpM6TMa5LPIh2WYk4FEZz13rpik7iuBGHajEK613RFs9dleEYjvYyo/wCobgfoRUR4Wd4ON4kkcIQxQ83Ugg7Vcer2C39kUZSGT4lYdR7ioZNolnHCbnV47WG8VjILhWw7Iilub2O3SsxcWvSrdq25NfZ3yqUHGo98Y/v7EtbeKi1giT97IMn0oUE6XNlDcxnKTIJFPqCM0ju7pUQgmlljkYppvYBf6igTk2CjsKi93cxO5JUD5V69uGkdsbU0zTcik9aYlPPJYQpqK2FaTGWdYkOMnFPN5f6Xw/Zmaa7jjlxhpJXCqPlUes4iymRsgn9KS6lpv22QNcsJ17c6g4ou7GwCUXLu4HN9TF5Et3FOJIm6FDkGiTxLptvdiwurpecrkpyk4+oGBTZHHJax+VG2Is9MUOPT45pGdiTzHrnek0sc7fPgerqVF5JbZsqRkiuQ3IbDUAW4ij5U+7jucmm4yeTPyZwG6V0spZAhhvYk9vcKBTgkqyLhtxUbt5Dsc06QSH1roSEqxR7X7SW94eurK3dUeXlUFun3hRnA+nxJqCKpEiWaH4h05zt+le1K7tbXThNeZCGWNUftHIWHIzf6Q2CfapVoKoxu3VFEpkxIV6Fuuc9DnOciptCkp1otvgra9xKnQlBLn+l+w+l9sCuqg+81eVFTc0VLN2FX5nDs0wGy0nyWOTQfvGhqMUqODEUDehFsCvDpRMjEnApRAwuXO29GJC7e1K0hjj6Ch59Ka1B4E6247mjBGq0MsBRLzAdK7dnBp2oDSKvU0lknPaiMyOeholETIsadR0oHmqe1FLCx60Py8USSEB86HYjrUH4outQs4ZIrNY4bl2CJOwyEjIIZsHYsQcA9qmvLjvXCI2GGVWHuM1GuKHWjhPDJNvXVGWZRyiHcP+ZFwpZxSCQeSpiUuMFlB2PvSW9csxz0qY6lF5loZB+Dr8qiN0vXIqlr0XRxDkvbesqzc8YyyO3IIJNMdzKVmCbYzvUpuYQVzUT162f7JL5RIZh1FV+MMtIyyh7tmiEQ+IU2apxFptgp8yZduuCP51TvEem8cHT5Rp3EF6sLZDJGQCg9sDOKglrpurJ8GsxT3eP87mLZ+YNWEYZXItOjl5e6L5m400iX/NQKO4lWiYvELRrZv3lxbqg/imGapkaVpjjmD8uOoKGhz6dHLbtDZ2kkz42+HApemiY6ccYUTQ2mcbcO6pGog1O2ye3mqf1Bou7vLO7uzDbXCNKu+EYHFZ34b8LLufVRPcA+a+cKvRAfU1cegcK2+gXcSWseB+Ju7e5purFJbEHQ4PL2fpyT2wDmJCTk96e4vhUGkVnABEo7YpyVBsoqNBDVWWRfb6Q+swNbmRI41IZi6cwYemKlthbQaZZrbQ743LYxk0k0m2a209SRhpPi+nalbAmtHbUIwiptdxmLq4lOTgn2oMeUmiSSe9cYNXk671MIQYowN6EpyaLeTOwrse29KcHs2FojO5Ned6L5qTIg9EmgFiKMJFFkr3NNIMJZ87V4Rg7mh8sec5rjDOymnATwjjB3oXwKOgoooR3zSeV5OmNq7Aoc9wqnApO1yTSVmdmwAc0NbeVvau9hARmJO5rjzLHE0sjhUQFmYnAAHejks/4jVYeLfFUGlaadAtJgLmdQ05DY5U7L8z/KjhByeCXaW0rqtGlDz/C9SC+IPi5xG80tlwxerY2ob4Z1QMSAerZ7HHQVLeCuOtP444eF5CUi1C3PlXtqDvDIPQdeVuqn09wazxfSu8cnwnkfPwAE82P6d96c/D3j234VS70C/tI4vtF4t2t4iBXccvI0bEdRggr6YI70x4hRUoZXkbe5sadCnHox4NISlcU0XdssrAEZoI1WF0SQSh4pAGWQdDmj0uonx8QzWWlEgJ4WRGmmrG3NyAj5U16lwpZ3Iaa1CxS91xsamMYSRNjmiJYHXpT8JNcCU6soSzEq2XhO6WXH2SN/cYpdYcJ3RuELxpDGOpFTjyrgscKNqNjhuMcrco9cUalImyvZ44QRZaVbWNuYoUBZvvOeprzWS+bz4pzhibqTmuXDRQqOY/Sgm8orHNuWWFwDk26VIdF0trub7RKpFuh/+59KoTjvxisuH7ptG0RUutUb/Nk2hj+R/E3t0Hc9qrnQfFLizRtXbUbLU7mKaRi0tvcMZElBOSRnb8vpVjZ2WrvnwOytqteD0PD/AN+xu0kdhQNqhHh/4k6Hx1owmjnjtdSiXNxaMT8P+pT3H8u9TUMkhPlOr4/hNXDTXJkqtKdKbhNYaB/DiuciHvRbBh2ov956GhyNikRxjegsUUUlZ5V/CaTyXDA4Kn8qRyOwKXbJoII7mkf2knYV0SMaDULge3uSTsaJMrHvSVmcGgrK2ehNJqOFnM2Ote8xh3oCLM/RSKP+yynviiOA+e46mjFk5zgrmvCzYH4mo9Y1QYAzRZOArGgOSozQtq4QabNb1qw4f0qTUtSm8uFNgBuzseiqO5NKk28IWMZTkoxWWxNxTxPpvCmhyalfvvusUQIzI2Ony9TWUdf1K5167vdVmdQzEO2ZQrOScbZ3PvgbCnHjbjLUuKtXmuJnEKR/BDGDsi+nc59TUPkSUlgXxjALGNgQM9cn51NhDQsHpHhHhis6eqfxvn5fIabqIKzytKyMFIGCTy/PtTHf237QUyqGQruhU9Om1SdYovMzN++JGAoYqd+jfr32puu7uxjkxIUVFGXYDGB0x6UMsPktqkFJb8Dvwjx1f6LEmj60GkgJ/dzYyMehNWVDriSoJrOdWQ78uazlfa7Ldc1rpkRYkEFh6en6Ur4Z4ju7F0ha4aQE9Dtg+lUV1aLeVMzVenGMs090ah0jikROFnyM9Q39DU2h1Gzu4FZJFP8ASs/6TrsN4i85G9SW0meM81vMy59GqnfaMaVLct55YsbEHFF+cgIBIGagdtd6iwAa5J+Yp2ikuWGHl6+goeoC44JS95DDHsQzdhUW4k1K7tuHNTvrOIzXcVtI0KDqW5Tj9aWxQ82OZjRk9qJk8lRkHrSKTbGHExJDcPqduLHUp2S4U5ilYfFzjqDnpmvfa77TeWOXM0LD7r7lfmOxq1vFbw4Nndvrmmw8qOcuqjYH1qvrO4GoWJjuEzNb7Sj8XL61p7asqsfmWdtLqLGcSX5F/DnE95oeqQ65otyYriJuZ06n327g9CK17wNx/bcSaVbanaZjfA86AHJiPRgfbO49qxRNp4tJBeQ/4WdmiOSPmtT7wz40PCvE0E08vPplziK5AHQHv8xnPyzU5brDG76z/UU8471+Tdtrc+e/JLgsRkN60r5UHYVFtGvEnsIZYpA4jPLzg55h2P5YqUryugYHYjNMSWDDtYeDmEPYUFoIm6rRmFru3rQiCR7GFui4NEtpw/Cacdu1e+VIIAjsF6yHJo9beBBsorzzADGd6JLSSHAodxQ/mQbDFc5ge9BWID7x3rjSxp0rsHBhoGD2ok3OTtUQ4+8QdN4D4bk1O8ZZLl/ht7bO8rf7D1+lHGLbwh2lTlVmqcFlscuK+MtD4O003er3QVypaOEEc8mPTOwHqayLx74wy8Rai7yuZ4CcRRcxWKL2UfiPTfvXLXQfEPx24rl1WV/s+mq3LJqF0CLeAfwIB99gOir9SOtXDwt/Zl4H0XVrTWb/AFPVNbvLaTzENwY4oSR0/dgE4+tSE409lyaKnUt/C+O6p6+S9v8Ac+xUehcE+KXEsMb6Tw99ntc4ElwVjUbf6v6Cny+8HfFzT7fnGl2N+G2ZbW5UsPoeWtcxRiKJIooljjTooGMUXcujxlGDYJ+L5fSh60mxh+P3mcpr7GANS1DUbS8u7DVbGS3vLFC8ttNjmwvfHcfLPeoq7vqknma2kyLL8aCNwqAdhjFbV4n4H4O4vupL/WdIMFyAIC6xhSFGcHb59fes3+IXAd1wXrIRWjuNMmAW2mA5iuOqN6MPenMOXJc2Pi36yfSq7P8ADIEujQQXsUtpdCWExAskf3hn8JzgZx6bb0zXFmFncxM5VeokGGPvTy0vJLyITIzHAOQPypRLdx3sxWeNV5Qo+BeXO3f3oWkXLpwksIX8Javb3V3Hp+oOIZz8MNxkDn9Fb1PoatezgvLUjzYTIg/Eg/pVD3NoOfmjwF9t8VdXhdxSutQroGqSc2owqTE7f56Dt7sP1G/Y1S3lptrgvcra1B0+5Ez0+eOTHKd/Q1JbRS6gEda5+x4WIdkBb1FLILDyj8JOPnVI4kKTT4BCBkYHO1OMEQHxUBE+HlalUKBR6ilisMZe42a3pMGo6XLbSoGV1wQayfxtw3PwrrX7TgUiHzfKmGNtx8J+oyPmK2PKByYPQ1V/GnD1vrt5caIyLzajZyJGx7Sp8aEfkfzqwtZuFRCwm6fevIzdLNHayi6jAktJtx1A+R9KKe3Fuwu7cg20p+LH4TQ9LSWTT7rTpABNbsQyMOg6EfnRmitZQTXtjql5JbwPEzQmOLzOeQfdXqOUHJ336CtGjQ6k0peTNQeAXEj6nwre6TcvzXVkysuTuYyMA/IYx+VXvblzbqR0G1Yu8FNYm0PxOtbF8FLsGyYYA5g26N+YFbWsMC13O+aSp6mI8XodK5bXEt/8gS7j1r3OxOKVEp7VzEee1NZKcLDYHWhiQYrjRBtwaAYD2NdsIGxQs28mwo13WIYUb12SUA4BovnTvuabQomd5WOwNFlZP4aXc6dq8CpPSiOG48ygsw5QBkk9BWZH09/HDxrvhcTTDhLQsCSSNsB0B+GMehkIY56gA+1aH8QdX/4f8Ode1dGCywWjiM/62+EfqarXwR0yPSvBixvAVMus3Mt9KVOdubkVfoF/MmnYvTByXsW1pJ0KE60fib0r5eb/AILKtltLW3htbaGK0tLdBHDDEoVIUA2VR22psg8SOG5buaysrp5pIDyuY4mIJ/6u9V/4j69PBphsreQqZ885U4IA7fWk3hroOdFF46ZlnJY5qtrXDgu0GnaxmtU2WgvH1pzlWtblUH4/Lzn6A5py0/irRtQkES3KLMTssmUY/LPWo9JpRVN46Yr/AEuNwQU3FRFeVIvdJkn9DRktm0WZMkM2SEDkjBDDO1Q/jfg/TeKOGLjS57eNZnX93OVyyP2OabdJ4lutJdbTVGe4tegn6vF8/wCIfqPep1HLDeWyTRussci5V1OQwPcVb29zGosxKypRq20019GfPfiPSLrR9cutIv8AKXVvIUbB756g+h/rTGkhEgV1yB1ya0d/aA4GulY8TWVqpijAW4lDfE4JwMjrt6+hFZyuDg8wTGdhjff39aly9Ubi1uVc0VVXPn7i6OclfKDDr1O9CjuJtOu4bq0keCaNg8ckZIZGG4IPakcMqcoBY4659PpRko54yuAc9CO1CixT1I1p4bcX2/HHDx8yRF12yX++W6jl8xegmQeh/EB0PsRUzEW9Yk4b4j1XhrXbbVdJuTb31s3NGw3BHcEdwRsRWyuCOK9O4/4YTVLAxxalGAt9Zqf8OTuV/wBJ6j/cVUXdn/8ASmvoZ+6p9B618L/H9en2HREGNxRoUBa4w5W+VFvKBVSkRmzsx+HNQTWrhYuMtBnLfcu0BPsfh/rUsurxUQ5Paq41Of7ZxdpUIOc3kQ//ACFHBYkmEvhefQqTxA0ePhrxw1CzDJBb3M/nB3PKgWTfJPpuah+rWv2e+l5VOVOwAwcetWz/AGmIUj4/0p0i+KW0UNJjrgnbP1qttXgMunW86yF2jjT4s9QRjH0xWqXBaeGVHVtVnyFXDN/9n1rR9UVviguY0bJ3ADAg+u2DW8LS8BvpYw2Y2Pwmvn5o7szyKu0rKSP+3B/pW4NIuS9lazhiS0aPn5qDUK7q9PT7kXxagqsYy91+xMmc5614SH1otFlljV1XZhmhi1lPWnVuYp7bAxOw70alx60WLYD7xr3IgpQRUbdyclq4bd/4q99oJOBRimRj02oTgAgYdTXTlB8K0cdvvGgl07muyKVr41NO/g3xAIxuI0JBPbzFzUf8H9Rh1TwO4eSK586azWW1nHeNg7EKf+0rVqcRaVBr/C+p6NJgC8tnhBK55SRscexxWWPAHiR9D4y1fw91RRH+0Wae1Zhgi4jGHQ/9SjPzX3p74qbRb0VrsmlzGWfo1j+CXeI1q3kJMfhHMBn1ztVq8JaelhoEEfLghQPyqP8AE+mR3ls0cy5QsG+W4/rU3tY/Js4oxthao7hYkh+nLMMHZiMH0pou4kcU5TPgGmyd6hNkiCGG8tEcEMM5pHpep3fDNycK0+nSHMkI3KH+JPf1Hf508y/FuelI5YkfYgUEJuEtUXuPSipx0yWUPnFmkWPF/A93ZibnguoCY5U37bH/AMVgm7tTbXdxZTEB45CpKjOCDg4zW2NIv30K9aKRs6XcN8ak/wCAx/GPY9x9fWsr+L2i/sHxU1a3XaGVlniONiHGf55rS29wqsPmL4UnQqzovh7og4UHPISfVc5zTnb6lDBoN5pr6bazvcSRyLdMD5tvy5yFOccrA7gjsDTD5xR+Xm23xilcJDNljgAfPFScmhTT2E0+Q2zYbsalHBPGmqcIa9Dq2mT+XIm00WfhmTIyp/oe3UVG7tCwGRvjY+tIEY82VyGH612RqpjLjLdM35wzxRoHiBoq6npE/k3CgLNFJsyORnlYfyI2NJNUeawmMU6GM9s9/cetY74S4z1jhbURe6VetCxPxod0cD8LDuP19K1Nwh4qaJxhpKW+pW6Cbo9vKMgn1Ru/6H2qFWs41O6GzKCvb1LbuprVD8r+hFqWqfC3xdqauCrGTXPEizI3is83Mn02H6kVM7nhrhTVJOaLULu0B6orK4Hy5hmuzXvCnhxw5qF3phklvJUwZ5mDO5/CNsADJ6Co1KyqKa1cIhVbyLg4wzllG/2htfgv+MWsIGDG2IUn0wDn9TUItuSeGK1PVoTGS23bI2qP61qtxr3E1zPcnzZCxDOPxNnJP504yXBttXtkj3RFXlA3I2z/AFq5Zo/CYdO3WfMK0iGWLW18pGbyzzOQCeVMgHPtv+tbZ0zCWcMa7KiKo+QFY9WOS14mRorho4bnEbcu3MjYyCPTYflWutOfECDOdhuO9U3iTxo+v8C36eEvf+CwNDuBJaNC3WM5HyNOZI7VEdLuvs90rfhbY1J2k9Kdtp64L5GJuqeio/mH/Cetc5Iz2pN5uBXhPUvBEFIjigXfc0B7nbCiuiF5N3OBRghiTc7mgOEheR+xrwilbtS3mQdMV3NLk4TpC2Nzism/2ieB9R4c4st/EHQJWtFuZFIlt/heC5AzzbfxYz881rkmqo8btQtzwrbaFOgdb6Qu6npyoP0OSKeo5lLT6lr4U5O5jTisqWz9v65GTw94/wBP8RuEVumCQ6xbBY7+16cr4+8o/gbcj03HarTf7oI6Yr59RX2rcB8WQ63oV08bZ5kJzySr3Rx3HX+dbp4Q11eKOA9F4hWLyjf2iStHnPI2MMue+CDVZfU9OGWNe0la1HHy8hXcE701zsd6drhd6a7gZqmkHBjfIxov3NGPtnNEk02PoBcxeZCwwDkYwazP40mZte0xLkHnt4GhWQ9ZEDZXPuMkfQVpzBYYzVReOHDh1Hg19Qt4ea505vtAYDcp0cflv9KlWtV06i9GHTahNS9DMUjj7UBjlye3balysQAP09aZzOHv0AOe53pzQkt0z6b1oovJY0p6m8eorcZh3OfSm2RMPk5BpxHLyZ3Ax2pJIrMmSD9B/wC+9OofqLKAx/Fg5Ab+dLLe8lhcBJHQg8xwcAY6GkUYA779aOxgbcre1JwBF4LF0XxX4j0xRDIYb+ADC/axzsv/AHjB/PNC1vjz/iWOOK5R4PKy3IpBUt0GOm3X3qugqggjII32OQaW23KzAFefuRjGaNVGMzsres8zhv8Ab9hy06xtLWJriPmkEYMsjkZwPU02Lfm51VrsKVJbPL+mKDql60TC2t5iyjZyNsk9R8qR2ZCSoSQMn9aHOSTqUWoR4RYc0XmnT7oBVIwM7fhOa1Hpc4a3jbbdQdvlWXdLZZ9O5NsxnmXm3/L54rROgXZktIST1Rf5VVeJraD9/wCAL9ZjFk2gfoamOlzrc2QDbumx96g1vJtTzpt6ba5U5+E7MPaoNrW0Tw+GZi7o9SG3KJYYYz2oP2ZD0oHnEjIO3Y11ZjV9uZ4//9k=";
+let LOGO=DEFAULT_LOGO;
+try{LOGO=localStorage.getItem('brandLogoV2')||DEFAULT_LOGO}catch(e){}
+const brandHtml=()=>`<img class="lgo" src="${LOGO}" alt="Aylin Market"><div><div class="bn">Aylin Market</div><div class="bs">مشتريات البيت</div></div>`;
+function paintBrand(){
+  document.querySelectorAll('.brand').forEach(b=>b.innerHTML=brandHtml());
+  if(LOGO)$('fav').href=LOGO;
+}
 const isOwner=()=>!!auth.currentUser&&(auth.currentUser.email||'').toLowerCase()===OWNER;
 const who=()=>((auth.currentUser&&auth.currentUser.email)||'').split('@')[0];
 
@@ -158,14 +426,25 @@ function groups(){
   for(const a of m.values())a.sort((x,y)=>(y.date||'').localeCompare(x.date||'')||y.ts-x.ts);
   return m;
 }
-const thumb=p=>p.photo?`<img class="th" alt="" data-ph="${esc(p.id)}">`:'<div class="th"></div>';
+const thumb=p=>p.photo?`<img class="th" alt="" data-ph="${esc(p.id)}">`:`<div class="th">${esc((p.item||'أ')[0])}</div>`;
 
 const nz=v=>String(v==null?'':v).toLowerCase().replace(/[\u064B-\u0652\u0640]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي');
 const FL=[['item','البند'],['brand','الماركة'],['store','المكان'],['note','ملاحظة'],['by','أضافها'],['price','السعر'],['qty','الوزن'],['date','التاريخ']];
 function matchP(p,ws){const t=nz([p.item,p.brand,p.store,p.note,p.by,p.date,fd(p.date),p.price,p.qty,U[p.unit][0]].join(' '));return ws.every(w=>t.includes(w))}
 function whyP(p,w){for(const [k,l] of FL){const v=k==='date'?fd(p.date):p[k];if(nz(v).includes(w))return l+': '+(k==='qty'?num(v)+' '+U[p.unit][0]:v)}return ''}
+
+function dashHtml(m){
+  const curMonth=today().slice(0,7);
+  const mSum=P.filter(p=>(p.date||'').startsWith(curMonth)).reduce((a,b)=>a+(+b.price||0),0);
+  return `<div class="dash">
+    <div class="d-card"><span>الأصناف</span><b>${m.size}</b></div>
+    <div class="d-card"><span>المشتريات</span><b>${P.length}</b></div>
+    <div class="d-card"><span>مشتريات الشهر</span><b>${num(mSum)} <small style="font-size:11px">ر.س</small></b></div>
+  </div>`;
+}
+
 function homeList(m){
-  if(!m.size)return '<p class="empty">لا توجد مشتريات بعد. ابدأ بتسجيل أول مشترى من الزر بالأسفل.</p>';
+  if(!m.size)return '<div class="empty"><span class="empty-ic">🛒</span>لا توجد مشتريات مسجلة بعد.<br>ابدأ بتسجيل أول مشترى من الزر بالأسفل.</div>';
   const ws=nz(q).split(/\s+/).filter(Boolean);
   const ents=[...m.entries()].map(([k,r])=>{
     if(!ws.length)return{k,r,why:''};
@@ -173,10 +452,10 @@ function homeList(m){
     const rest=ws.find(w=>!nz(k).includes(w));
     return{k,r,why:rest?whyP(hp,rest):''};
   }).filter(Boolean);
-  if(!ents.length)return '<p class="empty">لا توجد نتائج مطابقة.</p>';
+  if(!ents.length)return '<div class="empty"><span class="empty-ic">🔍</span>لا توجد نتائج مطابقة لبحثك.</div>';
   ents.sort((a,b)=>(b.r[0].date||'').localeCompare(a.r[0].date||''));
-  return ents.map(({k,r,why})=>{const l=r[0];
-    return `<button class="row" data-item="${esc(k)}">${thumb(l)}<div><div>${esc(k)}</div><div class="sub">${r.length} مرة · آخر شراء ${fd(l.date)}</div>${why?`<div class="sub" style="color:var(--ac)">${esc(why)}</div>`:''}</div><div class="pr">${num(l.price)} ر.س<div class="sub">${esc(l.brand)}</div></div></button>`}).join('');
+  return ents.map(({k,r,why},idx)=>{const l=r[0];
+    return `<button class="row" style="animation-delay:${Math.min(idx*0.035,0.35)}s" data-item="${esc(k)}">${thumb(l)}<div><div class="item-title">${esc(k)}</div><div class="sub">${r.length} عملية شراء · آخرها ${fd(l.date)}</div>${why?`<div class="sub" style="color:var(--ac);font-weight:600">${esc(why)}</div>`:''}</div><div class="pr">${num(l.price)} <small style="font-size:12px">ر.س</small><div><span class="pill">${esc(l.brand||'بدون ماركة')}</span></div></div></button>`}).join('');
 }
 
 function itemView(rows){
@@ -184,13 +463,13 @@ function itemView(rows){
   const pp=same.map(ppu),min=Math.min(...pp),avg=pp.reduce((a,c)=>a+c,0)/pp.length;
   const best=same.find(p=>ppu(p)===min),l=rows[0],u=BL[b];
   const ws=nz(q).split(/\s+/).filter(Boolean);
-  const list=rows.map(p=>{
+  const list=rows.map((p,idx)=>{
     const isBest=same.length>1&&U[p.unit][1]===b&&ppu(p)===min;
-    return `<button class="row${isBest?' best':''}${ws.length&&matchP(p,ws)?' hit':''}" data-id="${esc(p.id)}">${thumb(p)}<div><div>${esc(p.brand)||'بدون ماركة'}${isBest?'<span class="tag">الأرخص</span>':''}</div><div class="sub">${num(p.qty)} ${U[p.unit][0]} · ${fd(p.date)}${p.store?' · '+esc(p.store):''}${p.by?' · '+esc(p.by):''}</div>${p.note?`<div class="sub">${esc(p.note)}</div>`:''}</div><div class="pr">${num(p.price)} ر.س<div class="sub">${num(ppu(p))} / ${BL[U[p.unit][1]]}</div></div></button>`}).join('');
-  return `<button class="link" id="back">‹ كل البنود</button><h1>${esc(l.item)}</h1>
+    return `<button class="row${isBest?' best':''}${ws.length&&matchP(p,ws)?' hit':''}" style="animation-delay:${Math.min(idx*0.04,0.35)}s" data-id="${esc(p.id)}">${thumb(p)}<div><div class="item-title">${esc(p.brand)||'بدون ماركة'}${isBest?'<span class="tag">★ الأرخص</span>':''}</div><div class="sub">${num(p.qty)} ${U[p.unit][0]} · ${fd(p.date)}${p.store?' · 📍 '+esc(p.store):''}${p.by?' · 👤 '+esc(p.by):''}</div>${p.note?`<div class="sub" style="color:var(--ac)">📝 ${esc(p.note)}</div>`:''}</div><div class="pr">${num(p.price)} <small style="font-size:12px">ر.س</small><div class="sub">${num(ppu(p))} / ${BL[U[p.unit][1]]}</div></div></button>`}).join('');
+  return `<div class="wrap"><div class="detail-hd"><button class="back-btn" id="back">‹ كل البنود</button><span class="sub">${rows.length} سجلات</span></div><h1>${esc(l.item)}</h1>
   <div class="stats"><div class="stat"><span class="sub">آخر سعر</span><b>${num(l.price)}</b><span class="sub">${num(ppu(l))} / ${u}</span></div>
-  <div class="stat"><span class="sub">أرخص سعر</span><b>${num(min)}</b><span class="sub">/ ${u} · ${esc(best.brand)||'—'}</span></div>
-  <div class="stat"><span class="sub">المتوسط</span><b>${num(avg)}</b><span class="sub">/ ${u}</span></div></div>${list}`;
+  <div class="stat st-best"><span class="sub">أرخص سعر</span><b>${num(min)}</b><span class="sub">/ ${u} · ${esc(best.brand)||'—'}</span></div>
+  <div class="stat"><span class="sub">المتوسط</span><b>${num(avg)}</b><span class="sub">/ ${u}</span></div></div>${list}</div>`;
 }
 
 function render(){
@@ -201,7 +480,8 @@ function render(){
   if(cur&&!m.has(cur))cur=null;
   if(cur){$('app').innerHTML=itemView(m.get(cur))}
   else{
-    if(!$('list'))$('app').innerHTML=`<header class="hd"><div class="brand">${brandHtml()}</div><button class="mnb" id="mn" type="button" aria-label="القائمة">☰</button></header><input class="in" id="q" placeholder="ابحث بالبند أو الماركة أو المكان..." value="${esc(q)}" style="margin-bottom:12px"><div id="list"></div>`;
+    if(!$('list'))$('app').innerHTML=`<div class="hero"><div class="wrap"><header class="hd"><div class="brand">${brandHtml()}</div><div class="hdr-btns"><button class="mnb" id="thBtn" type="button" aria-label="المظهر">${theme==='dark'?'☀️':'🌙'}</button><button class="mnb" id="mn" type="button" aria-label="القائمة">☰</button></div></header></div></div><div class="wrap"><div class="search-box"><span class="search-ic">🔍</span><input class="in" id="q" placeholder="ابحث بالبند أو الماركة أو المكان..." value="${esc(q)}"></div><div id="dashWrap"></div><div id="list"></div></div>`;
+    if($('dashWrap'))$('dashWrap').innerHTML=dashHtml(m);
     $('list').innerHTML=homeList(m);
   }
   document.querySelectorAll('img[data-ph]').forEach(im=>{
@@ -214,13 +494,13 @@ function render(){
 
 function openSheet(src,isEdit){
   edit=isEdit?src:null;photo=null;
-  $('shT').textContent=isEdit?'تعديل مشترى':'تسجيل مشترى';
+  $('shT').textContent=isEdit?'تعديل بيانات المشترى':'تسجيل مشترى جديد';
   $('fItem').value=src?src.item:'';
   $('fBrand').value=src?src.brand||'':'';
   $('fQty').value=src?src.qty:'';
   $('fUnit').value=src?src.unit:'g';
   $('fPrice').value=isEdit?src.price:'';
-  $('fPrice').placeholder=src&&!isEdit?'آخر سعر '+num(src.price):'';
+  $('fPrice').placeholder=src&&!isEdit?'آخر سعر '+num(src.price)+' ر.س':'0.00';
   $('fDate').value=isEdit?src.date:today();
   $('fStore').value=src?src.store||'':'';
   $('fNote').value=isEdit?src.note||'':'';
@@ -231,7 +511,7 @@ function openSheet(src,isEdit){
     else db.doc('photos/'+src.id).get().then(s=>{if(s.exists)show(PC[src.id]=s.data().data)}).catch(()=>{});
   }
   $('del').hidden=!isEdit;$('err').textContent='';
-  $('sh').classList.add('on');$('sh').scrollTop=0;
+  $('sh').classList.add('on');$('sh').querySelector('.wrap').scrollTop=0;
 }
 const closeSheet=()=>$('sh').classList.remove('on');
 
@@ -253,7 +533,7 @@ function autofill(byBrand){
   if(!l)return;
   if(!byBrand)$('fBrand').value=l.brand||'';
   $('fQty').value=l.qty;$('fUnit').value=l.unit;$('fStore').value=l.store||'';
-  $('fPrice').placeholder='آخر سعر '+num(l.price);
+  $('fPrice').placeholder='آخر سعر '+num(l.price)+' ر.س';
 }
 $('fItem').onchange=()=>autofill(false);
 $('fBrand').onchange=()=>autofill(true);
@@ -265,7 +545,7 @@ $('cam').onclick=async()=>{
   try{
     stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
     $('vid').srcObject=stream;$('cm').classList.add('on');
-  }catch(x){stream=null;$('err').textContent='الكاميرا الداخلية غير متاحة هنا. اختر من المعرض.'}
+  }catch(x){stream=null;$('err').textContent='الكاميرا غير متاحة، اختر صورة من المعرض.'}
 };
 $('cmx').onclick=stopCam;
 $('snap').onclick=()=>{
@@ -291,40 +571,47 @@ $('save').onclick=async()=>{
     if(photo){await db.doc('photos/'+id).set({data:photo});PC[id]=photo}
     await db.doc('purchases/'+id).set(rec);
     closeSheet();
-  }catch(x){$('err').textContent='تعذر الحفظ. تأكد من الاتصال ومن أن لديك صلاحية التعديل.'}
+  }catch(x){$('err').textContent='تعذر الحفظ. تأكد من الاتصال وصلاحية التعديل.'}
   finally{$('save').disabled=false}
 };
 $('del').onclick=async()=>{
   const b=$('del');
-  if(!b.dataset.c){b.dataset.c=1;b.textContent='اضغط مرة أخرى لتأكيد الحذف';setTimeout(()=>{delete b.dataset.c;b.textContent='حذف'},3000);return}
+  if(!b.dataset.c){b.dataset.c=1;b.textContent='اضغط مرة أخرى لتأكيد الحذف النهائي';setTimeout(()=>{delete b.dataset.c;b.textContent='حذف المشترى'},3000);return}
   try{await db.doc('purchases/'+edit.id).delete();if(edit.photo)await db.doc('photos/'+edit.id).delete();closeSheet()}
   catch(x){$('err').textContent='تعذر الحذف.'}
-  delete b.dataset.c;b.textContent='حذف';
+  delete b.dataset.c;b.textContent='حذف المشترى';
 };
 document.addEventListener('click',e=>{
+  if(e.target.closest('#thBtn')){theme=theme==='dark'?'light':'dark';localStorage.setItem('theme',theme);applyTheme();return}
+  if(e.target.classList.contains('sheet')&&e.target.id!=='lg'&&e.target.id!=='vf'){e.target.classList.remove('on');return}
   const t=e.target.closest('[data-item],[data-id],#back');if(!t)return;
   if(t.id==='back'){cur=null}
   else if(t.dataset.item){cur=t.dataset.item}
   else{const p=P.find(x=>x.id===t.dataset.id);if(p)openSheet(p,true);return}
-  render();window.scrollTo(0,0);
+  render();window.scrollTo({top:0,behavior:'smooth'});
 });
-document.addEventListener('input',e=>{if(e.target.id==='q'){q=e.target.value;$('list').innerHTML=homeList(groups());render()}});
+document.addEventListener('input',e=>{if(e.target.id==='q'){q=e.target.value;$('list').innerHTML=homeList(groups())}});
 
 const show=id=>['lg','vf'].forEach(x=>$(x).classList.toggle('on',x===id));
-const AM={'auth/invalid-credential':'البريد أو كلمة المرور غير صحيحة.','auth/wrong-password':'البريد أو كلمة المرور غير صحيحة.','auth/user-not-found':'البريد أو كلمة المرور غير صحيحة.','auth/email-already-in-use':'هذا الإيميل مسجل بالفعل، اضغط دخول.','auth/weak-password':'كلمة المرور قصيرة (6 أحرف على الأقل).','auth/invalid-email':'الإيميل غير صحيح.','auth/network-request-failed':'تعذر الاتصال بالإنترنت.','auth/too-many-requests':'محاولات كثيرة، حاول بعد قليل.'};
+const AM={'auth/invalid-credential':'البريد أو كلمة المرور غير صحيحة.','auth/wrong-password':'البريد أو كلمة المرور غير صحيحة.','auth/user-not-found':'البريد أو كلمة المرور غير صحيحة.','auth/email-already-in-use':'هذا الإيميل مسجل بالفعل، اضغط تسجيل الدخول.','auth/weak-password':'كلمة المرور قصيرة (6 أحرف على الأقل).','auth/invalid-email':'صيغة الإيميل غير صحيحة.','auth/network-request-failed':'تعذر الاتصال بالإنترنت.','auth/too-many-requests':'محاولات كثيرة، حاول بعد قليل.'};
 const authMsg=e=>AM[e.code]||('تعذر تنفيذ الطلب ('+e.code+')');
 $('lB').onclick=async()=>{$('lErr').textContent='';try{await auth.signInWithEmailAndPassword($('lE').value.trim(),$('lP').value)}catch(e){$('lErr').textContent=authMsg(e)}};
 $('lN').onclick=async()=>{$('lErr').textContent='';try{const c=await auth.createUserWithEmailAndPassword($('lE').value.trim(),$('lP').value);await c.user.sendEmailVerification()}catch(e){$('lErr').textContent=authMsg(e)}};
-$('lF').onclick=async()=>{const m=$('lE').value.trim();if(!m){$('lErr').textContent='اكتب إيميلك أولا.';return}try{await auth.sendPasswordResetEmail(m);$('lErr').textContent='تم إرسال رابط إعادة تعيين كلمة المرور.'}catch(e){$('lErr').textContent=authMsg(e)}};
+$('lF').onclick=async()=>{const m=$('lE').value.trim();if(!m){$('lErr').textContent='اكتب إيميلك أولا.';return}try{await auth.sendPasswordResetEmail(m);$('lErr').textContent='تم إرسال رابط إعادة تعيين كلمة المرور لبريدك.'}catch(e){$('lErr').textContent=authMsg(e)}};
 $('vR').onclick=async()=>{try{await auth.currentUser.sendEmailVerification();$('vErr').textContent='تم إرسال الرابط مرة أخرى.'}catch(e){$('vErr').textContent=authMsg(e)}};
 $('vB').onclick=async()=>{try{await auth.currentUser.reload();await auth.currentUser.getIdToken(true);if(auth.currentUser.emailVerified)enter();else $('vErr').textContent='لم يتم التأكيد بعد.'}catch(e){$('vErr').textContent=authMsg(e)}};
 const out=()=>{if(unsub){unsub();unsub=null}if(unsub2){unsub2();unsub2=null}P=[];cur=null;$('ban').innerHTML='';['mu','mb'].forEach(x=>$(x).classList.remove('on'));render();auth.signOut()};
 $('vO').onclick=out;$('muOut').onclick=out;
 
 function enter(){
-  show(null);$('muMb').hidden=!isOwner();$('muLg').hidden=!isOwner();
+  show(null);$('muMb').hidden=!isOwner();$('muLg').hidden=!isOwner();$('dlIcons').hidden=!isOwner();
   if(unsub)return;
-  unsub2=db.doc('config/brand').onSnapshot(s=>{if(s.exists&&s.data().logo){LOGO=s.data().logo;try{localStorage.setItem('brandLogo',LOGO)}catch(e){}paintBrand()}},()=>{});
+  if(isOwner()){
+    db.doc('config/brand').get().then(s=>{
+      if(!s.exists||s.data().v!==2){db.doc('config/brand').set({logo:DEFAULT_LOGO,v:2}).catch(()=>{})}
+    }).catch(()=>{});
+  }
+  unsub2=db.doc('config/brand').onSnapshot(s=>{if(s.exists&&s.data().logo&&s.data().v===2){LOGO=s.data().logo;try{localStorage.setItem('brandLogoV2',LOGO)}catch(e){}paintBrand()}},()=>{});
   unsub=db.collection('purchases').onSnapshot(s=>{
     $('ban').innerHTML='';P=s.docs.map(d=>Object.assign({id:d.id},d.data()));render();
   },e=>{
@@ -338,12 +625,12 @@ auth.onAuthStateChanged(u=>{
   enter();
 });
 
-// القائمة والمشاركة والتصدير
+// القائمة والمشاركة والتصدير وتوليد الأيقونات
 $('muX').onclick=()=>$('mu').classList.remove('on');
 $('muMb').onclick=async()=>{$('mb').classList.add('on');$('mbErr').textContent='';renderMembers(await loadMembers())};
 $('mbX').onclick=()=>$('mb').classList.remove('on');
 async function loadMembers(){try{const s=await db.doc('config/members').get();return s.exists?(s.data().emails||[]):[]}catch(e){$('mbErr').textContent='تعذر تحميل القائمة.';return[]}}
-function renderMembers(l){$('mbList').innerHTML=l.length?l.map(e=>`<div class="row" style="grid-template-columns:1fr auto;cursor:default"><span>${esc(e)}</span><button class="link" data-rm="${esc(e)}" type="button">إزالة</button></div>`).join(''):'<p class="empty">لا يوجد أحد بعد.</p>'}
+function renderMembers(l){$('mbList').innerHTML=l.length?l.map(e=>`<div class="row" style="grid-template-columns:1fr auto;cursor:default"><span>${esc(e)}</span><button class="link" style="color:#e11d48" data-rm="${esc(e)}" type="button">إزالة</button></div>`).join(''):'<div class="empty">لا يوجد أعضاء مضافون بعد.</div>'}
 $('mbAdd').onclick=async()=>{
   const e=$('mbE').value.trim().toLowerCase();$('mbErr').textContent='';
   if(!/^\S+@\S+\.\S+$/.test(e)){$('mbErr').textContent='اكتب إيميل صحيح.';return}
@@ -365,25 +652,40 @@ $('exCsv').onclick=()=>{
   dl('purchases-'+today()+'.csv','\ufeff'+[h.map(c).join(','),...body].join('\r\n'),'text/csv;charset=utf-8');
 };
 $('exJs').onclick=async()=>{
-  $('muMsg').textContent='جاري تجهيز النسخة...';
+  $('muMsg').textContent='جاري تجهيز النسخة الاحتياطية...';
   try{
     const ph={};
     for(const p of P){if(p.photo){const s=await db.doc('photos/'+p.id).get();if(s.exists)ph[p.id]=s.data().data}}
     dl('purchases-backup-'+today()+'.json',JSON.stringify({exported:today(),purchases:P,photos:ph}),'application/json');
-    $('muMsg').textContent='تم تحميل الملف.';
+    $('muMsg').textContent='تم تحميل ملف النسخة الاحتياطية بنجاح.';
   }catch(e){$('muMsg').textContent='تعذر تجهيز النسخة.'}
 };
 $('muLg').onclick=()=>$('lgF').click();
 $('lgF').onchange=async e=>{
-  const f=e.target.files[0];if(!f)return;$('muMsg').textContent='جاري رفع الصورة...';
+  const f=e.target.files[0];if(!f)return;$('muMsg').textContent='جاري تحديث اللوجو...';
   try{
     const im=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=URL.createObjectURL(f)});
-    const m=Math.min(im.width,im.height),c=document.createElement('canvas');c.width=c.height=256;
-    c.getContext('2d').drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,256,256);
-    await db.doc('config/brand').set({logo:c.toDataURL('image/jpeg',.85)});
-    $('muMsg').textContent='تم تغيير الصورة.';
-  }catch(x){$('muMsg').textContent='تعذر رفع الصورة. تأكد من تحديث قواعد Firestore.'}
+    const m=Math.min(im.width,im.height),c=document.createElement('canvas');c.width=c.height=320;
+    c.getContext('2d').drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,320,320);
+    const dataUrl=c.toDataURL('image/jpeg',.88);
+    await db.doc('config/brand').set({logo:dataUrl,v:2});
+    LOGO=dataUrl;try{localStorage.setItem('brandLogoV2',LOGO)}catch(err){}
+    paintBrand();
+    $('muMsg').textContent='تم تحديث اللوجو بنجاح لكل المستخدمين!';
+  }catch(x){$('muMsg').textContent='تعذر رفع الصورة. تأكد من صلاحيات Firestore.'}
   e.target.value='';
+};
+$('dlIcons').onclick=async()=>{
+  try{
+    const im=await new Promise((res,rej)=>{const i=new Image();i.crossOrigin='anonymous';i.onload=()=>res(i);i.onerror=rej;i.src=LOGO});
+    for(const [sz,fn] of [[192,'icon-192.png'],[512,'icon-512.png'],[512,'icon-maskable-512.png'],[180,'apple-touch-icon.png']]){
+      const c=document.createElement('canvas');c.width=c.height=sz;
+      const ctx=c.getContext('2d'),m=Math.min(im.width,im.height);
+      ctx.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,sz,sz);
+      c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fn;a.click()},'image/png');
+    }
+    $('muMsg').textContent='جاري تحميل الأيقونات الأربع لرفعها مع ملفات الموقع.';
+  }catch(e){$('muMsg').textContent='تعذر توليد الأيقونات.'}
 };
 paintBrand();render();
 </script>
