@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAllowed() {
+      return request.auth != null && (
+        request.auth.token.email.lower() == 'faragm100@gmail.com' ||
+        (request.auth.token.email_verified == true &&
+         request.auth.token.email.lower() in get(/databases/$(database)/documents/config/members).data.emails)
+      );
+    }
+    match /purchases/{id} {
+      allow read, write: if isAllowed();
+    }
+    match /photos/{id} {
+      allow read, write: if isAllowed();
+    }
+    match /config/{doc} {
+      allow read, write: if isAllowed();
+    }
+  }
+}

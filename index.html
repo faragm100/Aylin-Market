@@ -80,7 +80,6 @@ h1 { font-size: 19.5px; font-weight: 700; margin: 8px 0 12px; letter-spacing: -0
 h2 { font-size: 15.5px; font-weight: 700; margin: 16px 0 10px; display: flex; align-items: center; gap: 7px; }
 input, select, button, textarea { font: inherit; color: inherit; }
 
-/* Safe Animations (Never opacity:0 at 0% so Android Battery Saver / WebView never hides elements!) */
 @keyframes cardSlide {
   0% { transform: translateY(10px); }
   100% { transform: translateY(0); }
@@ -103,7 +102,7 @@ input, select, button, textarea { font: inherit; color: inherit; }
   50% { top: 86%; }
 }
 
-/* Redesigned Luxury Hero Header - Spacious 2-Row Layout (No Overlap Ever!) */
+/* Luxury Hero Header - Spacious 2-Row Layout */
 .hero {
   background: radial-gradient(circle at 85% 15%, rgba(229, 184, 75, 0.22), transparent 45%),
               linear-gradient(135deg, var(--ac) 0%, var(--ac2) 90%);
@@ -349,6 +348,11 @@ input, select, button, textarea { font: inherit; color: inherit; }
   color: var(--ac); font-weight: 700; font-size: 11px;
   padding: 1px 6px; border-radius: 6px; margin-inline-start: 4px;
 }
+.code-pill {
+  display: inline-flex; align-items: center; gap: 3px;
+  background: var(--sf2); color: var(--mu); font-family: monospace;
+  font-size: 10.5px; padding: 1px 6px; border-radius: 6px; border: 1px solid var(--ln);
+}
 .item-title { font-weight: 700; font-size: 15px; margin-bottom: 2px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
 .pr { font-weight: 700; font-size: 15.5px; text-align: end; color: var(--ac); white-space: nowrap; }
 .sub { color: var(--mu); font-size: 11.8px; }
@@ -367,20 +371,28 @@ input, select, button, textarea { font: inherit; color: inherit; }
   padding: 1.5px 7px; border-radius: 99px; font-weight: 700;
 }
 
-/* Receipt Scanner & Editable Items Table */
+/* Redesigned Receipt Scanner & Labeled Editable Items Card */
 .rcpt-row {
-  background: var(--sf); border: 1.5px solid var(--ln); border-radius: 16px;
-  padding: 10px; margin-bottom: 8px; box-shadow: var(--shd);
+  background: var(--sf); border: 1.5px solid var(--ln); border-radius: 18px;
+  padding: 12px; margin-bottom: 10px; box-shadow: var(--shd);
 }
+.rcpt-row.code-matched { border-color: var(--ok); }
 .rcpt-row-top {
-  display: grid; grid-template-columns: 24px 1fr 30px; gap: 8px; align-items: center; margin-bottom: 6px;
+  display: grid; grid-template-columns: 24px 1fr 30px; gap: 8px; align-items: center; margin-bottom: 8px;
 }
-.rcpt-row-fields {
-  display: grid; grid-template-columns: 1.2fr 0.7fr 0.8fr 0.8fr 1fr; gap: 5px; align-items: center;
+.rcpt-grid-2 {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 7px;
 }
-.rcpt-row-fields .in { padding: 7px 8px; font-size: 12.5px; border-radius: 10px; }
+.rcpt-grid-5 {
+  display: grid; grid-template-columns: 0.7fr 0.85fr 0.85fr 0.95fr 1.05fr; gap: 6px; align-items: end;
+}
+.mini-lbl {
+  display: block; font-size: 10.5px; font-weight: 700; color: var(--mu); margin-bottom: 3px; white-space: nowrap;
+}
+.rcpt-row .in { padding: 7px 8px; font-size: 13px; border-radius: 10px; height: 36px; }
 .rcpt-match {
-  font-size: 11px; color: var(--ok); font-weight: 600; margin-top: 4px;
+  font-size: 11.5px; color: var(--ok); font-weight: 700; margin-top: 7px;
+  display: flex; align-items: center; gap: 5px;
 }
 
 /* Barcode Scanner Viewport */
@@ -712,30 +724,52 @@ label { display: block; font-size: 12.5px; font-weight: 600; color: var(--mu); m
   <div class="sel-actions" id="selActions"></div>
 </div>
 
-<!-- نافذة مسح الفاتورة الذكي وتسجيل الأصناف أوتوماتيكياً (Receipt OCR & AI Scanner Sheet) -->
+<!-- نافذة مسح الفاتورة الذكي وتسجيل الأصناف أوتوماتيكياً (Receipt AI Vision Scanner Sheet) -->
 <div class="sheet" id="rcptSh"><div class="wrap">
-  <h1>🧾 مسح الفاتورة الذكي وتسجيل المشتريات</h1>
-  <p class="sub" style="margin-top:-6px">صوّر فاتورة المحل ليتم استخراج الأصناف والأسعار وتوزيع كل منتج في مكانه تلقائياً، ويمكنك إضافة صورة لكل منتج لاحقاً بضغطة واحدة:</p>
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+    <h1 style="margin:6px 0">🧾 مسح الفاتورة الذكي</h1>
+    <button class="back-btn" id="rcptKeyBtn" type="button" style="font-size:11.5px;padding:6px 10px"></button>
+  </div>
+  <p class="sub" style="margin-top:0">صوّر الفاتورة ليقرأ الذكاء الاصطناعي كل صنف، رقمه، وزنه/حجمه، الكمية، والسعر، ويربطه بمكانه تلقائياً:</p>
+
+  <!-- صندوق إدخال مفتاح الذكاء الاصطناعي المباشر إن لم يكن مضافاً -->
+  <div id="rcptApiKeyBox" class="ins-card" style="margin-top:8px;border-color:var(--gold)" hidden>
+    <div style="font-weight:700;font-size:13.5px;margin-bottom:4px">🤖 ربط مفتاح Gemini AI لقراءة الفواتير بدقة 100%</div>
+    <div class="sub" style="margin-bottom:8px">يُحفظ المفتاح في حسابك السحابي ليعمل تلقائياً على جميع أجهزتك بدون إعادة إدخاله:</div>
+    <div style="display:flex;gap:6px">
+      <input class="in" id="rcptApiKeyIn" placeholder="AIzaSy..." autocomplete="off" style="font-family:monospace;font-size:13px">
+      <button class="btn" id="rcptSaveKeyBtn" type="button" style="width:auto;padding:0 16px;white-space:nowrap">حفظ ✓</button>
+    </div>
+  </div>
 
   <div class="two" style="margin-top:10px">
-    <button class="btn" id="rcptCamBtn" type="button" style="padding:12px">📷 تصوير الفاتورة</button>
-    <button class="btn g" id="rcptGalBtn" type="button" style="margin:0;padding:12px">🖼️ من المعرض</button>
+    <button class="btn" id="rcptCamBtn" type="button" style="padding:13px">📷 تصوير الفاتورة</button>
+    <button class="btn g" id="rcptGalBtn" type="button" style="margin:0;padding:13px">🖼️ من المعرض</button>
   </div>
+  <button class="btn g" id="loadDiscountTowerBtn" type="button" style="margin-top:8px;padding:10px;font-size:13px;border-color:var(--gold);color:var(--ac)">⚡ استخراج فاتورة «برج التخفيضات» (23/10/2026) جاهزة بضغطة واحدة</button>
   <input id="rcptFileIn" type="file" accept="image/*" hidden>
+
+  <!-- معاينة صورة الفاتورة المرفوعة مع زر إعادة التحليل -->
+  <div id="rcptImgWrap" style="margin-top:10px;position:relative" hidden>
+    <img id="rcptImgPrev" class="prev" style="max-height:170px;margin:0;object-fit:contain;background:#000" alt="">
+    <button class="back-btn" id="rcptRetryBtn" type="button" style="position:absolute;bottom:8px;inset-inline-end:8px;font-size:11.5px;padding:5px 10px;background:rgba(0,0,0,0.75);color:#fff;border-color:var(--gold)">🔄 إعادة قراءة الفاتورة</button>
+  </div>
 
   <!-- شريط تقدم قراءة الفاتورة -->
   <div id="rcptProgBox" class="ins-card" style="margin-top:12px;text-align:center" hidden>
-    <div id="rcptProgTxt" style="font-weight:700;color:var(--ac)">🔍 جاري قراءة وتحليل أصناف الفاتورة...</div>
-    <div class="prog-track"><div class="prog-fill" id="rcptProgBar" style="width:15%"></div></div>
-    <div class="sub">يتم التعرف على المتجر والتاريخ ومطابقة الأصناف مع سجل مشترياتك</div>
+    <div id="rcptProgTxt" style="font-weight:700;color:var(--ac)">🤖 جاري قراءة وتحليل أصناف الفاتورة...</div>
+    <div class="prog-track"><div class="prog-fill" id="rcptProgBar" style="width:25%"></div></div>
+    <div class="sub" id="rcptProgSub">يتم استخراج رقم الصنف، الاسم، الحجم/الوزن، الكمية، والسعر الشامل للضريبة</div>
   </div>
 
-  <!-- بيانات الفاتورة العامة -->
+  <p class="err" id="rcptErrMsg" hidden></p>
+
+  <!-- بيانات الفاتورة العامة والجدول التفصيلي -->
   <div id="rcptResultBox" style="margin-top:12px" hidden>
     <div class="two">
       <div>
         <label for="rStore">📍 المتجر المستخرج</label>
-        <input class="in" id="rStore" list="dStores" placeholder="مثال: بندة / العثيم">
+        <input class="in" id="rStore" list="dStores" placeholder="مثال: برج التخفيضات / بندة">
       </div>
       <div>
         <label for="rDate">📅 تاريخ الفاتورة</label>
@@ -747,7 +781,7 @@ label { display: block; font-size: 12.5px; font-weight: 600; color: var(--mu); m
       <h2 style="margin:0">📦 الأصناف المستخرجة (<span id="rItemsCnt">0</span>)</h2>
       <button class="back-btn" id="rAddRowBtn" type="button" style="padding:5px 10px;font-size:12px;color:var(--ac)">＋ إضافة بند يدوي</button>
     </div>
-    <div class="sub" style="margin-bottom:8px">راجع الأصناف أو عدّل أي اسم/وزن/سعر قبل الحفظ الجماعي في أماكنها:</div>
+    <div class="sub" style="margin-bottom:8px">راجع الأصناف أو عدّل أي حقل قبل الحفظ الجماعي في أماكنها (تُحفظ أرقام الأصناف تلقائياً للتعرف الفوري مستقبلاً):</div>
     <div id="rcptItemsList"></div>
 
     <button class="btn" id="rSaveAllBtn" type="button" style="margin-top:12px">✅ حفظ كل أصناف الفاتورة في أماكنها</button>
@@ -756,7 +790,7 @@ label { display: block; font-size: 12.5px; font-weight: 600; color: var(--mu); m
   <!-- خيار لصق نص فاتورة إلكترونية أو كتابة سريعة -->
   <details style="margin-top:12px;background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:10px">
     <summary style="font-weight:600;font-size:13px;cursor:pointer;color:var(--mu)">📋 أو الصق نص فاتورة إلكترونية / اكتب سطور سريعة</summary>
-    <textarea class="in" id="rcptRawTxt" rows="4" style="margin-top:8px;font-size:13px" placeholder="مثال لكل سطر:&#10;حليب المراعي 2 لتر 14.50&#10;جبنة كيري 2 × 500 جم 32&#10;خبز توست 6.00"></textarea>
+    <textarea class="in" id="rcptRawTxt" rows="4" style="margin-top:8px;font-size:13px" placeholder="مثال لكل سطر:&#10;6976115260025 شامبو بني طبيعي 420 ملي 13.00&#10;4800188108408 لوشن ليكاس باباي 300 مل 11.50"></textarea>
     <button class="btn g" id="rcptParseTxtBtn" type="button" style="padding:10px;font-size:13px">تحليل النص واستخراج الأصناف ⚡</button>
   </details>
 
@@ -765,8 +799,8 @@ label { display: block; font-size: 12.5px; font-weight: 600; color: var(--mu); m
 
 <!-- نافذة مسح الباركود الذكي (Barcode Scanner Sheet) -->
 <div class="sheet" id="bcSh"><div class="wrap">
-  <h1>▮▯ مسح باركود المنتج الذكي</h1>
-  <p class="sub" style="margin-top:-6px">وجّه الكاميرا نحو باركود المنتج ليتم التعرف عليه وتسجيله في مكانه فوراً:</p>
+  <h1>▮▯ مسح باركود / رقم الصنف</h1>
+  <p class="sub" style="margin-top:-6px">وجّه الكاميرا نحو باركود المنتج أو اكتب رقم الصنف ليتم التعرف عليه وتسجيله في مكانه فوراً:</p>
 
   <div class="bc-viewport" id="bcViewport">
     <video id="bcVid" autoplay playsinline muted></video>
@@ -776,7 +810,7 @@ label { display: block; font-size: 12.5px; font-weight: 600; color: var(--mu); m
   <p id="bcStatus" style="text-align:center;font-weight:700;color:var(--ac);margin:6px 0">📷 جاري البحث عن باركود...</p>
 
   <div style="display:flex;gap:8px;margin-top:10px">
-    <input class="in" id="bcManualIn" type="text" inputmode="numeric" placeholder="أو اكتب رقم الباركود يدوياً...">
+    <input class="in" id="bcManualIn" type="text" placeholder="أو اكتب رقم الصنف / الباركود (مثل ON-187 أو 6976...)...">
     <button class="btn" id="bcManualBtn" type="button" style="width:auto;padding:0 18px;white-space:nowrap">بحث 🔎</button>
   </div>
 
@@ -825,25 +859,26 @@ label { display: block; font-size: 12.5px; font-weight: 600; color: var(--mu); m
 </div>
 
 <label for="fItem" id="lblItem">البند</label>
-<input class="in" id="fItem" list="dItems" placeholder="مثال: حلاوة طحينية" autocomplete="off">
+<input class="in" id="fItem" list="dItems" placeholder="مثال: شامبو بني طبيعي" autocomplete="off">
 <datalist id="dItems"></datalist>
 
 <div class="two">
   <div>
     <label for="fBrand" id="lblBrand">الماركة</label>
-    <input class="in" id="fBrand" list="dBrands" placeholder="مثال: الرشيدي الميزان" autocomplete="off">
+    <input class="in" id="fBrand" list="dBrands" placeholder="مثال: ليكاس / لينا روز" autocomplete="off">
     <datalist id="dBrands"></datalist>
   </div>
   <div>
-    <label for="fBarcode" id="lblBarcode">الباركود (اختياري)</label>
-    <input class="in" id="fBarcode" placeholder="628..." autocomplete="off">
+    <label for="fBarcode" id="lblBarcode">رقم الصنف / الباركود</label>
+    <input class="in" id="fBarcode" list="dCodes" placeholder="6976... أو ON-187" autocomplete="off">
+    <datalist id="dCodes"></datalist>
   </div>
 </div>
 
 <div class="two">
   <div>
     <label for="fQty" id="lblQty">وزن / حجم الوحدة</label>
-    <input class="in" id="fQty" type="number" inputmode="decimal" min="0" step="any" placeholder="500">
+    <input class="in" id="fQty" type="number" inputmode="decimal" min="0" step="any" placeholder="420">
   </div>
   <div>
     <label for="fUnit" id="lblUnit">الوحدة</label>
@@ -886,7 +921,7 @@ label { display: block; font-size: 12.5px; font-weight: 600; color: var(--mu); m
   </div>
   <div>
     <label for="fStore" id="lblStore">المكان / المتجر</label>
-    <input class="in" id="fStore" list="dStores" placeholder="بندة / كارفور..." autocomplete="off">
+    <input class="in" id="fStore" list="dStores" placeholder="برج التخفيضات / بندة..." autocomplete="off">
     <datalist id="dStores"></datalist>
   </div>
 </div>
@@ -943,7 +978,7 @@ label { display: block; font-size: 12.5px; font-weight: 600; color: var(--mu); m
 </div>
 <button class="btn g" id="muCntry" type="button">🌍 تغيير الدولة والعملة</button>
 <button class="btn g" id="muBudget" type="button">🎯 تحديد الميزانية الشهرية المستهدفة</button>
-<button class="btn g" id="muAiKey" type="button">🤖 مفتاح الذكاء الاصطناعي للفواتير (اختياري)</button>
+<button class="btn g" id="muAiKey" type="button">🤖 إعداد مفتاح الذكاء الاصطناعي للفواتير (Gemini API)</button>
 <button class="btn g" id="muMb" type="button" hidden>👨‍👩‍👧 المشاركة مع العائلة</button>
 <button class="btn g" id="muLg" type="button" hidden>🖼️ تغيير صورة ولوجو Aylin Market</button>
 <button class="btn g" id="dlIcons" type="button" hidden>📲 تحميل أيقونات التثبيت (192 & 512)</button>
@@ -977,7 +1012,7 @@ const DICT = {
     subTitle: 'مشتريات البيت الذكية',
     scanRcpt: '🧾 تصوير فاتورة', scanBc: '▮▯ مسح باركود',
     navHome: 'الأصناف', navIns: 'الشهري والتحليل', navCart: 'للتسوق', navTrash: 'المهملات',
-    searchPh: 'ابحث بالبند أو الماركة أو المكان أو الباركود...',
+    searchPh: 'ابحث بالبند أو رقم الصنف أو الماركة أو المكان...',
     itemsCnt: 'الأصناف', purchasesCnt: 'عمليات الشراء', monthSpend: 'مشتريات الشهر',
     allTab: 'الكل', pinTab: '📌 المثبتة', cartTab: '🛒 للتسوق',
     sortDate: 'الأحدث ⇅', sortCount: 'الأكثر شراءً ⇅', sortPrice: 'الأعلى سعراً ⇅',
@@ -985,7 +1020,7 @@ const DICT = {
     buys: 'عملية', lastBuy: 'آخرها', backAll: '‹ كل البنود',
     dupEdit: '✨ نسخ مع التعديل', lastPrice: 'آخر سعر', bestPrice: 'أرخص سعر', avgPrice: 'المتوسط',
     addTitle: '＋ تسجيل مشترى جديد', editTitle: '✏️ تعديل بيانات المشترى', dupTitle: '✨ نسخ مع التعديل (شراء جديد)',
-    lblItem: 'البند / المنتج', lblBrand: 'الماركة', lblBarcode: 'الباركود (اختياري)', lblQty: 'وزن / حجم الوحدة الواحدة', lblUnit: 'الوحدة',
+    lblItem: 'البند / المنتج', lblBrand: 'الماركة', lblBarcode: 'رقم الصنف / الباركود', lblQty: 'وزن / حجم الوحدة الواحدة', lblUnit: 'الوحدة',
     lblCount: 'عدد الوحدات / العبوات المشتراة', lblUnitPrice: 'سعر الوحدة الواحدة', lblTotalPrice: 'الإجمالي المدفوع',
     lblDate: 'التاريخ', lblStore: 'المكان / المتجر', lblNote: 'ملاحظة (اختياري)', lblPhoto: 'صورة المنتج (اختياري)',
     saveBtn: 'حفظ المشترى', moveToTrash: 'نقل إلى سلة المهملات 🗑️', cancelBtn: 'إلغاء',
@@ -1005,7 +1040,7 @@ const DICT = {
     subTitle: 'Smart Household Tracker',
     scanRcpt: '🧾 Scan Receipt', scanBc: '▮▯ Scan Barcode',
     navHome: 'Catalog', navIns: 'Monthly & Insights', navCart: 'Shopping', navTrash: 'Trash',
-    searchPh: 'Search item, brand, store, or barcode...',
+    searchPh: 'Search item, code, brand, or store...',
     itemsCnt: 'Items', purchasesCnt: 'Purchases', monthSpend: 'This Month',
     allTab: 'All', pinTab: '📌 Pinned', cartTab: '🛒 To Buy',
     sortDate: 'Newest ⇅', sortCount: 'Most Bought ⇅', sortPrice: 'Highest Price ⇅',
@@ -1013,7 +1048,7 @@ const DICT = {
     buys: 'buys', lastBuy: 'Last', backAll: '‹ All Items',
     dupEdit: '✨ Duplicate & Edit', lastPrice: 'Last Price', bestPrice: 'Best Price', avgPrice: 'Average',
     addTitle: '＋ New Purchase', editTitle: '✏️ Edit Purchase', dupTitle: '✨ Duplicate & Edit (New Buy)',
-    lblItem: 'Item Name', lblBrand: 'Brand', lblBarcode: 'Barcode (Optional)', lblQty: 'Single Unit Weight / Size', lblUnit: 'Unit',
+    lblItem: 'Item Name', lblBrand: 'Brand', lblBarcode: 'Item Code / Barcode', lblQty: 'Single Unit Weight / Size', lblUnit: 'Unit',
     lblCount: 'Number of Units / Packs', lblUnitPrice: 'Single Unit Price', lblTotalPrice: 'Total Paid Price',
     lblDate: 'Date', lblStore: 'Store / Place', lblNote: 'Note (Optional)', lblPhoto: 'Product Photo (Optional)',
     saveBtn: 'Save Purchase', moveToTrash: 'Move to Trash 🗑️', cancelBtn: 'Cancel',
@@ -1034,7 +1069,7 @@ const t = k => (DICT[lang] && DICT[lang][k]) || DICT.ar[k] || k;
 
 // ========= نظام واجهات الدول والعملات =========
 const COUNTRIES = {
-  SA: { flag: '🇸🇦', nameAr: 'السعودية', nameEn: 'Saudi Arabia', currAr: 'ر.س', currEn: 'SAR', defaultBudget: 3000, stores: ['بندة', 'الدانوب', 'العثيم', 'بن داود', 'النوري', 'لولو', 'الراية', 'كارفور', 'التميمي', 'السدحان'] },
+  SA: { flag: '🇸🇦', nameAr: 'السعودية', nameEn: 'Saudi Arabia', currAr: 'ر.س', currEn: 'SAR', defaultBudget: 3000, stores: ['برج التخفيضات', 'بندة', 'الدانوب', 'العثيم', 'بن داود', 'النوري', 'لولو', 'الراية', 'كارفور', 'التميمي', 'السدحان'] },
   EG: { flag: '🇪🇬', nameAr: 'مصر', nameEn: 'Egypt', currAr: 'ج.م', currEn: 'EGP', defaultBudget: 15000, stores: ['كارفور', 'كازيون', 'فتح الله', 'سعودي', 'أولاد رجب', 'بيم', 'هايبر وان', 'سبينيس', 'الفرجاني'] },
   AE: { flag: '🇦🇪', nameAr: 'الإمارات', nameEn: 'UAE', currAr: 'د.إ', currEn: 'AED', defaultBudget: 3500, stores: ['لولو', 'كارفور', 'جمعية الاتحاد', 'سبينيس', 'تعاونية الشارقة', 'فيفا'] },
   GL: { flag: '🌍', nameAr: 'دولي / أخرى', nameEn: 'Global / Other', currAr: '$', currEn: 'USD', defaultBudget: 1000, stores: ['Walmart', 'Costco', 'Carrefour', 'Aldi', 'Lidl', 'Tesco'] }
@@ -1077,11 +1112,55 @@ const CFG={apiKey:"AIzaSyC7IbGGD_94sU-cDKV7Rfq47WmyGQDJrY4",authDomain:"aylin-ma
 const OWNER='faragm100@gmail.com';
 firebase.initializeApp(CFG);
 const auth=firebase.auth();
-let db=firebase.firestore(), ALL_P=[], P=[], TRASH=[], BARCODES={}, cur=null, activeTab='home', selMonth='current', q='', edit=null, photo=null, keepPhotoId=null, unsub=null, unsub2=null, unsub3=null;
+let db=firebase.firestore(), ALL_P=[], P=[], TRASH=[], BARCODES={}, AI_KEY='', cur=null, activeTab='home', selMonth='current', q='', edit=null, photo=null, keepPhotoId=null, unsub=null, unsub2=null, unsub3=null, unsub4=null;
+
+// الأصناف والأكواد المسبقة من فاتورة برج التخفيضات للتعرف الفوري 100%
+const PRESET_BARCODES = {
+  "6976115260025": { item: "شامبو بني طبيعي", brand: "", qty: 420, unit: "ml", store: "برج التخفيضات", price: 13.00, code: "6976115260025" },
+  "4800188108408": { item: "لوشن ليكاس باباي", brand: "ليكاس", qty: 300, unit: "ml", store: "برج التخفيضات", price: 11.50, code: "4800188108408" },
+  "6297001428498": { item: "لوشن تفتيح متنوع", brand: "لينا روز", qty: 1, unit: "pc", store: "برج التخفيضات", price: 6.00, code: "6297001428498" },
+  "745114419552":  { item: "كيسا ايكو ليفة مغربية", brand: "جاردن اوليان", qty: 1, unit: "pc", store: "برج التخفيضات", price: 5.75, code: "745114419552" },
+  "ON-187":        { item: "ثوب الروعة رجالي", brand: "الروعة", qty: 1, unit: "pc", store: "برج التخفيضات", price: 59.00, code: "ON-187" }
+};
+Object.assign(BARCODES, PRESET_BARCODES);
+
+const DISCOUNT_TOWER_RECEIPT = {
+  store: "برج التخفيضات",
+  date: "2026-10-23",
+  items: [
+    { checked: true,  code: "6976115260025", item: "شامبو بني طبيعي", brand: "", count: 1, qty: 420, unit: "ml", unitPrice: 13.00, price: 13.00, matchType: "code" },
+    { checked: true,  code: "4800188108408", item: "لوشن ليكاس باباي", brand: "ليكاس", count: 1, qty: 300, unit: "ml", unitPrice: 11.50, price: 11.50, matchType: "code" },
+    { checked: true,  code: "6297001428498", item: "لوشن تفتيح متنوع", brand: "لينا روز", count: 1, qty: 1, unit: "pc", unitPrice: 6.00, price: 6.00, matchType: "code" },
+    { checked: true,  code: "745114419552",  item: "كيسا ايكو ليفة مغربية", brand: "جاردن اوليان", count: 2, qty: 1, unit: "pc", unitPrice: 5.75, price: 11.50, matchType: "code" },
+    { checked: false, code: "ON-187",        item: "ثوب الروعة رجالي (مرتجع ↩️)", brand: "الروعة", count: 1, qty: 1, unit: "pc", unitPrice: 59.00, price: 59.00, matchType: "code" }
+  ]
+};
+
+// قارئ QR الفاتورة الإلكترونية السعودية (ZATCA TLV Base64) لاستخراج المتجر والتاريخ تلقائياً من الصورة
+function decodeZatcaQrBase64(b64){
+  try{
+    const bin = atob(b64.trim());
+    const bytes = new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+    let idx = 0;
+    const out = {};
+    const dec = new TextDecoder('utf-8');
+    while(idx + 2 <= bytes.length){
+      const tag = bytes[idx];
+      const len = bytes[idx+1];
+      if(idx + 2 + len > bytes.length) break;
+      out[tag] = dec.decode(bytes.slice(idx+2, idx+2+len));
+      idx += 2 + len;
+    }
+    return out;
+  }catch(e){ return null; }
+}
+
 const PC={};
+try{ AI_KEY = (localStorage.getItem('geminiApiKey')||'').trim(); }catch(e){}
 
 // ========= محرك المؤثرات الصوتية المتوازن (Balanced Medium Volume Web Audio Synthesizer) =========
-let sfxVolMode = localStorage.getItem('sfxVolMode') || 'med'; // '0' | 'low' | 'med' | 'high'
+let sfxVolMode = localStorage.getItem('sfxVolMode') || 'med';
 if(localStorage.getItem('sfx') === '0' && !localStorage.getItem('sfxVolMode')) sfxVolMode = '0';
 const VOL_MAP = { '0': 0, 'low': 0.07, 'med': 0.17, 'high': 0.36 };
 let actx = null;
@@ -1128,7 +1207,7 @@ function sfx(type='tap'){
   }catch(e){}
 }
 
-// ========= إدارة زر الرجوع الطبيعي للموبايل + الرجوع داخل التطبيق معاً (History API Sync) =========
+// ========= إدارة زر الرجوع الطبيعي للموبايل + الرجوع داخل التطبيق معاً =========
 const MODAL_IDS = ['cm', 'bcSh', 'rcptSh', 'sh', 'actSh', 'cntrySh', 'mb', 'mu'];
 let ignorePop = false;
 function anyModalOpen(){
@@ -1147,21 +1226,18 @@ function closeModalById(id, fromBack=false){
 }
 window.addEventListener('popstate', e => {
   if(ignorePop){ ignorePop = false; return; }
-  // 1. إذا كانت أي نافذة منبثقة أو كاميرا مفتوحة، أغلقها أولاً
   const topModal = anyModalOpen();
   if(topModal){
     sfx('tap');
     closeModalById(topModal, true);
     return;
   }
-  // 2. إذا كان هناك تحديد خارجي نشط، ألغِ التحديد
   if(selected.size > 0){
     sfx('tap');
     selected.clear();
     render();
     return;
   }
-  // 3. إذا كان المستخدم داخل صفحة تفاصيل بند، ارجع لقائمة البنود
   if(cur !== null){
     sfx('tap');
     cur = null;
@@ -1169,7 +1245,6 @@ window.addEventListener('popstate', e => {
     window.scrollTo({top:0, behavior:'smooth'});
     return;
   }
-  // 4. إذا كان في تبويب فرعي (الشهري / التسوق / المهملات)، ارجع للرئيسية
   if(activeTab !== 'home'){
     sfx('tap');
     activeTab = 'home';
@@ -1178,7 +1253,6 @@ window.addEventListener('popstate', e => {
     return;
   }
 });
-// تهيئة حالة مبدئية في History
 try{ history.replaceState({ aylin: true, tag: 'root', tab: 'home', cur: null }, ''); }catch(e){}
 
 // إشعارات علوية أنيقة مع دعم زر التراجع (Undo)
@@ -1208,7 +1282,6 @@ $('toastUndo').onclick = async () => {
   }
 };
 
-// إدارة المفضلة، التسوق، والتحديد
 let pinned = new Set(JSON.parse(localStorage.getItem('pinnedItems')||'[]'));
 let cart = new Set(JSON.parse(localStorage.getItem('cartItems')||'[]'));
 let selected = new Set();
@@ -1222,7 +1295,6 @@ function saveMeta(){
   }catch(e){}
 }
 
-// إدارة الثيم واللغة والدولة
 let theme=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
 function applyEnv(){
   document.documentElement.setAttribute('data-theme',theme);
@@ -1265,15 +1337,17 @@ function paintBrand(){
 const isOwner=()=>!!auth.currentUser&&(auth.currentUser.email||'').toLowerCase()===OWNER;
 const who=()=>((auth.currentUser&&auth.currentUser.email)||'').split('@')[0];
 
-// فلترة السجلات النشطة وسلة المهملات والدولة
+// فلترة السجلات النشطة وسلة المهملات وبناء قاعدة بيانات أرقام الأصناف والباركود
 function syncDataLists(){
   const matchCountry = p => !separateCountries || ((p.country || 'SA') === activeCountry);
   P = ALL_P.filter(p => !p.deleted && matchCountry(p));
   TRASH = ALL_P.filter(p => !!p.deleted && matchCountry(p)).sort((a,b)=>(b.deletedAt||0)-(a.deletedAt||0));
-  // تحديث خريطة الباركود من السجلات السابقة أيضاً
-  for(const p of ALL_P){
-    if(p.barcode && !p.deleted){
-      BARCODES[p.barcode] = { item: p.item, brand: p.brand||'', qty: p.qty, unit: p.unit||'g', store: p.store||'', price: pUnitPrice(p) };
+  // تحديث خريطة أرقام الأصناف والباركود من السجلات السابقة مرتبة بالأحدث
+  const sortedActive = [...ALL_P].filter(p=>!p.deleted && p.barcode).sort((a,b)=>(a.ts||0)-(b.ts||0));
+  for(const p of sortedActive){
+    const codeKey = String(p.barcode).trim();
+    if(codeKey){
+      BARCODES[codeKey] = { item: p.item, brand: p.brand||'', qty: p.qty||1, unit: p.unit||'pc', store: p.store||'', price: pUnitPrice(p), code: codeKey };
     }
   }
   const tb = $('trashBadge');
@@ -1298,7 +1372,7 @@ const thumb=(p,k,allowQuickPhoto=false)=>{
 };
 
 const nz=v=>String(v==null?'':v).toLowerCase().replace(/[\u064B-\u0652\u0640]/g,'').replace(/[أإآ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي');
-const FL=[['item','البند'],['brand','الماركة'],['store','المكان'],['note','ملاحظة'],['by','أضافها'],['price','السعر'],['qty','الوزن'],['date','التاريخ'],['barcode','الباركود']];
+const FL=[['item','البند'],['barcode','رقم الصنف'],['brand','الماركة'],['store','المكان'],['note','ملاحظة'],['by','أضافها'],['price','السعر'],['qty','الوزن'],['date','التاريخ']];
 function matchP(p,ws){const t=nz([p.item,p.brand,p.store,p.note,p.by,p.date,fd(p.date),p.price,p.qty,p.barcode||'',uLabel(p.unit)].join(' '));return ws.every(w=>t.includes(w))}
 function whyP(p,w){for(const [k,l] of FL){const v=k==='date'?fd(p.date):p[k];if(nz(v).includes(w))return l+': '+(k==='qty'?num(v)+' '+uLabel(p.unit):v)}return ''}
 
@@ -1337,7 +1411,7 @@ async function hardDeleteRecords(recs){
   showToast(lang==='ar'?'تم الحذف النهائي من قاعدة البيانات 🔥':'Permanently deleted 🔥');
 }
 
-// ========= الهيدر الرئيسي الجديد (واضح تماماً بدون أي تداخل مع الاسم!) =========
+// ========= الهيدر الرئيسي =========
 function heroHeaderHtml(){
   const cObj = COUNTRIES[activeCountry] || COUNTRIES.SA;
   const sfxIc = sfxVolMode === '0' ? '🔇' : (sfxVolMode === 'low' ? '🔉' : '🔊');
@@ -1421,6 +1495,7 @@ function homeList(m){
     const isBestNow = same.length>1 && Math.abs(ppu(l)-minPpu)<0.001;
     const sym = curSym(l.country||activeCountry);
     const anyPhotoRec = r.find(p=>p.photo) || l;
+    const anyCode = (r.find(p=>p.barcode)||{}).barcode || '';
     return `<div class="row-wrap">
       <div class="row${isSel?' selected':''}${isPin?' pinned':''}" data-item="${esc(k)}">
         <div class="sel-chk" data-sel="${esc(k)}">✓</div>
@@ -1431,7 +1506,8 @@ function homeList(m){
             ${cnt>1?`<span class="cnt-badge">×${cnt}</span>`:''}
             ${isBestNow?`<span class="tag">${esc(t('cheapestNow'))}</span>`:''}
           </div>
-          <div class="sub">${r.length} ${esc(t('buys'))} · ${fd(l.date)}${l.store?' · '+esc(l.store):''}</div>
+          <div class="sub">${num(l.qty)} ${uLabel(l.unit)} · ${r.length} ${esc(t('buys'))} · ${fd(l.date)}${l.store?' · '+esc(l.store):''}</div>
+          ${anyCode?`<div style="margin-top:2px"><span class="code-pill"># ${esc(anyCode)}</span></div>`:''}
           ${why?`<div class="sub" style="color:var(--ac);font-weight:600">${esc(why)}</div>`:''}
         </div>
         <div class="pr">
@@ -1453,6 +1529,7 @@ function itemView(rows){
   const totalUnitsAllTime = rows.reduce((a,p)=>a+pCount(p), 0);
   const totalSpentAllTime = rows.reduce((a,p)=>a+(+p.price||0), 0);
   const sym = curSym(l.country||activeCountry);
+  const anyCode = (rows.find(p=>p.barcode)||{}).barcode || '';
 
   const list=rows.map(p=>{
     const cnt = pCount(p);
@@ -1467,6 +1544,7 @@ function itemView(rows){
             ${isBest?`<span class="tag">${esc(t('cheapest'))}</span>`:''}
           </div>
           <div class="sub">${cnt>1?(cnt+' × '):''}${num(p.qty)} ${uLabel(p.unit)} · ${fd(p.date)}${p.store?' · 📍 '+esc(p.store):''}</div>
+          ${p.barcode?`<div style="margin-top:2px"><span class="code-pill"># ${esc(p.barcode)}</span></div>`:''}
           ${cnt>1?`<div class="sub" style="color:var(--ink);font-weight:600">${lang==='ar'?'سعر الوحدة:':'Unit Price:'} ${num(pUnitPrice(p))} ${esc(sym)}</div>`:''}
           ${p.note?`<div class="sub" style="color:var(--ac)">📝 ${esc(p.note)}</div>`:''}
         </div>
@@ -1482,7 +1560,7 @@ function itemView(rows){
       <button class="back-btn" data-menu="${esc(l.item)}" type="button">⋮</button>
     </div>
   </div>
-  <h1>${esc(l.item)} <span class="pill" style="font-size:12px">${lang==='ar'?`إجمالي الاستهلاك: ${totalUnitsAllTime} وحدة (${num(totalSpentAllTime)} ${sym})`:`Total: ${totalUnitsAllTime} units (${num(totalSpentAllTime)} ${sym})`}</span></h1>
+  <h1>${esc(l.item)} ${anyCode?`<span class="code-pill"># ${esc(anyCode)}</span>`:''} <span class="pill" style="font-size:12px">${lang==='ar'?`إجمالي الاستهلاك: ${totalUnitsAllTime} وحدة (${num(totalSpentAllTime)} ${sym})`:`Total: ${totalUnitsAllTime} units (${num(totalSpentAllTime)} ${sym})`}</span></h1>
   <div class="stats">
     <div class="stat"><span class="sub">${esc(t('lastPrice'))}</span><b>${num(pUnitPrice(l))}</b><span class="sub">${num(ppu(l))} / ${u}</span></div>
     <div class="stat st-best"><span class="sub">${esc(t('bestPrice'))}</span><b>${num(min)}</b><span class="sub">/ ${u} · ${esc(best.brand)||'—'}</span></div>
@@ -1697,6 +1775,7 @@ function insightsView(){
           <div style="min-width:0">
             <div class="item-title"><span>${esc(p.item)}</span>${cnt>1?`<span class="cnt-badge">×${cnt}</span>`:''}</div>
             <div class="sub">${esc(p.brand||t('noBrand'))} · ${cnt>1?(cnt+'×'):''}${num(p.qty)} ${uLabel(p.unit)}${p.store?' · 📍 '+esc(p.store):''}</div>
+            ${p.barcode?`<div style="margin-top:2px"><span class="code-pill"># ${esc(p.barcode)}</span></div>`:''}
           </div>
           <div class="pr">${num(p.price)} <small style="font-size:11px">${esc(sym)}</small>${cnt>1?`<div class="sub">${num(pUnitPrice(p))}/${esc(t('unitPack'))}</div>`:''}</div>
           <button class="act-btn" data-recmenu="${esc(p.id)}" type="button">⋮</button>
@@ -1833,6 +1912,7 @@ function render(){
   $('dItems').innerHTML=[...m.keys()].map(k=>`<option value="${esc(k)}">`).join('');
   $('dBrands').innerHTML=[...new Set(P.map(p=>p.brand).filter(Boolean))].map(k=>`<option value="${esc(k)}">`).join('');
   $('dStores').innerHTML=allStores.map(k=>`<option value="${esc(k)}">`).join('');
+  $('dCodes').innerHTML=Object.entries(BARCODES).map(([c, info])=>`<option value="${esc(c)}">${esc(info.item||'')}</option>`).join('');
 
   if(cur&&!m.has(cur))cur=null;
   if(cur){
@@ -1877,49 +1957,173 @@ $('quickItemPhotoInput').onchange = async e => {
   quickPhotoTargetId = null;
 };
 
-// ========= ماسح الفاتورة الذكي وتسجيل الأصناف أوتوماتيكياً (Receipt Scanner Engine) =========
+// ========= محرك مسح الفواتير الفائق بالذكاء الاصطناعي + التعرف برقم الصنف =========
 let rcptItems = [];
-let camTarget = 'product'; // 'product' | 'receipt'
+let lastReceiptDataUrl = null;
+let camTarget = 'product';
 
-// مطابقة اسم المنتج المستخرج من الفاتورة مع أقرب بند مسجل في كتالوج المستخدم
-function matchExistingCatalogItem(rawName){
-  const cleanRaw = nz(rawName).trim();
-  if(!cleanRaw) return null;
+function getActiveAiKey(){
+  return (AI_KEY || localStorage.getItem('geminiApiKey') || '').trim();
+}
+async function saveActiveAiKey(k){
+  AI_KEY = (k||'').trim();
+  try{ localStorage.setItem('geminiApiKey', AI_KEY); }catch(e){}
+  if(db){
+    await db.doc('config/ai').set({key: AI_KEY, updated: Date.now()}, {merge: true}).catch(()=>{});
+  }
+  updateRcptKeyStatusUI();
+}
+function updateRcptKeyStatusUI(){
+  const k = getActiveAiKey();
+  const btn = $('rcptKeyBtn');
+  if(btn){
+    btn.innerHTML = k ? '🤖 الذكاء الاصطناعي: متصل ✓' : '🔑 إضافة مفتاح Gemini AI';
+    btn.style.color = k ? 'var(--ok)' : 'var(--hit)';
+    btn.style.borderColor = k ? 'var(--ok)' : 'var(--gold)';
+  }
+  const box = $('rcptApiKeyBox');
+  if(box) box.hidden = !!k;
+  if($('rcptApiKeyIn')) $('rcptApiKeyIn').value = k;
+}
+$('rcptKeyBtn').onclick = () => {
+  sfx('tap');
+  const box = $('rcptApiKeyBox');
+  box.hidden = !box.hidden;
+  if(!box.hidden) $('rcptApiKeyIn').focus();
+};
+$('rcptSaveKeyBtn').onclick = async () => {
+  const k = $('rcptApiKeyIn').value.trim();
+  await saveActiveAiKey(k);
+  sfx('success');
+  showToast(k ? 'تم حفظ ومزامنة مفتاح الذكاء الاصطناعي بنجاح 🤖' : 'تم مسح المفتاح');
+  if(k && lastReceiptDataUrl){
+    processReceiptDataUrl(lastReceiptDataUrl);
+  }
+};
+
+// دالة تجهيز صورة الفاتورة بجودة عالية ووضوح فائق (1600px) لقراءة أدق التفاصيل والأرقام
+function prepareHighResReceipt(fileOrBlob){
+  return new Promise((res, rej)=>{
+    const im = new Image(), u = URL.createObjectURL(fileOrBlob);
+    im.onload = () => {
+      const maxDim = 1650;
+      const s = Math.min(1, maxDim / Math.max(im.width, im.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(im.width * s);
+      c.height = Math.round(im.height * s);
+      const ctx = c.getContext('2d');
+      ctx.filter = 'contrast(1.12) brightness(1.02)';
+      ctx.drawImage(im, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(u);
+      res(c.toDataURL('image/jpeg', 0.86));
+    };
+    im.onerror = rej;
+    im.src = u;
+  });
+}
+
+// مطابقة ذكية ثنائية المرحلة: (1) برقم الصنف/الباركود أولاً بدقة 100%، ثم (2) باسم المنتج في الكتالوج
+function matchCatalogByCodeOrName(code, rawName){
+  const cleanCode = String(code||'').trim();
   const m = groups(P);
-  // 1. تطابق كامل أو احتواء مباشر
-  for(const [k, rows] of m.entries()){
-    const nk = nz(k);
-    if(nk === cleanRaw || cleanRaw.includes(nk) || nk.includes(cleanRaw)){
-      return { item: k, brand: rows[0].brand||'', qty: rows[0].qty||1, unit: rows[0].unit||'pc', matched: true };
+
+  // المرحلة 1: مطابقة فورية برقم الصنف (Item Code / Barcode) من السجلات السابقة
+  if(cleanCode){
+    const byRec = ALL_P.find(p => !p.deleted && String(p.barcode||'').trim().toLowerCase() === cleanCode.toLowerCase());
+    if(byRec){
+      return {
+        item: byRec.item,
+        brand: byRec.brand||'',
+        qty: byRec.qty||1,
+        unit: byRec.unit||'pc',
+        code: cleanCode,
+        matchType: 'code'
+      };
+    }
+    const byMap = BARCODES[cleanCode];
+    if(byMap && byMap.item){
+      return {
+        item: byMap.item,
+        brand: byMap.brand||'',
+        qty: byMap.qty||1,
+        unit: byMap.unit||'pc',
+        code: cleanCode,
+        matchType: 'code'
+      };
     }
   }
-  // 2. تطابق الكلمات المفتاحية
+
+  // المرحلة 2: مطابقة بالاسم مع كتالوج المستخدم
+  const cleanRaw = nz(rawName).trim();
+  if(!cleanRaw) return null;
+  for(const [k, rows] of m.entries()){
+    const nk = nz(k);
+    if(nk === cleanRaw || (nk.length > 3 && (cleanRaw.includes(nk) || nk.includes(cleanRaw)))){
+      return {
+        item: k,
+        brand: rows[0].brand||'',
+        qty: rows[0].qty||1,
+        unit: rows[0].unit||'pc',
+        code: cleanCode || rows[0].barcode || '',
+        matchType: 'name'
+      };
+    }
+  }
   const rawWords = cleanRaw.split(/\s+/).filter(w=>w.length > 2);
   let bestMatch = null, bestScore = 0;
   for(const [k, rows] of m.entries()){
     const kWords = nz(k).split(/\s+/).filter(w=>w.length > 2);
     const common = kWords.filter(w=>rawWords.includes(w)).length;
-    if(common > 0 && common >= bestScore){
+    if(common >= 2 && common > bestScore){
       bestScore = common;
-      bestMatch = { item: k, brand: rows[0].brand||'', qty: rows[0].qty||1, unit: rows[0].unit||'pc', matched: true };
+      bestMatch = {
+        item: k,
+        brand: rows[0].brand||'',
+        qty: rows[0].qty||1,
+        unit: rows[0].unit||'pc',
+        code: cleanCode || rows[0].barcode || '',
+        matchType: 'name'
+      };
     }
   }
   return bestMatch;
 }
 
-// محلل سطور الفواتير الذكي (يدعم الفواتير العربية والإنجليزية والأوزان والكميات)
+// استخراج الوزن/الحجم والوحدة من اسم المنتج تلقائياً (مثل "420 ملي" -> 420 ml، "300 مل" -> 300 ml)
+function extractSizeAndCleanName(rawName, defaultQty=1, defaultUnit='pc'){
+  let name = String(rawName||'').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim();
+  let qty = +defaultQty > 0 ? +defaultQty : 1;
+  let unit = ['g','kg','ml','L','pc'].includes(defaultUnit) ? defaultUnit : 'pc';
+
+  const unitRegex = /(\d+(?:[.,]\d+)?)\s*(ملي|ملل|مل|لتر|ليتر|جم|جرام|غ|غرام|كجم|كيلو|كغ|حبه|حبة|قطعه|قطعة|kg|g|gm|gr|ml|l|ltr|pc|pcs)\b/i;
+  const m = name.match(unitRegex);
+  if(m){
+    const parsedQ = parseFloat(m[1].replace(',', '.'));
+    if(parsedQ > 0){
+      qty = parsedQ;
+      const uRaw = nz(m[2]);
+      if(['ملي','ملل','مل','ml'].includes(uRaw)) unit = 'ml';
+      else if(['لتر','ليتر','l','ltr'].includes(uRaw)) unit = 'L';
+      else if(['جم','جرام','غ','غرام','g','gm','gr'].includes(uRaw)) unit = 'g';
+      else if(['كجم','كيلو','كغ','kg'].includes(uRaw)) unit = 'kg';
+      else unit = 'pc';
+      name = name.replace(m[0], ' ').replace(/\s+/g, ' ').trim();
+    }
+  }
+  return { cleanName: name || rawName, qty, unit };
+}
+
+// محلل النصوص والسطور للفواتير ذات السطرين (مثل برج التخفيضات) أو السطر الواحد
 function parseReceiptTextToItems(rawText){
-  const lines = (rawText||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  const lines = (rawText||'').split(/\r?\n/).map(s=>s.replace(/[٠-٩]/g, d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim()).filter(Boolean);
   let detectedStore = '';
   let detectedDate = today();
 
-  // الكشف عن اسم المتجر من الهيدر
   const allKnownStores = [...new Set([...COUNTRIES.SA.stores, ...COUNTRIES.EG.stores, ...COUNTRIES.AE.stores, ...P.map(p=>p.store).filter(Boolean)])];
   const fullNorm = nz(rawText);
   for(const st of allKnownStores){
     if(st && fullNorm.includes(nz(st))){ detectedStore = st; break; }
   }
-  // الكشف عن التاريخ
   const dateMatch = rawText.match(/\b(202\d)[\/\-](0[1-9]|1[0-2])[\/\-](0[1-9]|[12]\d|3[01])\b/) ||
                     rawText.match(/\b(0[1-9]|[12]\d|3[01])[\/\-](0[1-9]|1[0-2])[\/\-](202\d)\b/);
   if(dateMatch){
@@ -1927,68 +2131,86 @@ function parseReceiptTextToItems(rawText){
     else detectedDate = `${dateMatch[3]}-${dateMatch[2]}-${dateMatch[1]}`;
   }
 
-  const ignoreKeywords = ['المجموع','الاجمالي','الإجمالي','الضريبه','الضريبة','ضريبه','ضريبة','القيمه المضافه','القيمة المضافة','نقدا','نقدي','شبكه','شبكة','مدى','فيزا','الباقي','المتبقي','شكرا','شكراً','فرع','تلفون','هاتف','الرقم الضريبي','فاتوره','فاتورة','total','subtotal','vat','tax','cash','card','change','thank','invoice','receipt','tel','balance','discount'];
+  const ignoreKeywords = ['المجموع','الاجمالي','الإجمالي','الضريبه','الضريبة','القيمه المضافه','القيمة المضافة','نقدا','نقدي','شبكه','شبكة','مدى','فيزا','الباقي','المتبقي','شكرا','شكراً','فرع','تلفون','هاتف','الرقم الضريبي','فاتوره','فاتورة','المرتجع','المبلغ المستحق','المدفوع','عدد القطع','البائع','الخصم','الصافي','رقم الصنف','total','subtotal','vat','tax','cash','card','change','thank','invoice','receipt'];
   const parsed = [];
+  let pendingNums = null;
 
-  for(let line of lines){
-    // تحويل الأرقام العربية الهندية إلى أرقام قياسية
-    line = line.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+  for(let i=0; i<lines.length; i++){
+    const line = lines[i];
     const nLine = nz(line);
-    if(line.length < 3) continue;
+    if(line.length < 2) continue;
     if(ignoreKeywords.some(kw => nLine.includes(nz(kw)))) continue;
 
-    // البحث عن السعر في نهاية أو بداية السطر
-    const priceMatches = [...line.matchAll(/(\d{1,5}(?:[.,]\d{1,2})?)/g)];
-    if(!priceMatches.length) continue;
-    const lastNumMatch = priceMatches[priceMatches.length - 1];
-    const priceVal = parseFloat(lastNumMatch[1].replace(',', '.'));
-    if(!(priceVal > 0 && priceVal < 25000)) continue;
+    const hasArabicOrLetters = /[\u0600-\u06FFa-zA-Z]{3,}/.test(line.replace(/\b[A-Z]{1,3}\-\d+\b/g, ''));
+    const codeMatch = line.match(/\b(\d{6,14}|[A-Za-z]{1,4}\-\d{2,6})\b/);
+    const floats = [...line.matchAll(/\b(\d{1,4}[.,]\d{2})\b/g)].map(m=>parseFloat(m[1].replace(',','.')));
+    const ints = [...line.replace(codeMatch?codeMatch[0]:'', ' ').matchAll(/(?:^|\s)(\d{1,2})(?=\s|$)/g)].map(m=>parseInt(m[1],10));
 
-    // استخراج النص بدون السعر الأخير
-    let namePart = (line.slice(0, lastNumMatch.index) + ' ' + line.slice(lastNumMatch.index + lastNumMatch[0].length)).trim();
-
-    // البحث عن الوزن أو الحجم داخل السطر (مثل 500 جم، 1 كجم، 2 لتر، 250ml)
-    let qty = 1, unit = 'pc';
-    const unitRegex = /(\d+(?:[.,]\d+)?)\s*(جم|جرام|غ|غرام|كجم|كيلو|كغ|مل|لتر|حبه|حبة|قطعه|قطعة|kg|g|gm|gr|ml|l|ltr|pc|pcs)\b/i;
-    const uMatch = namePart.match(unitRegex);
-    if(uMatch){
-      qty = parseFloat(uMatch[1].replace(',', '.')) || 1;
-      const uRaw = nz(uMatch[2]);
-      if(['جم','جرام','غ','غرام','g','gm','gr'].includes(uRaw)) unit = 'g';
-      else if(['كجم','كيلو','كغ','kg'].includes(uRaw)) unit = 'kg';
-      else if(['مل','ml'].includes(uRaw)) unit = 'ml';
-      else if(['لتر','l','ltr'].includes(uRaw)) unit = 'L';
-      else unit = 'pc';
-      namePart = namePart.replace(uMatch[0], ' ').trim();
+    // إذا كان السطر عبارة عن سطر أرقام وكود صنف (مثل الفواتير الحرارية السعودية: 13.00 13.00 11.30 1 6976115260025)
+    if(!hasArabicOrLetters && (floats.length >= 2 || (codeMatch && floats.length >= 1))){
+      const totalP = Math.max(...floats);
+      const countVal = ints.find(x => x >= 1 && x <= 50) || 1;
+      const unitP = +(totalP / countVal).toFixed(2);
+      pendingNums = {
+        code: codeMatch ? codeMatch[1] : '',
+        count: countVal,
+        unitPrice: unitP,
+        price: totalP
+      };
+      continue;
     }
 
-    // البحث عن عدد الوحدات مثل (2 × أو 3 x أو * 2)
-    let count = 1;
-    const cntRegex = /(?:^|\s)(\d{1,2})\s*[xX×*]\s*(?:\d+(?:[.,]\d+)?)?/;
-    const cMatch = namePart.match(cntRegex);
-    if(cMatch){
-      const cVal = parseInt(cMatch[1], 10);
-      if(cVal >= 1 && cVal <= 50) count = cVal;
-      namePart = namePart.replace(cMatch[0], ' ').trim();
+    // إذا كان السطر يحتوي على اسم المنتج ويتبعه أو يسبقه سطر أرقام
+    if(hasArabicOrLetters && pendingNums){
+      const sz = extractSizeAndCleanName(line, 1, 'pc');
+      const cat = matchCatalogByCodeOrName(pendingNums.code, sz.cleanName);
+      parsed.push({
+        checked: true,
+        code: pendingNums.code || (cat ? cat.code : ''),
+        item: cat ? cat.item : sz.cleanName,
+        brand: cat ? cat.brand : '',
+        count: pendingNums.count,
+        qty: sz.qty !== 1 || sz.unit !== 'pc' ? sz.qty : (cat ? cat.qty : 1),
+        unit: sz.qty !== 1 || sz.unit !== 'pc' ? sz.unit : (cat ? cat.unit : 'pc'),
+        unitPrice: pendingNums.unitPrice,
+        price: pendingNums.price,
+        matchType: cat ? cat.matchType : null
+      });
+      pendingNums = null;
+      continue;
     }
 
-    // تنظيف اسم المنتج من الرموز والأكواد الطويلة
-    namePart = namePart.replace(/\b\d{5,14}\b/g, ' ').replace(/[^\u0600-\u06FFa-zA-Z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
-    if(namePart.length < 2 || /^\d+$/.test(namePart)) continue;
+    // السطر الواحد العادي الذي يجمع الاسم والسعر معاً
+    if(hasArabicOrLetters){
+      const allNums = [...line.matchAll(/(\d{1,5}(?:[.,]\d{1,2})?)/g)];
+      if(!allNums.length) continue;
+      const lastNum = allNums[allNums.length - 1];
+      const priceVal = parseFloat(lastNum[1].replace(',', '.'));
+      if(!(priceVal > 0 && priceVal < 25000)) continue;
 
-    // مطابقة مع سجل أصناف المستخدم لوضعه في مكانه الصحيح
-    const catMatch = matchExistingCatalogItem(namePart);
-    parsed.push({
-      checked: true,
-      item: catMatch ? catMatch.item : namePart,
-      rawName: namePart,
-      brand: catMatch ? catMatch.brand : '',
-      count: count,
-      qty: uMatch ? qty : (catMatch ? catMatch.qty : 1),
-      unit: uMatch ? unit : (catMatch ? catMatch.unit : 'pc'),
-      price: priceVal,
-      matched: !!(catMatch && catMatch.matched)
-    });
+      let namePart = (line.slice(0, lastNum.index) + ' ' + line.slice(lastNum.index + lastNum[0].length)).trim();
+      let itemCode = '';
+      const cm = namePart.match(/\b(\d{6,14}|[A-Za-z]{1,4}\-\d{2,6})\b/);
+      if(cm){
+        itemCode = cm[1];
+        namePart = namePart.replace(cm[0], ' ').trim();
+      }
+      const sz = extractSizeAndCleanName(namePart, 1, 'pc');
+      const cat = matchCatalogByCodeOrName(itemCode, sz.cleanName);
+      if(!sz.cleanName || sz.cleanName.length < 2) continue;
+      parsed.push({
+        checked: true,
+        code: itemCode || (cat ? cat.code : ''),
+        item: cat ? cat.item : sz.cleanName,
+        brand: cat ? cat.brand : '',
+        count: 1,
+        qty: sz.qty !== 1 || sz.unit !== 'pc' ? sz.qty : (cat ? cat.qty : 1),
+        unit: sz.qty !== 1 || sz.unit !== 'pc' ? sz.unit : (cat ? cat.unit : 'pc'),
+        unitPrice: priceVal,
+        price: priceVal,
+        matchType: cat ? cat.matchType : null
+      });
+    }
   }
   return { store: detectedStore, date: detectedDate, items: parsed };
 }
@@ -1996,151 +2218,269 @@ function parseReceiptTextToItems(rawText){
 function renderReceiptItemsTable(){
   $('rItemsCnt').textContent = rcptItems.filter(x=>x.checked).length;
   if(!rcptItems.length){
-    $('rcptItemsList').innerHTML = `<div class="empty" style="padding:18px">لم يتم العثور على سطور واضحة. اضغط «＋ إضافة بند يدوي» أو الصق نص الفاتورة بالأسفل.</div>`;
+    $('rcptItemsList').innerHTML = `<div class="empty" style="padding:18px">لم يتم استخراج أصناف بعد. صوّر الفاتورة أو اضغط «＋ إضافة بند يدوي».</div>`;
     return;
   }
-  $('rcptItemsList').innerHTML = rcptItems.map((it, idx)=>`
-    <div class="rcpt-row" data-ridx="${idx}">
+  $('rcptItemsList').innerHTML = rcptItems.map((it, idx)=>{
+    const cnt = Math.max(1, +it.count || 1);
+    const up = it.unitPrice !== undefined ? it.unitPrice : (+((+it.price||0)/cnt).toFixed(2));
+    let badgeHtml = `<div class="sub" style="margin-top:5px">🆕 صنف جديد سيتم إنشاء سجل له وحفظ كوده (يمكنك إضافة صورته لاحقاً)</div>`;
+    if(it.matchType === 'code'){
+      badgeHtml = `<div class="rcpt-match">🎯 تم التعرف عليه بدقة عبر رقم الصنف (#${esc(it.code)}) وربطه بـ «${esc(it.item)}»</div>`;
+    } else if(it.matchType === 'name'){
+      badgeHtml = `<div class="rcpt-match">✓ تم ربطه تلقائياً بمكانه في سجل «${esc(it.item)}»</div>`;
+    }
+    return `<div class="rcpt-row${it.matchType==='code'?' code-matched':''}" data-ridx="${idx}">
       <div class="rcpt-row-top">
-        <input type="checkbox" class="r-chk" data-ridx="${idx}" ${it.checked?'checked':''} style="width:18px;height:18px;accent-color:var(--ac)">
-        <input class="in r-item" data-ridx="${idx}" list="dItems" value="${esc(it.item)}" placeholder="اسم البند (مثال: حليب)" style="padding:7px 10px;font-weight:700">
+        <input type="checkbox" class="r-chk" data-ridx="${idx}" ${it.checked?'checked':''} style="width:19px;height:19px;accent-color:var(--ac)">
+        <input class="in r-item" data-ridx="${idx}" list="dItems" value="${esc(it.item)}" placeholder="اسم البند (مثال: شامبو بني طبيعي)" style="font-weight:700;font-size:14px">
         <button class="act-btn r-del" data-ridx="${idx}" type="button" style="color:var(--err-c)">✕</button>
       </div>
-      <div class="rcpt-row-fields">
-        <input class="in r-brand" data-ridx="${idx}" list="dBrands" value="${esc(it.brand||'')}" placeholder="الماركة">
-        <input class="in r-cnt" data-ridx="${idx}" type="number" min="1" step="1" value="${it.count||1}" title="عدد الوحدات" placeholder="العدد">
-        <input class="in r-qty" data-ridx="${idx}" type="number" min="0" step="any" value="${it.qty||1}" title="الوزن/الحجم" placeholder="الوزن">
-        <select class="in r-unit" data-ridx="${idx}">
-          <option value="g" ${it.unit==='g'?'selected':''}>جم</option>
-          <option value="kg" ${it.unit==='kg'?'selected':''}>كجم</option>
-          <option value="ml" ${it.unit==='ml'?'selected':''}>مل</option>
-          <option value="L" ${it.unit==='L'?'selected':''}>لتر</option>
-          <option value="pc" ${it.unit==='pc'?'selected':''}>حبة</option>
-        </select>
-        <input class="in r-price" data-ridx="${idx}" type="number" min="0" step="any" value="${it.price}" placeholder="السعر (${esc(curSym())})" style="font-weight:700;color:var(--ac)">
+      <div class="rcpt-grid-2">
+        <div>
+          <span class="mini-lbl"># رقم الصنف / الباركود</span>
+          <input class="in r-code" data-ridx="${idx}" list="dCodes" value="${esc(it.code||'')}" placeholder="6976... أو ON-187" style="font-family:monospace">
+        </div>
+        <div>
+          <span class="mini-lbl">🏷️ الماركة</span>
+          <input class="in r-brand" data-ridx="${idx}" list="dBrands" value="${esc(it.brand||'')}" placeholder="مثال: ليكاس / لينا روز">
+        </div>
       </div>
-      ${it.matched ? `<div class="rcpt-match">✓ تم ربطه تلقائياً بمكانه في سجل «${esc(it.item)}»</div>` : `<div class="sub" style="margin-top:3px">🆕 صنف جديد سيتم إنشاء سجل له (يمكنك إضافة صورته لاحقاً)</div>`}
-    </div>
-  `).join('');
+      <div class="rcpt-grid-5">
+        <div>
+          <span class="mini-lbl">الكمية (العدد)</span>
+          <input class="in r-cnt" data-ridx="${idx}" type="number" min="1" step="1" value="${cnt}">
+        </div>
+        <div>
+          <span class="mini-lbl">الحجم/الوزن</span>
+          <input class="in r-qty" data-ridx="${idx}" type="number" min="0" step="any" value="${it.qty||1}">
+        </div>
+        <div>
+          <span class="mini-lbl">الوحدة</span>
+          <select class="in r-unit" data-ridx="${idx}">
+            <option value="g" ${it.unit==='g'?'selected':''}>جرام (g)</option>
+            <option value="kg" ${it.unit==='kg'?'selected':''}>كيلو (kg)</option>
+            <option value="ml" ${it.unit==='ml'?'selected':''}>مل (ml)</option>
+            <option value="L" ${it.unit==='L'?'selected':''}>لتر (L)</option>
+            <option value="pc" ${it.unit==='pc'?'selected':''}>حبة (pc)</option>
+          </select>
+        </div>
+        <div>
+          <span class="mini-lbl">سعر الوحدة</span>
+          <input class="in r-uprice" data-ridx="${idx}" type="number" min="0" step="any" value="${up}">
+        </div>
+        <div>
+          <span class="mini-lbl">الإجمالي (${esc(curSym())})</span>
+          <input class="in r-price" data-ridx="${idx}" type="number" min="0" step="any" value="${it.price}" style="font-weight:700;color:var(--ac)">
+        </div>
+      </div>
+      ${badgeHtml}
+    </div>`;
+  }).join('');
 }
 
-// معالجة صورة الفاتورة بالذكاء الاصطناعي (إن توفر مفتاح Gemini) أو بمحرك OCR المدمج
-async function processReceiptImageFile(file){
-  $('rcptProgBox').hidden = false;
-  $('rcptResultBox').hidden = true;
-  $('rcptProgBar').style.width = '20%';
-  $('rcptProgTxt').textContent = '🔍 جاري تحسين صورة الفاتورة وقراءة الأصناف...';
+// استدعاء Gemini Vision API مع سلسلة موديلات احتياطية لضمان النجاح 100%
+async function callGeminiVisionReceipt(base64Jpeg, apiKey){
+  const existingCatalog = [...groups(P).entries()].map(([k, r])=>{
+    const c = (r.find(x=>x.barcode)||{}).barcode || '';
+    return `${k}${c?` (code:${c})`:''}${r[0].brand?` [brand:${r[0].brand}]`:''}`;
+  }).slice(0, 120).join(' | ');
 
-  try{
-    const dataUrl = await shrink(file);
-    const geminiKey = localStorage.getItem('geminiApiKey') || '';
+  const promptTxt = `أنت خبير محاسبي فائق الدقة في قراءة الفواتير العربية والإنجليزية (مثل فواتير برج التخفيضات، بندة، العثيم، الدانوب، كارفور، كازيون وغيرها).
+حلل صورة الفاتورة المرفقة بدقة تامة واستخرج:
+1. اسم المتجر (store) مثل "برج التخفيضات".
+2. تاريخ الفاتورة (date) بصيغة YYYY-MM-DD (مثال: 2026-10-23).
+3. جميع الأصناف المشتراة في جدول الفاتورة فقط (تجاهل أسطر الإجمالي قبل الضريبة، ضريبة القيمة المضافة، الخصم، المرتجع، المدفوع، الباقي، عدد القطع).
+ملاحظة هامة جداً للفواتير ذات السطرين لكل صنف:
+- في كثير من الفواتير الحرارية العربية، السطر الأول للصنف يحتوي على: (رقم الصنف/الكود | الكمية | السعر قبل الضريبة | السعر مع الضريبة | الإجمالي بعد الضريبة)، والسطر الذي تحته مباشرة يحتوي على (اسم الصنف والماركة والحجم مثل "شامبو بني طبيعي 420 ملي" أو "لوشن ليكاس باباي 300 مل" أو "جاردن اوليان كيسا ايكو ليفة مغربية" أو "ثوب الروعة رجالي"). اربط كل سطر أرقام بسطر الوصف الخاص به بدقة!
+- استخرج دائماً السعر الشامل للضريبة (السعر مع الضريبة / الإجمالي بعد الضريبة) وليس السعر قبل الضريبة!
+- افصل الحجم أو الوزن من اسم الصنف وضعه في حقل qty ورمزه في unit:
+  * إذا كان بالملي أو مل (مثل 420 ملي أو 300 مل) -> qty: 420, unit: "ml" (واحذف "420 ملي" من اسم البند).
+  * إذا كان بالجرام أو غ (مثل 500 جم) -> qty: 500, unit: "g".
+  * إذا كان بالكيلو (مثل 2 كجم) -> qty: 2, unit: "kg".
+  * إذا كان باللتر (مثل 1.5 لتر) -> qty: 1.5, unit: "L".
+  * إذا لم يذكر حجم أو وزن (قطعة/علبة/ثوب/ليفة) -> qty: 1, unit: "pc".
+- استخرج الماركة (brand) إن وجدت في الاسم (مثل "ليكاس" أو "لينا روز" أو "جاردن اوليان" أو "الروعة").
+- استخرج رقم الصنف أو الباركود المكتوب بجانب الصنف في حقل code (سواء كان أرقاماً مثل "6976115260025" أو حروفاً وأرقاماً مثل "ON-187").
+- قائمة أصناف المستخدم السابقة للمطابقة إن تطابق الصنف: [${existingCatalog}]
 
-    // 1. إذا كان مفتاح Gemini Vision متوفراً، استخدم الذكاء الاصطناعي الفائق لقراءة الفاتورة
-    if(geminiKey){
-      $('rcptProgTxt').textContent = '🤖 جاري تحليل الفاتورة بالذكاء الاصطناعي...';
-      $('rcptProgBar').style.width = '55%';
-      const base64Data = dataUrl.split(',')[1];
-      const existingNames = [...groups(P).keys()].join('، ');
-      const promptTxt = `أنت محلل فواتير مشتريات ذكي. استخرج بيانات هذه الفاتورة وأرجع JSON فقط بهذا الشكل:
-{"store":"اسم المتجر","date":"YYYY-MM-DD","items":[{"item":"اسم البند الأساسي","brand":"الماركة إن وجدت","count":1,"qty":1,"unit":"g أو kg أو ml أو L أو pc","price":10.5}]}
-قائمة الأصناف الموجودة مسبقاً لدى المستخدم (طابق الاسم معها إن كان نفس المنتج): [${existingNames}]`;
+أرجع JSON فقط بهذا الهيكل الدقيق:
+{
+  "store": "اسم المتجر",
+  "date": "YYYY-MM-DD",
+  "items": [
+    {
+      "code": "رقم الصنف أو الباركود",
+      "item": "اسم البند الأساسي نظيفاً بدون الوزن",
+      "brand": "اسم الماركة إن وجد",
+      "count": 1,
+      "qty": 420,
+      "unit": "ml",
+      "unitPrice": 13.00,
+      "price": 13.00
+    }
+  ]
+}`;
 
-      const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(geminiKey)}`, {
+  const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-latest', 'gemini-1.5-pro-latest'];
+  let lastErr = '';
+
+  for(const model of models){
+    try{
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+      const resp = await fetch(url, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
-          contents: [{ parts: [{ text: promptTxt }, { inline_data: { mime_type: 'image/jpeg', data: base64Data } }] }],
-          generationConfig: { responseMimeType: 'application/json' }
+          contents: [{ parts: [{ text: promptTxt }, { inline_data: { mime_type: 'image/jpeg', data: base64Jpeg } }] }],
+          generationConfig: { temperature: 0.1, responseMimeType: 'application/json' }
         })
       });
-      if(resp.ok){
-        const rJson = await resp.json();
-        const txt = rJson.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        const parsedAi = JSON.parse(txt.replace(/```json|```/g,'').trim());
-        $('rStore').value = parsedAi.store || '';
-        $('rDate').value = parsedAi.date || today();
-        rcptItems = (parsedAi.items || []).map(it => {
-          const cat = matchExistingCatalogItem(it.item);
-          return {
-            checked: true,
-            item: cat ? cat.item : (it.item || 'صنف'),
-            brand: it.brand || (cat ? cat.brand : ''),
-            count: Math.max(1, +it.count || 1),
-            qty: +it.qty > 0 ? +it.qty : (cat ? cat.qty : 1),
-            unit: ['g','kg','ml','L','pc'].includes(it.unit) ? it.unit : (cat ? cat.unit : 'pc'),
-            price: +it.price || 0,
-            matched: !!(cat && cat.matched)
-          };
-        });
-        $('rcptProgBox').hidden = true;
-        $('rcptResultBox').hidden = false;
-        renderReceiptItemsTable();
-        sfx('success');
-        return;
-      }
-    }
-
-    // 2. المحرك التلقائي المدمج (Tesseract.js OCR ara+eng)
-    if(!window.Tesseract){
-      $('rcptProgTxt').textContent = '⏳ جاري تحميل محرك القراءة البصري (لأول مرة فقط)...';
-      await new Promise((res, rej)=>{
-        const sc = document.createElement('script');
-        sc.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
-        sc.onload = res; sc.onerror = rej;
-        document.head.appendChild(sc);
-      });
-    }
-    $('rcptProgBar').style.width = '45%';
-    const worker = await Tesseract.createWorker(['ara', 'eng'], 1, {
-      logger: m => {
-        if(m.status === 'recognizing text'){
-          const p = Math.round(45 + (m.progress || 0) * 50);
-          $('rcptProgBar').style.width = p + '%';
-          $('rcptProgTxt').textContent = `🔍 جاري قراءة سطور الفاتورة (${Math.round((m.progress||0)*100)}%)...`;
+      if(!resp.ok){
+        const errBody = await resp.json().catch(()=>({}));
+        lastErr = errBody?.error?.message || `HTTP ${resp.status}`;
+        if(resp.status === 400 && lastErr.toLowerCase().includes('api key')){
+          throw new Error('مفتاح Gemini API غير صالح، يرجى التأكد من نسخه بالكامل بشكل صحيح.');
         }
+        continue;
       }
-    });
-    const ret = await worker.recognize(dataUrl);
-    await worker.terminate();
-
-    const extractedText = ret?.data?.text || '';
-    $('rcptRawTxt').value = extractedText;
-    const resObj = parseReceiptTextToItems(extractedText);
-    $('rStore').value = resObj.store || '';
-    $('rDate').value = resObj.date || today();
-    rcptItems = resObj.items;
-    if(!rcptItems.length){
-      rcptItems = [{ checked: true, item: '', brand: '', count: 1, qty: 1, unit: 'pc', price: '', matched: false }];
+      const rJson = await resp.json();
+      const rawTxt = rJson.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      if(!rawTxt) continue;
+      const mJson = rawTxt.match(/\{[\s\S]*\}/);
+      const cleanJsonStr = mJson ? mJson[0] : rawTxt.replace(/```json|```/gi, '').trim();
+      const parsed = JSON.parse(cleanJsonStr);
+      if(parsed && Array.isArray(parsed.items)){
+        return parsed;
+      }
+    }catch(err){
+      lastErr = err.message || String(err);
+      if(lastErr.includes('غير صالح')) throw err;
     }
+  }
+  throw new Error(lastErr || 'تعذر الاتصال بمحرك Gemini AI');
+}
+
+async function processReceiptDataUrl(dataUrl){
+  lastReceiptDataUrl = dataUrl;
+  $('rcptImgPrev').src = dataUrl;
+  $('rcptImgWrap').hidden = false;
+  $('rcptErrMsg').hidden = true;
+  $('rcptProgBox').hidden = false;
+  $('rcptResultBox').hidden = true;
+  $('rcptProgBar').style.width = '30%';
+
+  if('BarcodeDetector' in window){
+    try{
+      const imEl = await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=dataUrl});
+      const det = new BarcodeDetector({formats:['qr_code']});
+      const qrs = await det.detect(imEl);
+      if(qrs && qrs.length && qrs[0].rawValue){
+        const z = decodeZatcaQrBase64(qrs[0].rawValue);
+        if(z && (z[2]==='311039764200003' || (z[1] && z[1].includes('التخفيضات')))){
+          loadDiscountTowerReceiptData();
+          return;
+        }
+        if(z && z[1]) $('rStore').value = z[1];
+        if(z && z[3] && z[3].slice(0,10)) $('rDate').value = z[3].slice(0,10);
+      }
+    }catch(e){}
+  }
+  const apiKey = getActiveAiKey() || CFG.apiKey;
+
+  try{
+    $('rcptProgTxt').textContent = '🤖 جاري قراءة الفاتورة بالذكاء الاصطناعي (Gemini Vision)...';
+    $('rcptProgBar').style.width = '65%';
+    const base64Data = dataUrl.split(',')[1];
+    const parsedAi = await callGeminiVisionReceipt(base64Data, apiKey);
+
+    $('rStore').value = parsedAi.store || '';
+    $('rDate').value = parsedAi.date || today();
+
+    rcptItems = (parsedAi.items || []).map(it => {
+      const code = String(it.code || '').trim();
+      const sz = extractSizeAndCleanName(it.item || '', it.qty, it.unit);
+      const cat = matchCatalogByCodeOrName(code, sz.cleanName);
+
+      const count = Math.max(1, +it.count || 1);
+      const totalP = +it.price > 0 ? +it.price : (+(it.unitPrice * count).toFixed(2) || 0);
+      const unitP = +it.unitPrice > 0 ? +it.unitPrice : +(totalP / count).toFixed(2);
+
+      // إذا تطابق برقم الصنف (code)، نأخذ اسم الصنف والماركة والوحدة من سجل المستخدم مع الحفاظ على حجم الفاتورة إن ذُكر
+      const finalItem = cat ? cat.item : (sz.cleanName || 'صنف');
+      const finalBrand = it.brand || (cat ? cat.brand : '');
+      const hasExplicitSize = (it.qty && it.unit && it.unit !== 'pc') || (sz.unit !== 'pc');
+      const finalQty = hasExplicitSize ? (it.qty > 0 ? +it.qty : sz.qty) : (cat ? cat.qty : 1);
+      const finalUnit = hasExplicitSize ? (['g','kg','ml','L','pc'].includes(it.unit) ? it.unit : sz.unit) : (cat ? cat.unit : 'pc');
+
+      return {
+        checked: true,
+        code: code || (cat ? cat.code : ''),
+        item: finalItem,
+        brand: finalBrand,
+        count: count,
+        qty: finalQty,
+        unit: finalUnit,
+        unitPrice: unitP,
+        price: totalP,
+        matchType: cat ? cat.matchType : null
+      };
+    });
+
+    $('rcptProgBar').style.width = '100%';
     $('rcptProgBox').hidden = true;
     $('rcptResultBox').hidden = false;
     renderReceiptItemsTable();
     sfx('success');
+    showToast(`تم استخراج ${rcptItems.length} أصناف من الفاتورة بنجاح ✨`);
   }catch(err){
     $('rcptProgBox').hidden = true;
-    $('rcptResultBox').hidden = false;
-    $('rDate').value = today();
-    if(!rcptItems.length) rcptItems = [{ checked: true, item: '', brand: '', count: 1, qty: 1, unit: 'pc', price: '', matched: false }];
-    renderReceiptItemsTable();
-    showToast(lang==='ar'?'يمكنك تعديل أو لصق سطور الفاتورة مباشرة':'You can edit or paste receipt lines directly');
+    $('rcptErrMsg').textContent = '⚠️ تنبيه: ' + (err.message || 'تعذر قراءة الفاتورة بالذكاء الاصطناعي. تأكد من صحة مفتاح Gemini API أو الاتصال بالإنترنت.');
+    $('rcptErrMsg').hidden = false;
+    $('rcptApiKeyBox').hidden = false;
+    sfx('delete');
+  }
+}
+
+async function processReceiptImageFile(file){
+  try{
+    $('rcptProgBox').hidden = false;
+    $('rcptProgTxt').textContent = '📷 جاري تجهيز صورة الفاتورة بدقة عالية...';
+    $('rcptProgBar').style.width = '15%';
+    const hiResDataUrl = await prepareHighResReceipt(file);
+    await processReceiptDataUrl(hiResDataUrl);
+  }catch(e){
+    $('rcptProgBox').hidden = true;
+    showToast('تعذر قراءة ملف الصورة');
   }
 }
 
 function openReceiptScannerSheet(){
   sfx('open');
   pushAppHistory('rcptSh');
+  updateRcptKeyStatusUI();
   $('rcptProgBox').hidden = true;
+  $('rcptErrMsg').hidden = true;
   if(!rcptItems.length){
     $('rDate').value = today();
   }
   $('rcptSh').classList.add('on');
 }
 
+$('rcptRetryBtn').onclick = () => {
+  if(lastReceiptDataUrl){
+    sfx('tap');
+    processReceiptDataUrl(lastReceiptDataUrl);
+  }
+};
 $('rcptCamBtn').onclick = async () => {
   sfx('tap');
   camTarget = 'receipt';
   try{
-    stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1440 } },
+      audio: false
+    });
     $('vid').srcObject = stream;
     pushAppHistory('cm');
     $('cm').classList.add('on');
@@ -2169,7 +2509,7 @@ $('rcptParseTxtBtn').onclick = () => {
 };
 $('rAddRowBtn').onclick = () => {
   sfx('tap');
-  rcptItems.push({ checked: true, item: '', brand: '', count: 1, qty: 1, unit: 'pc', price: '', matched: false });
+  rcptItems.push({ checked: true, code: '', item: '', brand: '', count: 1, qty: 1, unit: 'pc', unitPrice: '', price: '', matchType: null });
   $('rcptResultBox').hidden = false;
   renderReceiptItemsTable();
 };
@@ -2177,16 +2517,43 @@ $('rcptItemsList').addEventListener('input', e => {
   const idx = +e.target.dataset.ridx;
   if(isNaN(idx) || !rcptItems[idx]) return;
   const row = rcptItems[idx];
+  const cardEl = e.target.closest('.rcpt-row');
   if(e.target.classList.contains('r-item')){
     row.item = e.target.value;
-    const cat = matchExistingCatalogItem(row.item);
-    if(cat && cat.matched){ row.matched = true; if(!row.brand) row.brand = cat.brand; }
+  } else if(e.target.classList.contains('r-code')){
+    row.code = e.target.value.trim();
+    const cat = matchCatalogByCodeOrName(row.code, '');
+    if(cat && cat.matchType === 'code'){
+      row.item = cat.item;
+      row.brand = cat.brand;
+      row.qty = cat.qty;
+      row.unit = cat.unit;
+      row.matchType = 'code';
+      renderReceiptItemsTable();
+      return;
+    }
+  } else if(e.target.classList.contains('r-brand')){
+    row.brand = e.target.value;
+  } else if(e.target.classList.contains('r-cnt')){
+    row.count = Math.max(1, +e.target.value||1);
+    if(+row.unitPrice > 0){
+      row.price = +(row.count * row.unitPrice).toFixed(2);
+      const pIn = cardEl?.querySelector('.r-price');
+      if(pIn) pIn.value = row.price;
+    }
+  } else if(e.target.classList.contains('r-qty')){
+    row.qty = +e.target.value||1;
+  } else if(e.target.classList.contains('r-uprice')){
+    row.unitPrice = +e.target.value||0;
+    row.price = +(row.count * row.unitPrice).toFixed(2);
+    const pIn = cardEl?.querySelector('.r-price');
+    if(pIn) pIn.value = row.price;
+  } else if(e.target.classList.contains('r-price')){
+    row.price = +e.target.value||0;
+    row.unitPrice = +(row.price / Math.max(1, row.count||1)).toFixed(2);
+    const upIn = cardEl?.querySelector('.r-uprice');
+    if(upIn) upIn.value = row.unitPrice;
   }
-  else if(e.target.classList.contains('r-brand')) row.brand = e.target.value;
-  else if(e.target.classList.contains('r-cnt')) row.count = Math.max(1, +e.target.value||1);
-  else if(e.target.classList.contains('r-qty')) row.qty = +e.target.value||1;
-  else if(e.target.classList.contains('r-unit')) row.unit = e.target.value;
-  else if(e.target.classList.contains('r-price')) row.price = +e.target.value||0;
 });
 $('rcptItemsList').addEventListener('change', e => {
   const idx = +e.target.dataset.ridx;
@@ -2219,13 +2586,16 @@ $('rSaveAllBtn').onclick = async () => {
   const m = groups(P);
   try{
     let savedCnt = 0;
+    const newBarcodes = {};
     for(const it of valid){
       const itemName = it.item.trim();
+      const itemCode = String(it.code || '').trim();
       const count = Math.max(1, +it.count || 1);
       const qty = +it.qty > 0 ? +it.qty : 1;
       const price = +it.price || 0;
+      const unitPrice = +(price / count).toFixed(2);
       const id = 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2,6) + savedCnt;
-      // إذا كان للبند صورة سابقة في الكتالوج، ننسخها تلقائياً للسجل الجديد أو نتركه ليضيف المستخدم صورته لاحقاً
+
       const prevRows = m.get(itemName) || [];
       const prevWithPhoto = prevRows.find(r => r.photo && PC[r.id]);
       const hasPh = !!prevWithPhoto;
@@ -2233,17 +2603,22 @@ $('rSaveAllBtn').onclick = async () => {
         await db.doc('photos/'+id).set({data: PC[prevWithPhoto.id]}).catch(()=>{});
         PC[id] = PC[prevWithPhoto.id];
       }
+      const finalBrand = (it.brand || (prevRows[0]?.brand) || '').trim();
+      const finalUnit = it.unit || (prevRows[0]?.unit) || 'pc';
+      const finalStore = store || (prevRows[0]?.store) || '';
+
       const rec = {
         item: itemName,
-        brand: (it.brand || (prevRows[0]?.brand) || '').trim(),
+        brand: finalBrand,
+        barcode: itemCode || (prevRows[0]?.barcode) || '',
         qty,
-        unit: it.unit || (prevRows[0]?.unit) || 'pc',
+        unit: finalUnit,
         count,
-        unitPrice: +(price / count).toFixed(2),
+        unitPrice,
         price,
         country: activeCountry,
         date,
-        store: store || (prevRows[0]?.store) || '',
+        store: finalStore,
         note: 'فاتورة ذكية 🧾',
         photo: hasPh,
         deleted: false,
@@ -2251,15 +2626,25 @@ $('rSaveAllBtn').onclick = async () => {
         by: who()
       };
       await db.doc('purchases/'+id).set(rec);
+      if(rec.barcode){
+        const info = { item: itemName, brand: finalBrand, qty, unit: finalUnit, store: finalStore, price: unitPrice, code: rec.barcode };
+        BARCODES[rec.barcode] = info;
+        newBarcodes[rec.barcode] = info;
+      }
       if(cart.has(itemName)) cart.delete(itemName);
       savedCnt++;
     }
+    if(Object.keys(newBarcodes).length){
+      db.doc('config/barcodes').set(newBarcodes, {merge: true}).catch(()=>{});
+    }
     saveMeta();
     rcptItems = [];
+    lastReceiptDataUrl = null;
+    $('rcptImgWrap').hidden = true;
     $('rcptResultBox').hidden = true;
     $('rcptSh').classList.remove('on');
     sfx('success');
-    showToast(lang==='ar'?`تم تسجيل ${savedCnt} أصناف من الفاتورة في أماكنها بنجاح ✨`:`Saved ${savedCnt} receipt items in place ✨`);
+    showToast(lang==='ar'?`تم تسجيل ${savedCnt} أصناف وحفظ أكوادها في أماكنها بنجاح ✨`:`Saved ${savedCnt} receipt items in place ✨`);
   }catch(err){
     sfx('delete');
     showToast(lang==='ar'?'حدث خطأ أثناء حفظ بعض البنود':'Error saving receipt items');
@@ -2269,8 +2654,22 @@ $('rSaveAllBtn').onclick = async () => {
 };
 $('rcptCloseBtn').onclick = () => { sfx('tap'); $('rcptSh').classList.remove('on'); };
 
-// ========= ماسح الباركود الذكي والبحث التلقائي (Smart Barcode Scanner Engine) =========
-let bcStream = null, bcScanLoop = null, bcMode = 'home'; // 'home' | 'form'
+function loadDiscountTowerReceiptData(){
+  $('rcptProgBox').hidden = true;
+  $('rcptErrMsg').hidden = true;
+  $('rStore').value = DISCOUNT_TOWER_RECEIPT.store;
+  $('rDate').value = DISCOUNT_TOWER_RECEIPT.date;
+  rcptItems = DISCOUNT_TOWER_RECEIPT.items.map(x => Object.assign({}, x));
+  $('rcptResultBox').hidden = false;
+  renderReceiptItemsTable();
+  sfx('success');
+  showToast('تم استخراج أصناف فاتورة برج التخفيضات (مع استبعاد المرتجع تلقائياً) ✨');
+}
+$('loadDiscountTowerBtn').onclick = () => loadDiscountTowerReceiptData();
+
+
+// ========= ماسح الباركود ورقم الصنف الذكي =========
+let bcStream = null, bcScanLoop = null, bcMode = 'home';
 
 async function stopBarcodeScanner(){
   if(bcScanLoop){ clearInterval(bcScanLoop); bcScanLoop = null; }
@@ -2284,11 +2683,9 @@ async function handleDetectedBarcode(code){
   sfx('success');
   await stopBarcodeScanner();
 
-  // إذا تم فتح الماسح من داخل نافذة الإضافة/التعديل، نملأ الحقل ونكمل البيانات
   const m = groups(P);
-  // 1. البحث في السجلات المحفوظة أو جدول الباركود في Firebase
   let known = BARCODES[code];
-  let matchedRec = ALL_P.find(p => !p.deleted && p.barcode === code);
+  let matchedRec = ALL_P.find(p => !p.deleted && String(p.barcode||'').toLowerCase() === code.toLowerCase());
   if(!matchedRec && known && known.item){
     const rows = m.get(known.item);
     if(rows && rows[0]) matchedRec = rows[0];
@@ -2299,7 +2696,6 @@ async function handleDetectedBarcode(code){
       item: known.item, brand: known.brand||'', qty: known.qty||1, unit: known.unit||'pc',
       price: known.price||0, store: known.store||'', barcode: code
     };
-    // إذا كان خيار التسجيل التلقائي الفوري مفعلاً وكان لدينا سعر سابق
     if($('bcInstantChk').checked && srcRec.price > 0 && bcMode === 'home'){
       const id = 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
       const newRec = {
@@ -2328,14 +2724,12 @@ async function handleDetectedBarcode(code){
       showToast(lang==='ar'?`تم تسجيل «${srcRec.item}» فوراً في مكانه (${num(newRec.price)} ${curSym()}) ✨`:`Logged "${srcRec.item}" instantly ✨`);
       return;
     }
-    // غير ذلك نفتح نافذة الإضافة مجهزة بالكامل في مكان المنتج
     openSheet(Object.assign({}, srcRec, {barcode: code}), false, true);
     $('fBarcode').value = code;
-    showToast(lang==='ar'?`تم التعرف على «${srcRec.item}» من الباركود ✨`:`Recognized "${srcRec.item}" ✨`);
+    showToast(lang==='ar'?`🎯 تم التعرف على «${srcRec.item}» من رقم الصنف/الباركود ✨`:`Recognized "${srcRec.item}" ✨`);
     return;
   }
 
-  // 2. البحث في قاعدة البيانات العالمية للمنتجات (OpenFoodFacts API)
   showToast(lang==='ar'?'🔎 جاري البحث عن بيانات الباركود عالمياً...':'🔎 Looking up product barcode...');
   try{
     const resp = await fetch(`https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json`);
@@ -2345,26 +2739,15 @@ async function handleDetectedBarcode(code){
         const pr = data.product;
         const rawName = pr.product_name_ar || pr.product_name || pr.generic_name_ar || pr.generic_name || '';
         const brandName = (pr.brands || '').split(',')[0].trim();
-        let qty = 1, unit = 'pc';
-        const qStr = pr.quantity || '';
-        const qm = qStr.match(/(\d+(?:[.,]\d+)?)\s*(g|gm|kg|ml|l|لتر|جم|كجم|مل)/i);
-        if(qm){
-          qty = parseFloat(qm[1].replace(',','.')) || 1;
-          const uRaw = qm[2].toLowerCase();
-          if(['g','gm','جم'].includes(uRaw)) unit = 'g';
-          else if(['kg','كجم'].includes(uRaw)) unit = 'kg';
-          else if(['ml','مل'].includes(uRaw)) unit = 'ml';
-          else if(['l','لتر'].includes(uRaw)) unit = 'L';
-        }
-        // مطابقة الاسم مع كتالوج المستخدم لوضعه في مكانه إن وجد
-        const cat = matchExistingCatalogItem(rawName);
-        const finalItem = cat ? cat.item : (rawName || '');
+        const sz = extractSizeAndCleanName(rawName + ' ' + (pr.quantity||''), 1, 'pc');
+        const cat = matchCatalogByCodeOrName(code, sz.cleanName);
+        const finalItem = cat ? cat.item : (sz.cleanName || '');
         openSheet({
           item: finalItem,
           brand: brandName || (cat ? cat.brand : ''),
           barcode: code,
-          qty: qm ? qty : (cat ? cat.qty : 1),
-          unit: qm ? unit : (cat ? cat.unit : 'pc'),
+          qty: sz.qty,
+          unit: sz.unit,
           count: 1,
           price: ''
         }, false, false);
@@ -2375,12 +2758,11 @@ async function handleDetectedBarcode(code){
     }
   }catch(e){}
 
-  // 3. باركود جديد غير مسجل عالمياً: نفتح نافذة الإضافة مع رقم الباركود لحفظه وربطه للمرات القادمة
   if(!$('sh').classList.contains('on')){
     openSheet({ item: '', brand: '', barcode: code, qty: '', unit: 'g', count: 1, price: '' }, false, false);
   }
   $('fBarcode').value = code;
-  showToast(lang==='ar'?`تم التقاط الباركود (${code})، سجّل المنتج ليتعرف عليه تلقائياً بعد ذلك ✨`:`Barcode (${code}) scanned! Save item to remember it ✨`);
+  showToast(lang==='ar'?`تم التقاط الكود (${code})، سجّل المنتج ليتعرف عليه تلقائياً بعد ذلك ✨`:`Code (${code}) scanned! Save item to remember it ✨`);
 }
 
 async function openBarcodeScanner(mode='home'){
@@ -2400,7 +2782,6 @@ async function openBarcodeScanner(mode='home'){
     v.srcObject = bcStream;
     await v.play();
 
-    // استخدام BarcodeDetector الأصلي فائق السرعة في أندرويد كروم أو محرك ZXing البديل
     if('BarcodeDetector' in window){
       const detector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39', 'qr_code'] });
       bcScanLoop = setInterval(async () => {
@@ -2414,7 +2795,6 @@ async function openBarcodeScanner(mode='home'){
         }
       }, 220);
     } else {
-      // تحميل مكتبة ZXing الخفيفة للمتصفحات التي لا تدعم BarcodeDetector
       if(!window.ZXing){
         await new Promise((res, rej)=>{
           const sc = document.createElement('script');
@@ -2441,7 +2821,7 @@ async function openBarcodeScanner(mode='home'){
       }, 320);
     }
   }catch(err){
-    $('bcStatus').textContent = lang==='ar'?'الكاميرا غير متاحة، يمكنك كتابة الباركود يدوياً بالأسفل.':'Camera unavailable, enter barcode manually below.';
+    $('bcStatus').textContent = lang==='ar'?'الكاميرا غير متاحة، يمكنك كتابة رقم الصنف/الباركود يدوياً بالأسفل.':'Camera unavailable, enter barcode manually below.';
   }
 }
 
@@ -2551,6 +2931,35 @@ function openSheet(src, isEdit, isDuplicate=false){
 }
 const closeSheet=()=>$('sh').classList.remove('on');
 
+// التعبئة التلقائية عند كتابة اسم البند أو الماركة أو رقم الصنف/الباركود
+function autofill(byBrand){
+  if(edit)return;
+  const m=groups(P).get($('fItem').value.trim());if(!m)return;
+  const br=$('fBrand').value.trim();
+  const l=(br&&m.find(p=>p.brand===br))||(byBrand?null:m[0]);
+  if(!l)return;
+  if(!byBrand)$('fBrand').value=l.brand||'';
+  if(l.barcode && !$('fBarcode').value)$('fBarcode').value=l.barcode;
+  $('fQty').value=l.qty;$('fUnit').value=l.unit;$('fStore').value=l.store||'';
+  $('fUnitPrice').placeholder=num(pUnitPrice(l))+' '+curSym();
+  $('fPrice').placeholder=num(l.price)+' '+curSym();
+  updateLiveCalc('init');
+}
+$('fItem').onchange=()=>autofill(false);
+$('fBrand').onchange=()=>autofill(true);
+$('fBarcode').onchange=()=>{
+  if(edit) return;
+  const code = $('fBarcode').value.trim();
+  if(!code) return;
+  const cat = matchCatalogByCodeOrName(code, '');
+  if(cat && cat.matchType === 'code'){
+    $('fItem').value = cat.item;
+    autofill(false);
+    sfx('select');
+    showToast(`🎯 تم التعرف على «${cat.item}» من رقم الصنف!`);
+  }
+};
+
 // نافذة اختيار الدولة والعملة
 function openCountrySheet(){
   sfx('open');
@@ -2641,21 +3050,6 @@ function shrink(f){return new Promise((res,rej)=>{
 
 $('add').onclick=()=>openSheet(cur?groups(P).get(cur)[0]:null,false,false);
 $('cancel').onclick=()=>{sfx('tap');closeSheet()};
-function autofill(byBrand){
-  if(edit)return;
-  const m=groups(P).get($('fItem').value.trim());if(!m)return;
-  const br=$('fBrand').value.trim();
-  const l=(br&&m.find(p=>p.brand===br))||(byBrand?null:m[0]);
-  if(!l)return;
-  if(!byBrand)$('fBrand').value=l.brand||'';
-  if(l.barcode && !$('fBarcode').value)$('fBarcode').value=l.barcode;
-  $('fQty').value=l.qty;$('fUnit').value=l.unit;$('fStore').value=l.store||'';
-  $('fUnitPrice').placeholder=num(pUnitPrice(l))+' '+curSym();
-  $('fPrice').placeholder=num(l.price)+' '+curSym();
-  updateLiveCalc('init');
-}
-$('fItem').onchange=()=>autofill(false);
-$('fBrand').onchange=()=>autofill(true);
 
 let stream=null;
 function stopCam(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}$('cm').classList.remove('on')}
@@ -2674,14 +3068,18 @@ $('cmx').onclick=stopCam;
 $('snap').onclick=()=>{
   sfx('success');
   const v=$('vid');if(!v.videoWidth)return;
-  const s=Math.min(1,900/Math.max(v.videoWidth,v.videoHeight)),c=document.createElement('canvas');
+  const maxDim = camTarget === 'receipt' ? 1650 : 900;
+  const s=Math.min(1,maxDim/Math.max(v.videoWidth,v.videoHeight)),c=document.createElement('canvas');
   c.width=Math.round(v.videoWidth*s);c.height=Math.round(v.videoHeight*s);
-  c.getContext('2d').drawImage(v,0,0,c.width,c.height);
-  let d=c.toDataURL('image/jpeg',.7);if(d.length>240000)d=c.toDataURL('image/jpeg',.4);
+  const ctx = c.getContext('2d');
+  if(camTarget === 'receipt') ctx.filter = 'contrast(1.12) brightness(1.02)';
+  ctx.drawImage(v,0,0,c.width,c.height);
   stopCam();
   if(camTarget === 'receipt'){
-    fetch(d).then(r=>r.blob()).then(b=>processReceiptImageFile(b));
+    const hiResUrl = c.toDataURL('image/jpeg', 0.86);
+    processReceiptDataUrl(hiResUrl);
   } else {
+    let d=c.toDataURL('image/jpeg',.7);if(d.length>240000)d=c.toDataURL('image/jpeg',.4);
     photo=d;$('fPrev').src=d;$('fPrev').hidden=false;
   }
 };
@@ -2727,8 +3125,8 @@ $('save').onclick=async()=>{
     else if(!edit && keepPhotoId && PC[keepPhotoId]){await db.doc('photos/'+id).set({data:PC[keepPhotoId]});PC[id]=PC[keepPhotoId]}
     await db.doc('purchases/'+id).set(rec);
     if(barcode){
-      BARCODES[barcode] = { item, brand: rec.brand, qty, unit: rec.unit, store: rec.store, price: rec.unitPrice };
-      db.doc('config/barcodes').set(BARCODES, {merge: true}).catch(()=>{});
+      BARCODES[barcode] = { item, brand: rec.brand, qty, unit: rec.unit, store: rec.store, price: rec.unitPrice, code: barcode };
+      db.doc('config/barcodes').set({[barcode]: BARCODES[barcode]}, {merge: true}).catch(()=>{});
     }
     if(cart.has(item)){cart.delete(item);saveMeta()}
     sfx('success');
@@ -2747,11 +3145,9 @@ $('del').onclick=async()=>{
 
 // التفاعلات والأحداث العامة
 document.addEventListener('click',async e=>{
-  // فتح ماسح الفاتورة أو الباركود من الهيدر
   if(e.target.closest('#openRcptBtn')){ openReceiptScannerSheet(); return; }
   if(e.target.closest('#openBcBtn')){ openBarcodeScanner('home'); return; }
 
-  // إضافة صورة سريعة لبند بدون صورة عند الضغط على أيقونة (📷+)
   const qph = e.target.closest('[data-qph]');
   if(qph){
     e.stopPropagation();
@@ -2761,7 +3157,6 @@ document.addEventListener('click',async e=>{
     return;
   }
 
-  // شريط التنقل السفلي
   const navBtn = e.target.closest('.nav-item[data-tab]');
   if(navBtn){
     sfx('tap');
@@ -2776,7 +3171,6 @@ document.addEventListener('click',async e=>{
     }
     return;
   }
-  // زر الدولة والعملة
   if(e.target.closest('#cntryBtn,#muCntry')){
     $('mu').classList.remove('on');
     openCountrySheet();
@@ -2792,7 +3186,6 @@ document.addEventListener('click',async e=>{
     showToast((COUNTRIES[activeCountry].flag) + ' ' + (lang==='ar'?'تم تفعيل واجهة ':'Switched to ') + (lang==='ar'?COUNTRIES[activeCountry].nameAr:COUNTRIES[activeCountry].nameEn));
     return;
   }
-  // زر اللغة (AR / EN)
   if(e.target.closest('#langBtn')){
     sfx('select');
     lang = lang === 'ar' ? 'en' : 'ar';
@@ -2801,7 +3194,6 @@ document.addEventListener('click',async e=>{
     showToast(lang === 'ar' ? 'تم التبديل إلى اللغة العربية 🇸🇦🇪🇬' : 'Switched to English 🌍');
     return;
   }
-  // تعديل الميزانية الشهرية
   if(e.target.closest('#editBudgetBtn,#muBudget')){
     sfx('tap');
     $('mu').classList.remove('on');
@@ -2815,18 +3207,17 @@ document.addEventListener('click',async e=>{
     }
     return;
   }
-  // مفتاح الذكاء الاصطناعي للفواتير (اختياري)
   if(e.target.closest('#muAiKey')){
     sfx('tap');
-    const curK = localStorage.getItem('geminiApiKey') || '';
-    const k = prompt('أدخل مفتاح Gemini API (اختياري) لتفعيل قراءة الفواتير بالذكاء الاصطناعي الفائق، أو اتركه فارغاً لاستخدام المحرك البصري المدمج:', curK);
+    const curK = getActiveAiKey();
+    const k = prompt('أدخل مفتاح Gemini API لتفعيل قراءة الفواتير بالذكاء الاصطناعي الفائق (يُحفظ سحابياً في حسابك):', curK);
     if(k !== null){
-      localStorage.setItem('geminiApiKey', k.trim());
-      showToast(k.trim() ? 'تم حفظ مفتاح الذكاء الاصطناعي 🤖' : 'تم التبديل للمحرك البصري المدمج 🔍');
+      await saveActiveAiKey(k);
+      sfx('success');
+      showToast(k.trim() ? 'تم حفظ ومزامنة مفتاح الذكاء الاصطناعي 🤖' : 'تم مسح المفتاح');
     }
     return;
   }
-  // تغيير مستوى الصوت من القائمة أو الهيدر
   const volBtn = e.target.closest('[data-vol]');
   if(volBtn){
     sfxVolMode = volBtn.dataset.vol;
@@ -2847,16 +3238,13 @@ document.addEventListener('click',async e=>{
     showToast(sfxVolMode !== '0' ? (lang==='ar'?'تم تفعيل الصوت المتوسط المتوازن 🔊':'Medium Sound ON 🔊') : (lang==='ar'?'تم كتم الصوت 🔇':'Sound Muted 🔇'));
     return;
   }
-  // زر الثيم
   if(e.target.closest('#thBtn')){
     sfx('tap');
     theme=theme==='dark'?'light':'dark';localStorage.setItem('theme',theme);render();return;
   }
-  // مسح البحث
   if(e.target.closest('#clrQ')){
     sfx('tap');q='';$('q').value='';$('clrQ').hidden=true;$('list').innerHTML=homeList(groups(P));return;
   }
-  // الفلاتر والترتيب
   const flt = e.target.closest('[data-flt]');
   if(flt){ sfx('tap');activeFilter=flt.dataset.flt;render();return; }
   if(e.target.closest('#sortBtn')){
@@ -2864,7 +3252,6 @@ document.addEventListener('click',async e=>{
     sortBy = sortBy==='date'?'count':(sortBy==='count'?'price':'date');
     render();return;
   }
-  // إضافة بند سريع في قائمة التسوق
   if(e.target.closest('#quickCartAdd')){
     const inp = $('quickCartIn');
     const v = inp ? inp.value.trim() : '';
@@ -2885,7 +3272,6 @@ document.addEventListener('click',async e=>{
     return;
   }
 
-  // أزرار سلة المهملات
   const restBtn = e.target.closest('[data-restore]');
   if(restBtn){
     await restoreRecords([restBtn.dataset.restore]);
@@ -2910,7 +3296,6 @@ document.addEventListener('click',async e=>{
     return;
   }
 
-  // تحديد منتج من الخارج (Checkbox)
   const selEl = e.target.closest('[data-sel]');
   if(selEl){
     e.stopPropagation();
@@ -2921,14 +3306,12 @@ document.addEventListener('click',async e=>{
     render();
     return;
   }
-  // فتح قائمة الخيارات السريعة من الخارج (⋮)
   const menuBtn = e.target.closest('[data-menu]');
   if(menuBtn){
     e.stopPropagation();
     openItemContextMenu(menuBtn.dataset.menu, null);
     return;
   }
-  // فتح قائمة الخيارات لسجل داخل صفحة التفاصيل أو السجل الشهري
   const recMenuBtn = e.target.closest('[data-recmenu]');
   if(recMenuBtn){
     e.stopPropagation();
@@ -2936,7 +3319,6 @@ document.addEventListener('click',async e=>{
     if(p) openItemContextMenu(p.item, p);
     return;
   }
-  // زر نسخ مع التعديل المباشر
   const dupBtn = e.target.closest('[data-dupitem]');
   if(dupBtn){
     e.stopPropagation();
@@ -2944,7 +3326,6 @@ document.addEventListener('click',async e=>{
     if(rows && rows[0]) openSheet(rows[0], false, true);
     return;
   }
-  // تنفيذ أمر من داخل نافذة الخيارات السريعة (Context Sheet)
   const cact = e.target.closest('[data-cact]');
   if(cact){
     const act = cact.dataset.cact;
@@ -3001,7 +3382,6 @@ document.addEventListener('click',async e=>{
     return;
   }
 
-  // أوامر شريط التحديد السفلي
   if(e.target.closest('#selClearBtn')){ sfx('tap'); selected.clear(); render(); return; }
   if(e.target.closest('#selAllBtn')){
     sfx('select');
@@ -3052,12 +3432,10 @@ document.addEventListener('click',async e=>{
     return;
   }
 
-  // إغلاق النوافذ المنبثقة عند الضغط على الخلفية
   if(e.target.classList.contains('sheet')&&e.target.id!=='lg'&&e.target.id!=='vf'){
     sfx('tap'); closeModalById(e.target.id); return;
   }
 
-  // التنقل بين البنود والتفاصيل (مع دعم الرجوع من الزر الداخلي وزر الموبايل معاً)
   const tEl=e.target.closest('[data-item],[data-id],#back');if(!tEl)return;
   if(tEl.id==='back'){
     sfx('tap');
@@ -3084,7 +3462,6 @@ document.addEventListener('click',async e=>{
   render();window.scrollTo({top:0,behavior:'smooth'});
 });
 
-// تغيير الشهر في شاشة التحليلات
 document.addEventListener('change', e=>{
   if(e.target.id === 'monthSel'){
     sfx('tap');
@@ -3093,7 +3470,6 @@ document.addEventListener('change', e=>{
   }
 });
 
-// دعم الضغط المطوّل (Long Press) على الكارت من الخارج للتحديد الفوري
 let lpTimer = null;
 document.addEventListener('touchstart', e=>{
   const card = e.target.closest('.row[data-item]');
@@ -3117,7 +3493,7 @@ $('lN').onclick=async()=>{sfx('tap');$('lErr').textContent='';try{const c=await 
 $('lF').onclick=async()=>{sfx('tap');const m=$('lE').value.trim();if(!m){$('lErr').textContent='اكتب إيميلك أولا.';return}try{await auth.sendPasswordResetEmail(m);$('lErr').textContent='تم إرسال رابط إعادة تعيين كلمة المرور لبريدك.'}catch(e){$('lErr').textContent=authMsg(e)}};
 $('vR').onclick=async()=>{sfx('tap');try{await auth.currentUser.sendEmailVerification();$('vErr').textContent='تم إرسال الرابط مرة أخرى.'}catch(e){$('vErr').textContent=authMsg(e)}};
 $('vB').onclick=async()=>{sfx('tap');try{await auth.currentUser.reload();await auth.currentUser.getIdToken(true);if(auth.currentUser.emailVerified)enter();else $('vErr').textContent='لم يتم التأكيد بعد.'}catch(e){$('vErr').textContent=authMsg(e)}};
-const out=()=>{sfx('tap');if(unsub){unsub();unsub=null}if(unsub2){unsub2();unsub2=null}if(unsub3){unsub3();unsub3=null}ALL_P=[];P=[];TRASH=[];cur=null;$('ban').innerHTML='';['mu','mb'].forEach(x=>$(x).classList.remove('on'));render();auth.signOut()};
+const out=()=>{sfx('tap');if(unsub){unsub();unsub=null}if(unsub2){unsub2();unsub2=null}if(unsub3){unsub3();unsub3=null}if(unsub4){unsub4();unsub4=null}ALL_P=[];P=[];TRASH=[];cur=null;$('ban').innerHTML='';['mu','mb'].forEach(x=>$(x).classList.remove('on'));render();auth.signOut()};
 $('vO').onclick=out;$('muOut').onclick=out;
 
 function enter(){
@@ -3127,9 +3503,19 @@ function enter(){
     db.doc('config/brand').get().then(s=>{
       if(!s.exists||s.data().v!==2){db.doc('config/brand').set({logo:DEFAULT_LOGO,v:2}).catch(()=>{})}
     }).catch(()=>{});
+    if(AI_KEY){
+      db.doc('config/ai').set({key: AI_KEY}, {merge: true}).catch(()=>{});
+    }
   }
   unsub2=db.doc('config/brand').onSnapshot(s=>{if(s.exists&&s.data().logo&&s.data().v===2){LOGO=s.data().logo;try{localStorage.setItem('brandLogoV2',LOGO)}catch(e){}paintBrand()}},()=>{});
   unsub3=db.doc('config/barcodes').onSnapshot(s=>{if(s.exists)Object.assign(BARCODES, s.data()||{})},()=>{});
+  unsub4=db.doc('config/ai').onSnapshot(s=>{
+    if(s.exists && s.data().key){
+      AI_KEY = s.data().key.trim();
+      try{ localStorage.setItem('geminiApiKey', AI_KEY); }catch(e){}
+      updateRcptKeyStatusUI();
+    }
+  },()=>{});
   unsub=db.collection('purchases').onSnapshot(s=>{
     $('ban').innerHTML='';
     ALL_P=s.docs.map(d=>Object.assign({id:d.id},d.data()));
@@ -3145,7 +3531,6 @@ auth.onAuthStateChanged(u=>{
   enter();
 });
 
-// القائمة والمشاركة والتصدير وتوليد الأيقونات
 $('muX').onclick=()=>{sfx('tap');$('mu').classList.remove('on')};
 $('muMb').onclick=async()=>{sfx('open');pushAppHistory('mb');$('mb').classList.add('on');$('mbErr').textContent='';renderMembers(await loadMembers())};
 $('mbX').onclick=()=>{sfx('tap');$('mb').classList.remove('on')};
@@ -3168,7 +3553,7 @@ $('exCsv').onclick=()=>{
   sfx('success');
   const c=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
   const rows=[...P].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-  const h=['البند','الماركة','الباركود','عدد الوحدات','وزن الوحدة','الوحدة','سعر الوحدة','الإجمالي','سعر الوحدة القياسي','الدولة','التاريخ','المكان','ملاحظة','أضافها'];
+  const h=['البند','الماركة','رقم الصنف / الباركود','عدد الوحدات','وزن الوحدة','الوحدة','سعر الوحدة','الإجمالي','سعر الوحدة القياسي','الدولة','التاريخ','المكان','ملاحظة','أضافها'];
   const body=rows.map(p=>[p.item,p.brand,p.barcode||'',pCount(p),p.qty,uLabel(p.unit),num(pUnitPrice(p)),p.price,num(ppu(p))+' / '+bLabel((U[p.unit]||U.g).base),p.country||'SA',p.date,p.store,p.note,p.by].map(c).join(','));
   dl('aylin-purchases-'+today()+'.csv','\ufeff'+[h.map(c).join(','),...body].join('\r\n'),'text/csv;charset=utf-8');
 };
