@@ -1,7 +1,7 @@
 {
-  "name": "Aylin Market",
+  "name": "Aylin Market Pro",
   "short_name": "Aylin Market",
-  "description": "مشتريات البيت الذكية",
+  "description": "مشتريات البيت الذكية والتحليلات الشهرية",
   "lang": "ar",
   "dir": "rtl",
   "start_url": "./",
