@@ -11,6 +11,9 @@ service cloud.firestore {
     match /purchases/{id} {
       allow read, write: if isAllowed();
     }
+    match /catalog/{id} {
+      allow read, write: if isAllowed();
+    }
     match /photos/{id} {
       allow read, write: if isAllowed();
     }
