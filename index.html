@@ -139,17 +139,18 @@ input, select, button, textarea { font: inherit; color: inherit; }
 }
 
 /* شعار آيلين المتحرك: حركة حية للصورة + يد طفلة طبيعية تخرج من حدود الدائرة وتلوّح باي باي */
-.lgo-wrap{position:relative;display:inline-block;flex:none;overflow:visible;z-index:3}
-.lgo-frame{position:relative;width:54px;height:54px;border-radius:50%;overflow:hidden;border:2.5px solid #fff;background:linear-gradient(135deg,var(--ac),var(--ac2));animation:goldHalo 3.5s infinite ease-in-out,lgoPopAlive 4.8s ease-in-out infinite;transform-origin:50% 65%}
-.lg-hero .lgo-frame{width:92px;height:92px;border-width:3px}
-.lgo-frame .lgo{width:100%;height:100%;border:0;animation:lgoSmileZoom 4.8s ease-in-out infinite;transform-origin:50% 42%;display:block;object-fit:cover;border-radius:50%}
+.lgo-wrap{position:relative;display:block;width:54px;height:54px;flex:0 0 54px;overflow:visible;z-index:3}
+.lg-hero .lgo-wrap{width:92px;height:92px;flex:0 0 92px;margin:0 auto}
+.lgo-frame{position:relative;display:block;width:100%;height:100%;border-radius:50%;overflow:hidden;border:2.5px solid #fff;background:linear-gradient(135deg,var(--ac),var(--ac2));animation:goldHalo 3.5s infinite ease-in-out,lgoPopAlive 4.8s ease-in-out infinite;transform-origin:50% 65%}
+.lg-hero .lgo-frame{border-width:3px}
+.lgo-frame .lgo{width:100% !important;height:100% !important;max-width:100%;max-height:100%;border:0;animation:lgoSmileZoom 4.8s ease-in-out infinite;transform-origin:50% 42%;display:block;object-fit:cover;border-radius:50%}
 .lgo-wrap.is-anim .lgo-frame{animation:goldHalo 3.5s infinite ease-in-out}
 .lgo-wrap.is-anim .lgo-frame .lgo{animation:none}
 .lgo-spark{position:absolute;top:-5px;inset-inline-start:-4px;font-size:12px;color:var(--gold-lt);opacity:0;pointer-events:none;animation:lgoSpark 4.8s ease-in-out infinite;filter:drop-shadow(0 0 4px rgba(255,225,130,.9))}
-.lgo-hand{position:absolute;bottom:-6px;inset-inline-end:-12px;width:30px;height:34px;transform-origin:38% 88%;opacity:0;pointer-events:none;z-index:5;animation:lgoHandOut 4.8s ease-in-out infinite;filter:drop-shadow(0 3px 5px rgba(30,6,20,.45))}
-.lg-hero .lgo-hand{width:46px;height:52px;bottom:-8px;inset-inline-end:-18px}
-.lgo-bye{position:absolute;top:-11px;inset-inline-end:-24px;font-size:10px;font-weight:800;background:linear-gradient(135deg,#fff7dc,var(--gold));color:#3b142c;border:1px solid #fff;border-radius:12px 12px 12px 3px;padding:2px 8px;white-space:nowrap;opacity:0;transform:scale(.4) translateY(4px);transform-origin:20% 100%;animation:lgoBye 4.8s ease-in-out infinite;pointer-events:none;z-index:6;box-shadow:0 3px 10px rgba(0,0,0,.28)}
-.lg-hero .lgo-bye{font-size:12px;top:-10px;inset-inline-end:-30px;padding:3px 10px}
+.lgo-hand{position:absolute;bottom:-5px;inset-inline-end:-10px;width:26px;height:30px;transform-origin:38% 88%;opacity:0;pointer-events:none;z-index:5;animation:lgoHandOut 4.8s ease-in-out infinite;filter:drop-shadow(0 3px 5px rgba(30,6,20,.45))}
+.lg-hero .lgo-hand{width:42px;height:48px;bottom:-7px;inset-inline-end:-16px}
+.lgo-bye{position:absolute;top:-9px;inset-inline-end:-16px;font-size:9.5px;font-weight:800;background:linear-gradient(135deg,#fff7dc,var(--gold));color:#3b142c;border:1px solid #fff;border-radius:12px 12px 12px 3px;padding:1.5px 6px;white-space:nowrap;opacity:0;transform:scale(.4) translateY(4px);transform-origin:20% 100%;animation:lgoBye 4.8s ease-in-out infinite;pointer-events:none;z-index:6;box-shadow:0 3px 10px rgba(0,0,0,.28)}
+.lg-hero .lgo-bye{font-size:12px;top:-10px;inset-inline-end:-26px;padding:3px 9px}
 @keyframes lgoPopAlive{0%,56%,100%{transform:translateY(0) rotate(0) scale(1)}62%{transform:translateY(-2px) rotate(-4deg) scale(1.07)}68%{transform:translateY(-3px) rotate(4deg) scale(1.09)}74%{transform:translateY(-2px) rotate(-3deg) scale(1.07)}80%{transform:translateY(-2px) rotate(3deg) scale(1.08)}88%{transform:translateY(-1px) rotate(-1deg) scale(1.03)}95%{transform:translateY(0) rotate(0) scale(1)}}
 @keyframes lgoSmileZoom{0%,56%,100%{transform:scale(1);filter:brightness(1)}64%,86%{transform:scale(1.12) translateY(-1px);filter:brightness(1.07) saturate(1.06)}95%{transform:scale(1);filter:brightness(1)}}
 @keyframes lgoHandOut{0%,56%{opacity:0;transform:translate(8px,10px) scale(.35) rotate(-25deg)}62%{opacity:1;transform:translate(0,0) scale(1.04) rotate(8deg)}67%{opacity:1;transform:translate(0,-1px) scale(1.06) rotate(-18deg)}72%{opacity:1;transform:translate(0,-1px) scale(1.06) rotate(22deg)}77%{opacity:1;transform:translate(0,-1px) scale(1.06) rotate(-16deg)}82%{opacity:1;transform:translate(0,-1px) scale(1.05) rotate(18deg)}88%{opacity:1;transform:translate(0,0) scale(1) rotate(-6deg)}95%,100%{opacity:0;transform:translate(6px,8px) scale(.45) rotate(-20deg)}}
