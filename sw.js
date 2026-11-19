@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aylin-market-v4';
+const CACHE_NAME = 'aylin-market-v6';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -12,7 +12,7 @@ const CORE_ASSETS = [
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(CORE_ASSETS))
+      .then(cache => cache.addAll(CORE_ASSETS).then(() => cache.add('./aylin-logo.webp').catch(() => {})))
       .then(() => self.skipWaiting())
   );
 });
