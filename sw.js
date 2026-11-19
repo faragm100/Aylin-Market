@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aylin-market-v2';
+const CACHE_NAME = 'aylin-market-v3';
 const CORE_ASSETS = [
   './',
   './index.html',
