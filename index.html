@@ -785,6 +785,10 @@ label { display: block; font-size: 12.5px; font-weight: 600; color: var(--mu); m
       <input class="in" id="rcptApiKeyIn" placeholder="AIzaSy..." autocomplete="off" style="font-family:monospace;font-size:13px;direction:ltr">
       <button class="btn" id="rcptSaveKeyBtn" type="button" style="width:auto;padding:0 14px;white-space:nowrap;font-size:13px">اختبار وحفظ ✓</button>
     </div>
+    <div class="sub" style="margin:10px 0 4px;font-weight:700">🔁 مفتاح Gemini احتياطي <span style="font-weight:400">(من حساب/مشروع جوجل آخر — حصة مستقلة)</span></div>
+    <input class="in" id="rcptKey2In" placeholder="AIzaSy... (اختياري)" autocomplete="off" style="font-family:monospace;font-size:13px;direction:ltr">
+    <div class="sub" style="margin:10px 0 4px;font-weight:700">⚡ مفتاح Groq <span style="font-weight:400">(مجاني — console.groq.com/keys — محرك بديل سريع)</span></div>
+    <input class="in" id="rcptGroqIn" placeholder="gsk_... (اختياري)" autocomplete="off" style="font-family:monospace;font-size:13px;direction:ltr">
     <p class="sub" id="rcptKeyMsg" style="margin:8px 0 0;font-weight:600"></p>
   </div>
 
@@ -793,8 +797,16 @@ label { display: block; font-size: 12.5px; font-weight: 600; color: var(--mu); m
     <button class="btn g" id="rcptGalBtn" type="button" style="margin:0;padding:13px">🖼️ من المعرض</button>
   </div>
   <input id="rcptFileIn" type="file" accept="image/*" hidden>
+  <div class="f-tabs" style="margin-top:10px;align-items:center;gap:6px;flex-wrap:wrap">
+    <span class="sub" style="margin:0">المحرك:</span>
+    <button class="tab-pill" data-eng="auto" type="button">🔄 تلقائي</button>
+    <button class="tab-pill" data-eng="gemini" type="button">✨ Gemini</button>
+    <button class="tab-pill" data-eng="groq" type="button">⚡ Groq</button>
+    <button class="tab-pill" data-eng="local" type="button">📴 على الجهاز</button>
+  </div>
+  <p class="sub" id="engHint" style="margin:4px 0 0;font-size:11.5px">تلقائي: Gemini ← مفتاح Gemini احتياطي ← Groq ← قراءة على الجهاز (بلا حدود). لو انتهى حد أي محرك ينتقل للتالي لوحده.</p>
   <div class="f-tabs" style="margin-top:10px;align-items:center;gap:6px">
-    <span class="sub" style="margin:0">وضع القراءة:</span>
+    <span class="sub" style="margin:0">وضع قراءة Gemini:</span>
     <button class="tab-pill" data-gm="fast" type="button">⚡ سريع</button>
     <button class="tab-pill" data-gm="accurate" type="button">🎯 دقيق (أبطأ)</button>
   </div>
@@ -1271,42 +1283,44 @@ const CAT_GROUPS = [
 const CATS = [
   // ---- أقسام ذات أولوية في التخمين (متخصصة أولاً) ----
   { id:'baby', g:'family', ar:'أطفال ورضع', en:'Baby & infant', ic:'🍼', h:'n', nd:'need', kw:['حفاض','حفاظ','بامبرز','هاجيس','حليب اطفال','حليب رضع','حليب اطفال','سيريلاك','رضاع','مناديل مبلل','مصاصه','baby','pampers','huggies','diaper','aptamil','nido','similac','infant'] },
-  { id:'meds', g:'care', ar:'أدوية وصيدلية', en:'Medicine & pharmacy', ic:'💊', h:'n', nd:'need', kw:['دواء','ادويه','بنادول','بانادول','باراسيتامول','بروفين','ايبوبروفين','اموكسيل','اوجمنتين','مسكن','شراب كحه','شراب للكحه','سعال','اقراص','كبسولات','كبسوله','حبوب','مرهم','قطره','بخاخ','انسولين','مضاد حيوي','مضاد','فولتارين','كونجستال','antibiotic','panadol','paracetamol','ibuprofen','tablet','capsule','syrup','ointment','drops','spray','tablets'] },
+  { id:'meds', g:'care', ar:'أدوية ومكملات ومستلزمات طبية', en:'Medicine, supplements & medical', ic:'💊', h:'n', nd:'need', kw:['دواء','ادويه','بنادول','بانادول','باراسيتامول','بروفين','ايبوبروفين','اموكسيل','اوجمنتين','مسكن','شراب كحه','شراب للكحه','سعال','اقراص','كبسولات','كبسوله','حبوب','مرهم','قطره','بخاخ','انسولين','مضاد حيوي','مضاد','فولتارين','كونجستال','antibiotic','panadol','paracetamol','ibuprofen','tablet','capsule','syrup','ointment','drops','spray','tablets'] },
   { id:'supplements', g:'care', ar:'فيتامينات ومكملات', en:'Vitamins & supplements', ic:'🧬', h:'n', nd:'mix', kw:['فيتامين','اوميجا','اوميغا','مكمل','كالسيوم','حديد','زنك','ماغنسيوم','بروبيوتيك','كولاجين','بروتين باودر','مسحوق بروتين','vitamin','omega','supplement','probiotic','collagen','whey','multivitamin'] },
   { id:'first_aid', g:'care', ar:'إسعافات ومستلزمات طبية', en:'First aid & medical supplies', ic:'🩹', h:'n', nd:'need', kw:['ضماده','ضمادات','شاش','لاصق طبي','كمامه','كمامات','قفازات','ميزان حراره','جهاز ضغط','جهاز سكر','قطن','سرنجه','محلول ملحي','معقم','بلاستر','plaster','bandage','thermometer','face mask','gloves','sanitizer'] },
   { id:'telecom', g:'tech', ar:'اتصالات وإنترنت', en:'Telecom & internet', ic:'📶', h:'n', nd:'need', kw:['شحن رصيد','رصيد','بطاقه شحن','باقه','شريحه','سيم','انترنت','نت منزلي','فاتوره جوال','اشتراك جوال','مكالمات','recharge','top up','topup','sim card','sim','data plan','prepaid','stc','mobily','zain','vodafone','etisalat','orange','telecom egypt'] },
   { id:'accessories', g:'tech', ar:'ملحقات وإكسسوارات', en:'Accessories & cables', ic:'🔌', h:'n', nd:'want', kw:['شاحن','كابل','كيبل','وصله','محول','باور بانك','كفر','جراب','حمايه شاشه','سكرينه','فلاش','ذاكره','كرت ذاكره','ماوس','كيبورد','بطاريه','بطاريات','سماعه سلكيه','حامل جوال','charger','cable','adapter','power bank','case','screen protector','usb','sd card','mouse','keyboard','battery','batteries','holder'] },
-  { id:'electronics', g:'tech', ar:'إلكترونيات وأجهزة', en:'Electronics & devices', ic:'💻', h:'n', nd:'want', kw:['تلفزيون','تلفاز','شاشه','لابتوب','لاب توب','حاسب','كمبيوتر','تابلت','ايباد','ايفون','جوال','موبايل','هاتف','سماعه','سماعات','راوتر','طابعه','كاميره','بلايستيشن','ساعه ذكيه','سمارت','laptop','tablet','ipad','iphone','galaxy','phone','headphone','earbuds','airpods','router','printer','camera','tv','monitor','playstation','smartwatch'] },
+  { id:'electronics', g:'tech', ar:'إلكترونيات وملحقات', en:'Electronics & accessories', ic:'💻', h:'n', nd:'want', kw:['تلفزيون','تلفاز','شاشه','لابتوب','لاب توب','حاسب','كمبيوتر','تابلت','ايباد','ايفون','جوال','موبايل','هاتف','سماعه','سماعات','راوتر','طابعه','كاميره','بلايستيشن','ساعه ذكيه','سمارت','laptop','tablet','ipad','iphone','galaxy','phone','headphone','earbuds','airpods','router','printer','camera','tv','monitor','playstation','smartwatch'] },
   { id:'car', g:'misc', ar:'سيارة ووقود', en:'Car & fuel', ic:'🚗', h:'n', nd:'mix', kw:['بنزين','وقود','زيت محرك','زيت سياره','اطار','اطارات','فلتر زيت','سائل تبريد','ماء رديتر','غسيل سياره','معطر سياره','اكسسوار سياره','car','fuel','petrol','engine oil','tyre','tire','car wash'] },
   { id:'pets', g:'misc', ar:'حيوانات أليفة', en:'Pets', ic:'🐾', h:'n', nd:'mix', kw:['طعام قطط','اكل قطط','طعام كلاب','اكل كلاب','تراب قطط','قطط','كلاب','طيور','سمك زينه','cat food','dog food','cat litter','pet','whiskas','pedigree'] },
   { id:'services', g:'misc', ar:'خدمات واشتراكات', en:'Services & subscriptions', ic:'🧾', h:'n', nd:'mix', kw:['اشتراك','فاتوره','كهرباء','فاتوره ماء','صيانه','توصيل','تأمين','تامين','نتفلكس','شاهد','اوبر','subscription','netflix','spotify','shahid','service','delivery','insurance','repair','maintenance'] },
-  { id:'toys', g:'family', ar:'ألعاب وهدايا', en:'Toys & gifts', ic:'🧸', h:'n', nd:'want', kw:['لعبه','العاب','دميه','ليجو','هديه','بالون','تزيين','toy','toys','lego','gift','doll','puzzle','balloon'] },
+  { id:'toys', g:'family', ar:'ألعاب وهدايا وقرطاسية', en:'Toys, gifts & stationery', ic:'🧸', h:'n', nd:'want', kw:['لعبه','العاب','دميه','ليجو','هديه','بالون','تزيين','toy','toys','lego','gift','doll','puzzle','balloon'] },
   { id:'stationery', g:'family', ar:'قرطاسية وكتب', en:'Stationery & books', ic:'📚', h:'n', nd:'mix', kw:['دفتر','قلم','اقلام','كتاب','حقيبه مدرسيه','مسطره','ممحاه','الوان','ملف','ورق طباعه','notebook','pen','pencil','book','school bag','paper a4','marker','folder'] },
   { id:'clothes', g:'family', ar:'ملابس وأحذية', en:'Clothes & shoes', ic:'👕', h:'n', nd:'want', kw:['ثوب','قميص','بنطلون','جوارب','شماغ','فنيله','تيشرت','عباءه','عبايه','حذاء','شبشب','جاكيت','سروال','فستان','بيجامه','طقم','حجاب','طرحه','ملابس','shirt','socks','pants','shoes','jacket','dress','clothes','sneakers','pajama','trousers'] },
   { id:'tools', g:'home', ar:'أدوات وصيانة', en:'Tools & repairs', ic:'🔧', h:'n', nd:'mix', kw:['مفك','مسمار','مسامير','دهان','بوية','شريط لاصق','سلك','مفتاح ربط','دريل','صنبور','سيليكون','غراء','لمبه','لمبات','مفتاح كهرباء','فيشه','tool','drill','paint','screw','nails','glue','tape','bulb','hammer','wrench'] },
-  { id:'kitchen', g:'home', ar:'أدوات مطبخ وأجهزة منزلية', en:'Kitchenware & appliances', ic:'🍳', h:'n', nd:'want', kw:['قدر','طنجره','مقلاه','صحون','اطباق','اكواب','كاسات','ملعقه','سكين','خلاط','غلايه','مكواه','مكنسه','مروحه','عصاره','فرن','ميكروويف','قلايه','طقم اواني','ترمس','حافظه طعام','طاسه','pot','pan','plates','cups','blender','kettle','iron','vacuum','fan','air fryer','microwave','cookware','thermos'] },
+  { id:'kitchen', g:'home', ar:'أدوات مطبخ وأثاث وصيانة', en:'Kitchen, furniture & repairs', ic:'🍳', h:'n', nd:'want', kw:['قدر','طنجره','مقلاه','صحون','اطباق','اكواب','كاسات','ملعقه','سكين','خلاط','غلايه','مكواه','مكنسه','مروحه','عصاره','فرن','ميكروويف','قلايه','طقم اواني','ترمس','حافظه طعام','طاسه','pot','pan','plates','cups','blender','kettle','iron','vacuum','fan','air fryer','microwave','cookware','thermos'] },
   { id:'furniture', g:'home', ar:'فرش وأثاث وديكور', en:'Bedding, furniture & decor', ic:'🛏️', h:'n', nd:'want', kw:['مخده','وساده','بطانيه','لحاف','ستاره','ستائر','سجاد','سجاده','شرشف','مفرش','منشفه','فوطه حمام','مرتبه','كرسي','طاوله','رف','ديكور','اطار صور','pillow','blanket','curtain','carpet','sheet','towel','mattress','chair','table','decor'] },
-  { id:'cleaning', g:'home', ar:'منظفات', en:'Cleaning', ic:'🧴', h:'n', nd:'need', kw:['منظف','كلور','مسحوق غسيل','سائل جلي','جلي','فيري','تايد','داون','معطر جو','ملمع','مطهر','ديتول','فلاش','كلوركس','مبيض','منعم','اكياس قمامه','سائل غسيل','ازاله','مزيل','detergent','bleach','dettol','tide','fairy','softener','cleaner','air freshener','trash bag'] },
+  { id:'cleaning', g:'home', ar:'منظفات ومستلزمات منزلية', en:'Cleaning & household', ic:'🧴', h:'n', nd:'need', kw:['منظف','كلور','مسحوق غسيل','سائل جلي','جلي','فيري','تايد','داون','معطر جو','ملمع','مطهر','ديتول','فلاش','كلوركس','مبيض','منعم','اكياس قمامه','سائل غسيل','ازاله','مزيل','detergent','bleach','dettol','tide','fairy','softener','cleaner','air freshener','trash bag'] },
   { id:'household', g:'home', ar:'ورقيات ومستلزمات منزلية', en:'Paper & household supplies', ic:'🧻', h:'n', nd:'need', kw:['مناديل ورق','مناديل','ورق تواليت','ورق مطبخ','فوط','اكياس','رقائق','الومنيوم','شمع','اعواد','سيجارتي','فيلم تغليف','tissue','toilet paper','kitchen roll','foil','napkin','cling film','bag'] },
   // ---- طعام وشراب ----
   { id:'sweet_drinks', g:'food', ar:'مشروبات غازية وعصائر محلاة', en:'Soft & sweetened drinks', ic:'🥤', h:'limit', nd:'want', kw:['بيبسي','كولا','سفن اب','ميرندا','فانتا','سبرايت','مشروب غازي','غازيه','مشروب طاقه','ريد بول','شاي مثلج','تانج','عصير','نكتار','كابتن','موز عصير','pepsi','cola','7up','sprite','fanta','juice','soda','energy drink','red bull','nectar','soft drink'] },
-  { id:'sweets_snacks', g:'food', ar:'حلويات وسناكس', en:'Sweets & snacks', ic:'🍫', h:'limit', nd:'want', kw:['شيبس','بطاطس شيبس','شوكولا','شكولا','بسكويت','بسكوت','كيك','حلوي','ايس كريم','آيس كريم','ايسكريم','ملبس','علكه','لبان','سناك','مقرمشات','كراميل','دونات','ويفر','نوتيلا','لوكوم','حلقوم','كرواسون','فشار','popcorn','chips','chocolate','biscuit','cookie','cake','candy','snack','wafer','ice cream','gum','lays','pringles','oreo'] },
+  { id:'sweets_snacks', g:'food', ar:'حلويات وسناكس ومشروبات محلاة ووجبات سريعة', en:'Sweets, snacks, soft drinks & fast food', ic:'🍫', h:'limit', nd:'want', kw:['شيبس','بطاطس شيبس','شوكولا','شكولا','بسكويت','بسكوت','كيك','حلوي','ايس كريم','آيس كريم','ايسكريم','ملبس','علكه','لبان','سناك','مقرمشات','كراميل','دونات','ويفر','نوتيلا','لوكوم','حلقوم','كرواسون','فشار','popcorn','chips','chocolate','biscuit','cookie','cake','candy','snack','wafer','ice cream','gum','lays','pringles','oreo'] },
   { id:'processed', g:'food', ar:'لحوم مصنعة ووجبات سريعة', en:'Processed meat & fast food', ic:'🌭', h:'limit', nd:'mix', kw:['نقانق','سجق','لانشون','مرتديلا','برجر','ناجتس','بيتزا','هوت دوج','سلامي','بسطرمه','نودلز','اندومي','شعريه سريعه','وجبه سريعه','كنتاكي','ماكدونالدز','sausage','burger','nugget','pizza','hot dog','salami','noodles','indomie','fast food'] },
   { id:'frozen', g:'food', ar:'مجمدات', en:'Frozen', ic:'🧊', h:'n', nd:'need', kw:['مجمد','فروزن','frozen'] },
-  { id:'dairy', g:'food', ar:'ألبان وبيض وأجبان', en:'Dairy, eggs & cheese', ic:'🥛', h:'good', nd:'need', kw:['لبن','حليب','زبادي','جبن','قشطه','زبده','بيض','لبنه','كريمه','روب','قيمر','milk','yogurt','yoghurt','cheese','butter','egg','cream','labneh'] },
+  { id:'dairy', g:'food', ar:'ألبان وبيض ولحوم ودواجن', en:'Dairy, eggs & meat', ic:'🥛', h:'good', nd:'need', kw:['لبن','حليب','زبادي','جبن','قشطه','زبده','بيض','لبنه','كريمه','روب','قيمر','milk','yogurt','yoghurt','cheese','butter','egg','cream','labneh'] },
   { id:'protein', g:'food', ar:'لحوم ودواجن وأسماك', en:'Meat, poultry & fish', ic:'🍗', h:'good', nd:'need', kw:['لحم','لحمه','دجاج','فراخ','سمك','روبيان','جمبري','تونه','كبده','مفروم','ستيك','ضان','بقر','عجل','صدر دجاج','فيليه','كبد','chicken','beef','lamb','fish','shrimp','tuna','meat','salmon'] },
   { id:'produce', g:'food', ar:'خضار وفواكه', en:'Fruits & vegetables', ic:'🥬', h:'good', nd:'need', kw:['خيار','طماطم','بندوره','بطاطس','بطاطا','بصل','جزر','تفاح','موز','برتقال','ليمون','خس','فلفل','باذنجان','كوسه','فواكه','فاكهه','خضار','ثوم','عنب','مانجو','فراوله','رمان','بطيخ','شمام','كمثري','خوخ','جوافه','سبانخ','ملوخيه','بقدونس','كزبره','نعناع','جرجير','بروكلي','قرنبيط','ذره','ورق عنب','apple','banana','orange','tomato','potato','onion','carrot','lemon','lettuce','cucumber','grapes','mango','vegetable','fruit'] },
   { id:'nuts', g:'food', ar:'مكسرات وتمور', en:'Nuts & dates', ic:'🥜', h:'good', nd:'mix', kw:['مكسرات','فستق','لوز','كاجو','عين جمل','جوز','بندق','زبيب','تمر','تمور','سمسم','حبه البركه','nuts','almond','cashew','pistachio','walnut','hazelnut','raisin','dates'] },
   { id:'bakery', g:'food', ar:'مخبوزات وحبوب ومكرونة', en:'Bakery, grains & pasta', ic:'🍞', h:'n', nd:'need', kw:['خبز','رز','ارز','مكرونه','معكرونه','دقيق','شوفان','عيش','توست','سميد','برغل','فريكه','كورن فليكس','حبوب','صامولي','كعك','باستا','رغيف','نشا','bread','rice','pasta','flour','oats','cereal','toast','spaghetti'] },
   { id:'canned', g:'food', ar:'معلبات وصلصات وبقوليات', en:'Canned goods, sauces & legumes', ic:'🥫', h:'n', nd:'need', kw:['معلب','صلصه','معجون طماطم','فول','حمص','عدس','فاصوليا','لوبيا','بقوليات','زيتون','مخلل','كاتشب','مايونيز','شطه','صوص','طحينه','canned','sauce','ketchup','mayonnaise','beans','lentil','olives','pickles','tomato paste','tahini'] },
-  { id:'pantry', g:'food', ar:'بقالة وزيوت وتوابل وسكر', en:'Pantry: oil, spices & sugar', ic:'🧂', h:'n', nd:'need', kw:['زيت','سكر','ملح','توابل','بهارات','خل','مربي','عسل','كاري','سمن','بيكنج','خميره','فانيليا','oil','sugar','salt','honey','spice','jam','ghee','yeast'] },
+  { id:'pantry', g:'food', ar:'بقالة ومعلبات وحبوب ومجمدات', en:'Pantry, canned, grains & frozen', ic:'🥫', h:'n', nd:'need', kw:['زيت','سكر','ملح','توابل','بهارات','خل','مربي','عسل','كاري','سمن','بيكنج','خميره','فانيليا','oil','sugar','salt','honey','spice','jam','ghee','yeast'] },
   { id:'drinks', g:'food', ar:'مياه وشاي وقهوة', en:'Water, tea & coffee', ic:'💧', h:'good', nd:'mix', kw:['ماء','مياه','شاي','قهوه','نسكافيه','ينسون','كرك','نسكافي','كابتشينو','مشروب ساخن','water','tea','coffee','nescafe','instant coffee','herbal'] },
   // ---- عناية شخصية (بعد الألبان لتفادي تداخل «كريم/كريمة») ----
   { id:'personal', g:'care', ar:'عناية شخصية وتجميل', en:'Personal care & beauty', ic:'🧼', h:'n', nd:'need', kw:['شامبو','لوشن','معجون اسنان','معجون','فرشاه اسنان','صابون','مزيل عرق','كريم','عطر','شفره','حلاقه','ليفه','كيسه','بلسم','واقي شمس','غسول','مرطب','ماسك','سيروم','مكياج','روج','مناديل نسائيه','فوط صحيه','صبغه','خيط اسنان','غسول فم','shampoo','lotion','toothpaste','soap','deodorant','conditioner','perfume','razor','makeup','body wash','toothbrush'] },
   { id:'other', g:'misc', ar:'أخرى (اكتب النوع)', en:'Other (type it)', ic:'📦', h:'n', nd:'mix', kw:null }
 ];
+const CAT_MERGE = { protein:'dairy', sweet_drinks:'sweets_snacks', processed:'sweets_snacks', bakery:'pantry', canned:'pantry', nuts:'pantry', frozen:'pantry', supplements:'meds', first_aid:'meds', household:'cleaning', pets:'cleaning', furniture:'kitchen', tools:'kitchen', accessories:'electronics', stationery:'toys' };
+const normCat = id => CAT_MERGE[id] || id;
 const CAT_BY_ID = Object.fromEntries(CATS.map(c => [c.id, c]));
-const catInfo = id => CAT_BY_ID[id] || CAT_BY_ID.other;
+const catInfo = id => CAT_BY_ID[normCat(id)] || CAT_BY_ID.other;
 const catLabel = id => { const c = catInfo(id); return lang === 'ar' ? c.ar : c.en; };
 const catGroupOf = id => CAT_GROUPS.find(g => g.id === catInfo(id).g) || CAT_GROUPS[5];
 
@@ -1324,13 +1338,13 @@ function buildCatRx(){
 function guessCategory(name, brand){
   if(!_catRx) buildCatRx();
   const txt = ' ' + nz(arDigits((name || '') + ' ' + (brand || ''))) + ' ';
-  for(const c of _catRx){ if(c.rx.some(r => r.test(txt))) return c.id; }
+  for(const c of _catRx){ if(c.rx.some(r => r.test(txt))) return normCat(c.id); }
   return 'other';
 }
 // تصنيف سجل شراء: المخزّن أولاً ثم قاعدة المنتجات ثم التخمين
 function catOf(p){
-  if(p && p.cat && CAT_BY_ID[p.cat]) return p.cat;
-  if(p && p.barcode){ const d = PDB.get(canonId(p.barcode)); if(d && d.cat && CAT_BY_ID[d.cat]) return d.cat; }
+  if(p && p.cat && CAT_BY_ID[p.cat]) return normCat(p.cat);
+  if(p && p.barcode){ const d = PDB.get(canonId(p.barcode)); if(d && d.cat && CAT_BY_ID[d.cat]) return normCat(d.cat); }
   return guessCategory(p && (p.item || p.name), p && p.brand);
 }
 // قسم مخصص (يكتبه المستخدم عند اختيار «أخرى»)
@@ -1343,7 +1357,7 @@ const catKeyInfo = k => String(k).startsWith('c:') ? CAT_BY_ID.other : catInfo(k
 
 function catOptionsHtml(selected){
   return CAT_GROUPS.map(g => '<optgroup label="' + g.ic + ' ' + (lang === 'ar' ? g.ar : g.en) + '">' +
-    CATS.filter(c => c.g === g.id).map(c => '<option value="' + c.id + '"' + (c.id === selected ? ' selected' : '') + '>' + c.ic + ' ' + (lang === 'ar' ? c.ar : c.en) + '</option>').join('') + '</optgroup>').join('');
+    CATS.filter(c => c.g === g.id && !CAT_MERGE[c.id]).map(c => '<option value="' + c.id + '"' + (c.id === selected ? ' selected' : '') + '>' + c.ic + ' ' + (lang === 'ar' ? c.ar : c.en) + '</option>').join('') + '</optgroup>').join('');
 }
 function customCatNames(){
   const s = new Set();
@@ -2310,7 +2324,7 @@ function renderAdvisor(j){
 }
 async function runAiAdvisor(){
   const key = getActiveAiKey(), out = $('aiAdvOut'), btn = $('aiAdvBtn');
-  if(!key){ out.textContent = L('أضف مفتاح Gemini أولاً من القائمة.', 'Add your Gemini key first.'); return; }
+  if(!key && !getGroqKey()){ out.textContent = L('أضف مفتاح Gemini أو Groq أولاً (من شاشة مسح الفاتورة).', 'Add a Gemini or Groq key first.'); return; }
   const mRecs = selMonth === 'all' ? P : P.filter(p => (p.date || '').startsWith(selMonth));
   if(mRecs.length < 3){ out.textContent = L('سجّل 3 مشتريات على الأقل لأحصل على بيانات كافية.', 'Log at least 3 purchases first.'); return; }
   const A = analyze(mRecs), H = healthScore(A), summary = advisorSummary(mRecs, A, H, getBudget());
@@ -2318,9 +2332,10 @@ async function runAiAdvisor(){
   if(_advCache[ck]){ out.innerHTML = _advCache[ck]; return; }
   btn.disabled = true; out.textContent = L('⏳ جاري التحليل العميق...', '⏳ Deep analysis...');
   try{
-    const models = await gemGetModels(key);
     let html = '', lastE = null;
-    for(const model of models.slice(0, 3)){
+    const models = key ? await gemGetModels(key).catch(e => { lastE = e; return []; }) : [];
+    for(const model of models.slice(0, 4)){
+      if(coolLeft('gem:' + key.slice(-6) + ':' + model)) continue;
       for(const useSchema of [true, false]){
         try{
           const gc = { temperature: 0.4, maxOutputTokens: 4096 };
@@ -2330,9 +2345,16 @@ async function runAiAdvisor(){
           const j = await gemGenerate(model, key, body, 70000);
           const data = parseJsonLoose(gemText(j));
           if(data && Array.isArray(data.sections)){ html = renderAdvisor(data); break; }
-        }catch(e){ lastE = e; if(e.fatal || e.status === 'net' || e.status === 'timeout') throw e; if(e.status === 400) continue; break; }
+        }catch(e){ lastE = e; if(e.status === 429) coolMark('gem:' + key.slice(-6) + ':' + model, isDailyLimit(e) ? 3600e3 : 65e3); if(e.fatal || e.status === 'net' || e.status === 'timeout') break; if(e.status === 400) continue; break; }
       }
       if(html) break;
+    }
+    if(!html && getGroqKey()){
+      try{
+        const txt = await groqText(getGroqKey(), ADV_SYS + '\nReturn ONLY JSON: {"headline":string,"health_comment":string|null,"sections":[{"theme":"money|health|habit|opportunity","title":string,"points":[{"text":string,"est_saving":number|null,"priority":"high|medium|low"}]}],"weekly_plan":[string],"watch_out":string|null}', 'بيانات الفترة (JSON):\n' + JSON.stringify(summary), 3500);
+        const data = parseJsonLoose(txt);
+        if(data && Array.isArray(data.sections)){ html = renderAdvisor(data); out.dataset.via = 'groq'; }
+      }catch(e){ lastE = lastE || e; }
     }
     if(!html) throw lastE || new Error('empty');
     _advCache[ck] = html; out.innerHTML = html; sfx('success');
@@ -2765,6 +2787,9 @@ function updateRcptKeyStatusUI(){
   const box = $('rcptApiKeyBox');
   if(box && !k) box.hidden = false;
   if($('rcptApiKeyIn') && document.activeElement !== $('rcptApiKeyIn')) $('rcptApiKeyIn').value = k;
+  if($('rcptKey2In') && document.activeElement !== $('rcptKey2In')) $('rcptKey2In').value = getGemKey2();
+  if($('rcptGroqIn') && document.activeElement !== $('rcptGroqIn')) $('rcptGroqIn').value = getGroqKey();
+  if(btn){ const extra = (getGemKey2() ? 1 : 0) + (getGroqKey() ? 1 : 0); if(k && extra) btn.innerHTML = L('🤖 المحركات: ' + (1 + extra) + ' متصلة ✓', '🤖 Engines: ' + (1 + extra) + ' connected ✓'); else if(!k && extra) { btn.innerHTML = L('🤖 محرك بديل متصل ✓', '🤖 Backup engine ✓'); btn.style.color = 'var(--ok)'; btn.style.borderColor = 'var(--ok)'; } }
 }
 
 // ---------- أخطاء Gemini برسائل واضحة ----------
@@ -2801,7 +2826,7 @@ async function gemListModels(key){
 // وضع القراءة: fast (افتراضي، أسرع) أو accurate (أبطأ وأدق)
 const getGemMode = () => { try{ return localStorage.getItem('gemMode') === 'accurate' ? 'accurate' : 'fast'; }catch(e){ return 'fast'; } };
 function setGemMode(m){ try{ localStorage.setItem('gemMode', m); }catch(e){} paintGemMode(); }
-function paintGemMode(){ const m = getGemMode(); document.querySelectorAll('[data-gm]').forEach(b => b.classList.toggle('on', b.dataset.gm === m)); }
+function paintGemMode(){ try{ paintEngine(); }catch(e){} const m = getGemMode(); document.querySelectorAll('[data-gm]').forEach(b => b.classList.toggle('on', b.dataset.gm === m)); }
 
 function rankGeminiModels(ids, mode){
   const bad = /embedding|tts|image|live|audio|robotics|computer|gemma|learnlm|aqa|imagen|veo|deep-research|customtools|nano|banana/i;
@@ -2934,7 +2959,11 @@ async function gemReadReceipt(base64, key, extraText){
   let models = await gemGetModels(key);
   if(!models.length) models = ['gemini-flash-latest', 'gemini-2.5-flash'];
   let lastErr = null;
-  for(const model of models.slice(0, 3)){
+  const cid = m => 'gem:' + key.slice(-6) + ':' + m;
+  let tried = 0;
+  for(const model of models.slice(0, 5)){
+    if(coolLeft(cid(model))) continue;
+    tried++;
     const th = thinkingFor(model, mode);
     const attempts = [{ schema: true, think: th }, { schema: true, think: null }, { schema: false, think: null }];
     const seen = new Set();
@@ -2962,12 +2991,13 @@ async function gemReadReceipt(base64, key, extraText){
         if(e.status === 'timeout') throw e;             // لا نكرر طلباً بطيئاً
         if(e.status === 400) continue;                  // جرّب نمطاً أبسط لنفس الموديل
         if(e.status === 404){ try{ localStorage.removeItem('gemModelsV3'); }catch(x){} }
-        if(e.status === 429 || (typeof e.status === 'number' && e.status >= 500)) await sleep(1000);
-        break;                                          // انتقل للموديل التالي
+        if(e.status === 429) coolMark(cid(model), isDailyLimit(e) ? 3600e3 : 65e3);
+        else if(typeof e.status === 'number' && e.status >= 500) await sleep(600);
+        break;                                          // انتقل للموديل التالي (حصة كل موديل مستقلة)
       }
     }
   }
-  throw lastErr || gemErr(0, 'unknown');
+  throw lastErr || (tried ? gemErr(0, 'unknown') : gemErr(429, 'cooldown'));
 }
 
 // ---------- تجهيز الصورة وقراءة QR الفاتورة الإلكترونية ----------
@@ -3261,6 +3291,190 @@ function prepareForAi(canvas){
 }
 const rowsNet = rows => +rows.reduce((a, it) => a + (it.isReturn ? -1 : 1) * (+it.price || 0), 0).toFixed(2);
 
+// ================= محركات القراءة البديلة (عند انتهاء حد Gemini) =================
+// تلقائي: Gemini ← (مفتاح Gemini احتياطي) ← Groq ← القراءة على الجهاز (بدون حدود)
+const lsGet = k => { try{ return (localStorage.getItem(k) || '').trim(); }catch(e){ return ''; } };
+const lsSet = (k, v) => { try{ localStorage.setItem(k, v); }catch(e){} };
+const getGroqKey = () => lsGet('groqApiKey');
+const getGemKey2 = () => lsGet('geminiApiKey2');
+const getEngine = () => { const v = lsGet('aiEngine'); return ['auto', 'gemini', 'groq', 'local'].includes(v) ? v : 'auto'; };
+function setEngine(v){ lsSet('aiEngine', v); paintEngine(); }
+function paintEngine(){ const m = getEngine(); document.querySelectorAll('[data-eng]').forEach(b => b.classList.toggle('on', b.dataset.eng === m)); }
+async function saveExtraKeys(groq, gem2){
+  lsSet('groqApiKey', (groq || '').trim()); lsSet('geminiApiKey2', (gem2 || '').trim());
+  if(db){ await db.doc('config/ai').set({ groq: (groq || '').trim(), key2: (gem2 || '').trim() }, { merge: true }).catch(() => {}); }
+  updateRcptKeyStatusUI();
+}
+
+// فترات الانتظار (cooldown) عند 429 حتى لا نعيد الطلب على موديل/مفتاح منتهي
+const _cool = {};
+const coolMark = (id, ms) => { _cool[id] = Date.now() + ms; };
+const coolLeft = id => Math.max(0, (_cool[id] || 0) - Date.now());
+const isDailyLimit = e => /per ?day|daily|PerDay/i.test(String(e && e.message || ''));
+
+// ---------- Groq (متوافق مع OpenAI، رؤية + JSON) ----------
+const GROQ_BASE = 'https://api.groq.com/openai/v1';
+function groqErr(status, msg){
+  const e = new Error(String(msg || ('HTTP ' + status)));
+  e.status = status; e.fatal = false; e.engine = 'groq';
+  if(status === 'net') e.ar = L('تعذر الاتصال بـ Groq.', 'Cannot reach Groq.');
+  else if(status === 'timeout') e.ar = L('استغرقت قراءة Groq وقتاً طويلاً.', 'Groq took too long.');
+  else if(status === 401 || status === 403){ e.fatal = true; e.ar = L('مفتاح Groq غير صحيح.', 'Invalid Groq key.'); }
+  else if(status === 429) e.ar = L('وصلت لحد استخدام Groq. انتظر قليلاً.', 'Groq rate limit reached.');
+  else e.ar = L('رفض Groq الطلب: ', 'Groq rejected: ') + String(msg || '').slice(0, 160);
+  return e;
+}
+async function groqFetch(path, key, body, timeoutMs){
+  const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), timeoutMs || 60000);
+  let r;
+  try{
+    r = await fetch(GROQ_BASE + path, { method: body ? 'POST' : 'GET', headers: Object.assign({ Authorization: 'Bearer ' + key }, body ? { 'Content-Type': 'application/json' } : {}), body: body ? JSON.stringify(body) : undefined, signal: ctl.signal });
+  }catch(e){ throw groqErr(e.name === 'AbortError' ? 'timeout' : 'net', ''); }
+  finally{ clearTimeout(to); }
+  const j = await r.json().catch(() => null);
+  if(!r.ok) throw groqErr(r.status, j && j.error && j.error.message);
+  return j;
+}
+async function groqVisionModels(key){
+  try{
+    const c = JSON.parse(lsGet('groqModelsV1') || 'null');
+    if(c && c.tag === key.slice(-6) && Date.now() - c.t < 12 * 3600e3 && c.ids.length) return c.ids;
+  }catch(e){}
+  const j = await groqFetch('/models', key, null, 15000);
+  const all = (j.data || []).map(m => m.id);
+  const vis = all.filter(id => /llama-4|maverick|scout|vision|qwen.*vl|-vl/i.test(id) && !/guard|whisper|tts/i.test(id));
+  vis.sort((a, b) => (/maverick/.test(b) ? 1 : 0) - (/maverick/.test(a) ? 1 : 0));   // الأكبر أولاً
+  lsSet('groqModelsV1', JSON.stringify({ tag: key.slice(-6), t: Date.now(), ids: vis }));
+  return vis;
+}
+const GROQ_JSON_HINT = `\nReturn ONLY one JSON object, no prose: {"store":string|null,"date":"YYYY-MM-DD"|null,"invoice_total":number|null,"vat_total":number|null,"items":[{"code":string|null,"name":string,"brand":string|null,"count":number,"size_value":number|null,"size_unit":"ml"|"L"|"g"|"kg"|"pc","unit_price":number|null,"discount":number|null,"line_total":number,"is_return":boolean}]}`;
+async function groqReadReceipt(b64, key, extraText){
+  const models = (await groqVisionModels(key)).slice(0, 3);
+  if(!models.length) throw groqErr(404, 'no vision model');
+  let lastErr = null;
+  for(const model of models){
+    if(coolLeft('groq:' + model)) continue;
+    try{
+      const j = await groqFetch('/chat/completions', key, {
+        model, temperature: 0, max_tokens: 6000, response_format: { type: 'json_object' },
+        messages: [
+          { role: 'system', content: RCPT_SYS + GROQ_JSON_HINT },
+          { role: 'user', content: [{ type: 'text', text: extraText || 'Transcribe this receipt into the JSON.' }, { type: 'image_url', image_url: { url: 'data:image/jpeg;base64,' + b64 } }] }
+        ]
+      }, 70000);
+      const data = parseJsonLoose(j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content);
+      if(data && Array.isArray(data.items)) return { data, model: 'Groq · ' + model };
+      lastErr = groqErr(0, 'bad json');
+    }catch(e){
+      lastErr = e;
+      if(e.fatal || e.status === 'net') throw e;
+      if(e.status === 429) coolMark('groq:' + model, isDailyLimit(e) ? 3600e3 : 65e3);
+    }
+  }
+  throw lastErr || groqErr(0, 'unknown');
+}
+async function groqText(key, system, user, maxTokens){
+  const models = (await groqVisionModels(key)).concat(['llama-3.3-70b-versatile']).slice(0, 3);
+  let lastErr = null;
+  for(const model of models){
+    try{
+      const j = await groqFetch('/chat/completions', key, { model, temperature: 0.4, max_tokens: maxTokens || 3500, response_format: { type: 'json_object' }, messages: [{ role: 'system', content: system }, { role: 'user', content: user }] }, 60000);
+      return j.choices[0].message.content;
+    }catch(e){ lastErr = e; if(e.fatal || e.status === 'net') throw e; }
+  }
+  throw lastErr;
+}
+async function testGroqKey(key){
+  const ids = await groqVisionModels(key);
+  if(!ids.length) throw groqErr(404, 'no vision model for this key');
+  return ids[0];
+}
+
+// ---------- القراءة على الجهاز (Tesseract.js) — بدون مفتاح ولا حدود ----------
+function parseOcrText(text){
+  const lines = arDigits(String(text || '')).replace(/[٫]/g, '.').split(/\n+/).map(l => l.replace(/[|_~=«»]+/g, ' ').replace(/\s+/g, ' ').trim()).filter(Boolean);
+  const SKIP = /(اجمالي|إجمالي|المجموع|الضريب|ضريبه|القيمه|المضافه|vat|total|subtotal|نقد|مدى|mada|visa|master|بطاق|الباقي|change|رقم|هاتف|جوال|tel|phone|فاتور|invoice|كاشير|cashier|تاريخ|date|فرع|branch|مبيعات|الرقم|شكرا|thank|الخصم|discount|عدد|الأصناف|الاصناف|المستلم|مستلم|مدفوع)/i;
+  const NUM = /\d{1,5}[.,]\d{2}(?!\d)/g;
+  const items = [];
+  let prevText = '';
+  const nameOf = l => l.replace(NUM, ' ').replace(/\b\d{6,14}\b/g, ' ').replace(/[\d.,xX×*@:]+/g, ' ').replace(/\s+/g, ' ').trim();
+  lines.forEach((l, i) => {
+    const nums = (l.match(NUM) || []).map(n => +n.replace(',', '.'));
+    const lineHasSkip = SKIP.test(nz(l));
+    const nameHere = nameOf(l);
+    if(!nums.length || lineHasSkip){ if(!lineHasSkip && /[؀-ۿa-zA-Z]{3,}/.test(nameHere)) prevText = nameHere; return; }
+    const total = Math.max(...nums);
+    if(!(total > 0)) return;
+    let name = /[؀-ۿa-zA-Z]{3,}/.test(nameHere) ? nameHere : prevText;
+    if(!name || name.length < 3) return;
+    const codeM = (l + (nameHere === name ? '' : ' ' + (lines[i - 1] || ''))).match(/\b\d{8,14}\b/);
+    let count = 1, unit = nums.length > 1 ? Math.min(...nums.filter(n => n > 0)) : 0;
+    const qm = l.match(/(?:^|\s)(\d{1,2})\s*[xX×*]|[xX×*]\s*(\d{1,2})(?:\s|$)/);
+    if(qm) count = +(qm[1] || qm[2]) || 1;
+    else if(unit > 0 && total / unit >= 1.9 && Math.abs(total / unit - Math.round(total / unit)) < 0.02) count = Math.round(total / unit);
+    items.push({ code: codeM ? codeM[0] : null, name, brand: null, count, size_value: null, size_unit: 'pc', unit_price: unit || null, line_total: total, is_return: /مرتجع|استرجاع|refund|return/i.test(l) });
+    prevText = '';
+  });
+  const dm = lines.join(' ').match(/(20\d{2})[-\/.](\d{1,2})[-\/.](\d{1,2})|(\d{1,2})[-\/.](\d{1,2})[-\/.](20\d{2})/);
+  let date = null;
+  if(dm) date = dm[1] ? `${dm[1]}-${String(dm[2]).padStart(2, '0')}-${String(dm[3]).padStart(2, '0')}` : `${dm[6]}-${String(dm[5]).padStart(2, '0')}-${String(dm[4]).padStart(2, '0')}`;
+  const tl = lines.find(l => /(اجمالي|إجمالي|المبلغ المستحق|total|grand)/i.test(nz(l)) && NUM.test(l));
+  NUM.lastIndex = 0;
+  let invoice_total = null;
+  if(tl){ const n = (tl.match(NUM) || []).map(x => +x.replace(',', '.')); if(n.length) invoice_total = Math.max(...n); }
+  const store = (lines.find(l => /[؀-ۿa-zA-Z]{3,}/.test(l) && !SKIP.test(nz(l))) || '').slice(0, 40) || null;
+  return { store, date, invoice_total, items };
+}
+async function localOcrReadReceipt(canvas){
+  await loadScriptOnce('https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js');
+  const c = document.createElement('canvas');
+  const s = Math.min(2, 2200 / Math.max(canvas.width, canvas.height));
+  c.width = Math.round(canvas.width * s); c.height = Math.round(canvas.height * s);
+  const x = c.getContext('2d');
+  try{ x.filter = 'grayscale(1) contrast(1.5) brightness(1.05)'; }catch(e){}
+  x.drawImage(canvas, 0, 0, c.width, c.height);
+  const res = await Tesseract.recognize(c, 'ara+eng', { logger: m => {
+    if(m && m.status === 'recognizing text') setRcptProgress(35 + Math.round((m.progress || 0) * 35), L('🔤 قراءة النص على جهازك...', '🔤 On-device OCR...'), L('بدون إنترنت للحدود — أول مرة تحمّل ملف اللغة العربية', 'No quota — first run downloads Arabic data'));
+  } });
+  const data = parseOcrText(res.data && res.data.text);
+  if(!data.items.length){ const e = new Error('ocr empty'); e.ar = L('لم تُستخرج أصناف بالقراءة على الجهاز. جرّب Gemini/Groq أو أضف يدوياً.', 'On-device OCR found no items.'); throw e; }
+  return { data, model: L('على الجهاز (OCR) — تقريبي، راجع كل صنف', 'On-device OCR — approximate, review each row') };
+}
+
+// ---------- مدير المحركات ----------
+// opts.only: حصر المحاولة في محرك واحد (مثلاً مرحلة التصحيح)
+async function readReceiptSmart(b64, canvas, extraText, opts){
+  opts = opts || {};
+  const eng = getEngine();
+  const order = opts.only ? [opts.only] : (eng === 'auto' ? ['gemini', 'gemini2', 'groq', 'local'] : (eng === 'gemini' ? ['gemini', 'gemini2'] : [eng]));
+  let lastErr = null; const skipped = [];
+  for(const id of order){
+    try{
+      let r;
+      if(id === 'gemini' || id === 'gemini2'){
+        const key = id === 'gemini' ? getActiveAiKey() : getGemKey2();
+        if(!key){ if(id === 'gemini' && eng !== 'auto') throw gemErr(401, 'no key'); continue; }
+        r = await gemReadReceipt(b64, key, extraText); r.model = 'Gemini · ' + r.model + (id === 'gemini2' ? ' (مفتاح 2)' : '');
+      }else if(id === 'groq'){
+        const key = getGroqKey();
+        if(!key){ if(eng === 'groq') throw groqErr(401, 'no key'); continue; }
+        r = await groqReadReceipt(b64, key, extraText);
+      }else{
+        if(extraText) continue;
+        r = await localOcrReadReceipt(canvas);
+      }
+      r.engine = id === 'gemini2' ? 'gemini2' : id;
+      if(skipped.length) r.fellBack = skipped;
+      return r;
+    }catch(e){
+      lastErr = e; skipped.push(id === 'gemini2' ? 'Gemini 2' : id === 'gemini' ? 'Gemini' : id === 'groq' ? 'Groq' : 'OCR');
+      if(order.length === 1 || opts.only) throw e;
+      // في الوضع التلقائي ننتقل للمحرك التالي مهما كان السبب (حد استخدام، مفتاح، شبكة)
+    }
+  }
+  throw lastErr || new Error('no engine');
+}
+
 async function processReceiptCanvas(canvas){
   const t0 = Date.now();
   lastReceiptCanvas = canvas;
@@ -3282,9 +3496,10 @@ async function processReceiptCanvas(canvas){
   const qrPromise = detectReceiptQr(canvas).then(parseZatca).catch(() => null);
 
   const key = getActiveAiKey();
-  if(!key){
+  const engSel = getEngine();
+  if((engSel === 'gemini' && !key) || (engSel === 'groq' && !getGroqKey())){
     $('rcptProgBox').hidden = true;
-    $('rcptErrMsg').textContent = L('⚠️ أضف مفتاح Gemini أولاً لقراءة الأصناف (الزر أعلى الصفحة).', '⚠️ Add your Gemini key first.');
+    $('rcptErrMsg').textContent = L('⚠️ أضف مفتاح المحرك المختار أولاً (الزر أعلى الصفحة) أو اختر «تلقائي».', '⚠️ Add the key for the selected engine, or choose Auto.');
     $('rcptErrMsg').hidden = false;
     $('rcptApiKeyBox').hidden = false;
     const qr0 = await qrPromise;
@@ -3298,8 +3513,9 @@ async function processReceiptCanvas(canvas){
   try{
     const b64 = prepareForAi(canvas).split(',')[1];
     const accurate = getGemMode() === 'accurate';
-    setRcptProgress(35, L('🤖 جاري قراءة الأصناف بـ Gemini...', '🤖 Reading items with Gemini...'), accurate ? L('الوضع الدقيق: قد يستغرق حتى دقيقة', 'Accurate mode: may take up to a minute') : L('الوضع السريع: عادةً أقل من 15 ثانية', 'Fast mode: usually under 15s'));
-    let { data, model } = await gemReadReceipt(b64, key);
+    const engTxt = engSel === 'local' ? L('🔤 قراءة النص على جهازك...', '🔤 On-device OCR...') : engSel === 'groq' ? L('🤖 جاري القراءة بـ Groq...', '🤖 Reading with Groq...') : L('🤖 جاري قراءة الأصناف بـ Gemini...', '🤖 Reading items with Gemini...');
+    setRcptProgress(35, engTxt, engSel === 'auto' ? L('تلقائي: لو انتهى حد Gemini ينتقل لمحرك بديل', 'Auto: falls back if Gemini hits its limit') : (accurate ? L('الوضع الدقيق: قد يستغرق حتى دقيقة', 'Accurate mode: up to a minute') : L('الوضع السريع: عادةً أقل من 15 ثانية', 'Fast mode: usually under 15s')));
+    let { data, model, engine, fellBack } = await readReceiptSmart(b64, canvas);
     rcptMeta.model = model;
     const qr = await qrPromise;
     if(qr){ rcptMeta.qr = qr; rcptMeta.invoiceTotal = qr.total; }
@@ -3315,7 +3531,7 @@ async function processReceiptCanvas(canvas){
       try{
         const prevJson = JSON.stringify({ store: data.store, date: data.date, invoice_total: T, items: data.items });
         const msg = `Your previous transcription is below. The receipt's printed grand total is ${T} but the sum of your line_total values (returns subtracted) is ${rowsNet(rows)} — a difference of ${+(rowsNet(rows) - T).toFixed(2)}. Look at the receipt again and fix ONLY real mistakes: a missed item, a duplicated item, a misread price or count, a discount not applied, or a line that is not a product. Return the full corrected JSON.\nPREVIOUS:\n${prevJson}`;
-        const r2 = await gemReadReceipt(b64, key, msg);
+        const r2 = await readReceiptSmart(b64, canvas, msg, { only: engine });
         const rows2 = (r2.data.items || []).filter(it => it.name).map(buildReceiptRow);
         if(rows2.length && Math.abs(rowsNet(rows2) - T) < Math.abs(rowsNet(rows) - T)){ rows = rows2; data = r2.data; rcptMeta.repaired = true; }
       }catch(e){ /* نكتفي بالنتيجة الأولى */ }
@@ -3324,6 +3540,8 @@ async function processReceiptCanvas(canvas){
     applyReceiptHeader(data);
     if(!rcptItems.length) rcptMeta.notes.push(L('لم يتعرّف Gemini على أصناف في الصورة. أعد التصوير أو أضف البنود يدوياً.', 'No items detected. Retake the photo or add rows manually.'));
     rcptMeta.sec = Math.round((Date.now() - t0) / 1000);
+    if(engine === 'local') rcptMeta.notes.unshift(L('⚠️ القراءة على الجهاز تقريبية (أسماء وأسعار قد تحتاج تصحيحاً). الإجمالي من QR الفاتورة أدق — راجع كل صنف قبل الحفظ.', '⚠️ On-device OCR is approximate — review every row.'));
+    if(fellBack && fellBack.length) rcptMeta.notes.unshift(L('↪️ تعذّر ' + fellBack.join(' ثم ') + ' (حد الاستخدام/خطأ) فتم التحويل تلقائياً إلى: ' + model, '↪️ Fell back automatically to: ' + model));
     if(rcptMeta.repaired) rcptMeta.notes.unshift(L('✓ طابقت المراجعة الثانية الإجمالي بشكل أفضل فتم اعتمادها تلقائياً.', '✓ A second pass matched the total better and was applied.'));
     $('rcptProgBox').hidden = true;
     $('rcptResultBox').hidden = false;
@@ -3332,7 +3550,7 @@ async function processReceiptCanvas(canvas){
     showToast(L(`تم استخراج ${rcptItems.length} أصناف في ${rcptMeta.sec} ث — راجعها قبل الحفظ ✨`, `Extracted ${rcptItems.length} items in ${rcptMeta.sec}s — review before saving ✨`));
   }catch(err){
     $('rcptProgBox').hidden = true;
-    $('rcptErrMsg').textContent = '⚠️ ' + (err.ar || err.message || L('تعذرت القراءة', 'Reading failed'));
+    $('rcptErrMsg').textContent = '⚠️ ' + (err.ar || err.message || L('تعذرت القراءة', 'Reading failed')) + (err.status === 429 || err.engine ? L(' — غيّر «المحرك» إلى تلقائي أو Groq أو «على الجهاز» ثم اضغط إعادة قراءة.', ' — switch Engine to Auto/Groq/On-device and retry.') : '');
     $('rcptErrMsg').hidden = false;
     if(err.fatal) $('rcptApiKeyBox').hidden = false;
     const qr1 = await qrPromise;
@@ -3485,25 +3703,32 @@ $('rcptKeyBtn').onclick = () => {
   if(!box.hidden) $('rcptApiKeyIn').focus();
 };
 $('rcptSaveKeyBtn').onclick = async () => {
-  const k = $('rcptApiKeyIn').value.trim();
+  const k = $('rcptApiKeyIn').value.trim(), k2 = $('rcptKey2In').value.trim(), gq = $('rcptGroqIn').value.trim();
   const msg = $('rcptKeyMsg');
-  if(!k){ await saveActiveAiKey(''); msg.textContent = L('تم مسح المفتاح.', 'Key cleared.'); return; }
   $('rcptSaveKeyBtn').disabled = true;
   msg.style.color = 'var(--mu)';
-  msg.textContent = L('⏳ جاري اختبار المفتاح...', '⏳ Testing key...');
+  msg.textContent = L('⏳ جاري اختبار المفاتيح...', '⏳ Testing keys...');
+  const out = [];
   try{
-    const model = await testGeminiKey(k);
-    await saveActiveAiKey(k);
-    msg.style.color = 'var(--ok)';
-    msg.textContent = L(`✓ المفتاح يعمل. الموديل المستخدم: ${model}. تم الحفظ والمزامنة على كل أجهزتك.`, `✓ Key works. Model: ${model}. Saved & synced.`);
+    if(k !== getActiveAiKey()){
+      if(!k){ await saveActiveAiKey(''); out.push(L('تم مسح مفتاح Gemini.', 'Gemini key cleared.')); }
+      else{ const m = await testGeminiKey(k); await saveActiveAiKey(k); out.push('✓ Gemini: ' + m); }
+    }
+    let k2ok = k2, gqok = gq;
+    if(k2 && k2 !== getGemKey2()){ try{ const m = await testGeminiKey(k2); out.push('✓ Gemini 2: ' + m); }catch(e){ k2ok = getGemKey2(); out.push('✕ Gemini 2: ' + (e.ar || e.message)); } }
+    if(gq && gq !== getGroqKey()){ try{ const m = await testGroqKey(gq); out.push('✓ Groq: ' + m); }catch(e){ gqok = getGroqKey(); out.push('✕ Groq: ' + (e.ar || e.message)); } }
+    await saveExtraKeys(gqok, k2ok);
+    msg.style.color = out.some(x => x.startsWith('✕')) ? 'var(--err-c)' : 'var(--ok)';
+    msg.textContent = out.length ? out.join(' · ') : L('✓ محفوظ.', '✓ Saved.');
     sfx('success');
-    if(lastReceiptCanvas) processReceiptCanvas(lastReceiptCanvas);
+    if(lastReceiptCanvas && !$('rcptErrMsg').hidden) processReceiptCanvas(lastReceiptCanvas);
   }catch(e){
     msg.style.color = 'var(--err-c)';
     msg.textContent = '✕ ' + (e.ar || e.message);
     sfx('delete');
   }finally{ $('rcptSaveKeyBtn').disabled = false; }
 };
+document.addEventListener('click', e => { const g = e.target.closest('[data-eng]'); if(g){ sfx('tap'); setEngine(g.dataset.eng); } });
 document.addEventListener('click', e => { const g = e.target.closest('[data-gm]'); if(g){ sfx('tap'); setGemMode(g.dataset.gm); } });
 $('rcptRetryBtn').onclick = () => { if(lastReceiptCanvas){ sfx('tap'); processReceiptCanvas(lastReceiptCanvas); } };
 $('rcptCamBtn').onclick = async () => {
@@ -3755,7 +3980,7 @@ async function processScannedCode(code){
       if(info.brand && (k || !$('fBrand').value.trim())) $('fBrand').value = info.brand;
       if(info.qty && (k || !$('fQty').value)) $('fQty').value = info.qty;
       if(info.unit) $('fUnit').value = info.unit;
-      if(info.cat){ $('fCat').value = info.cat; $('fCatC').value = info.catCustom || ''; toggleCustomCat('fCat', 'fCatC'); }
+      if(info.cat){ $('fCat').value = normCat(info.cat); $('fCatC').value = info.catCustom || ''; toggleCustomCat('fCat', 'fCatC'); }
       if(info.store && !$('fStore').value.trim()) $('fStore').value = info.store;
       if(info.price > 0) $('fUnitPrice').placeholder = num(info.price) + ' ' + curSym();
       formNutri = info.nutri || null;
@@ -3929,7 +4154,7 @@ function openProductForm(p, opts = {}){
   $('pfCode').disabled = !!pfEditId && !!(p && p.barcode);
   $('pfName').value = p ? (p.name || '') : '';
   $('pfBrand').value = p ? (p.brand || '') : '';
-  $('pfCat').value = p && p.cat && CAT_BY_ID[p.cat] ? p.cat : (p && p.name ? guessCategory(p.name, p.brand) : 'other');
+  $('pfCat').value = p && p.cat && CAT_BY_ID[p.cat] ? normCat(p.cat) : (p && p.name ? guessCategory(p.name, p.brand) : 'other');
   $('pfCatC').value = (p && p.catCustom) || ''; toggleCustomCat('pfCat', 'pfCatC');
   $('pfQty').value = p && p.qty ? p.qty : '';
   $('pfUnit').value = p && p.unit ? p.unit : 'g';
@@ -3952,7 +4177,7 @@ async function pfLookupFill(code){
     if(info.brand && !$('pfBrand').value.trim()) $('pfBrand').value = info.brand;
     if(info.qty && !$('pfQty').value) $('pfQty').value = info.qty;
     if(info.unit) $('pfUnit').value = info.unit;
-    $('pfCat').value = info.cat && CAT_BY_ID[info.cat] ? info.cat : guessCategory(info.name, info.brand);
+    $('pfCat').value = info.cat && CAT_BY_ID[info.cat] ? normCat(info.cat) : guessCategory(info.name, info.brand);
     toggleCustomCat('pfCat', 'pfCatC');
     if(info.nutri){ pfNutri = info.nutri; $('pfNutri').textContent = '🥗 Nutri-Score ' + (info.nutri.ns || '').toUpperCase(); }
     showToast(L('🎯 تم جلب بيانات المنتج', '🎯 Product data found'));
@@ -4053,8 +4278,8 @@ function normUnit(u){
 function catFromText(t){
   const n = nz(t).trim();
   if(!n) return '';
-  const c = CATS.find(c => c.id === n || nz(c.ar) === n || nz(c.en) === n || (n.length > 2 && (nz(c.ar).includes(n) || nz(c.en).includes(n))));
-  return c ? c.id : '';
+  const c0 = CATS.find(c => c.id === n || nz(c.ar) === n || nz(c.en) === n || (n.length > 2 && (nz(c.ar).includes(n) || nz(c.en).includes(n))));
+  return c0 ? normCat(c0.id) : '';
 }
 function rowToProduct(r){
   const g = k => imMap[k] !== undefined && imMap[k] !== '' ? String(r[imMap[k]] == null ? '' : r[imMap[k]]).trim() : '';
@@ -4349,7 +4574,7 @@ function autofillFromDb(){
   if(!$('fQty').value && pd.qty) $('fQty').value = pd.qty;
   if(pd.unit) $('fUnit').value = pd.unit;
   if(!$('fBarcode').value) $('fBarcode').value = pd.barcode || '';
-  $('fCat').value = pd.cat || 'other'; $('fCatC').value = pd.catCustom || ''; toggleCustomCat('fCat', 'fCatC');
+  $('fCat').value = normCat(pd.cat || 'other'); $('fCatC').value = pd.catCustom || ''; toggleCustomCat('fCat', 'fCatC');
   formNutri = pd.nutri || null;
   if(pd.price > 0) $('fUnitPrice').placeholder = num(pd.price) + ' ' + curSym();
   if(typeof updateLiveCalc === 'function') updateLiveCalc('init');
@@ -4365,7 +4590,7 @@ $('fBarcode').onchange=()=>{
   if(cat && cat.matchType === 'code'){
     $('fItem').value = cat.item;
     autofill(false);
-    if(cat.cat){ $('fCat').value = cat.cat; $('fCatC').value = cat.catCustom || ''; toggleCustomCat('fCat','fCatC'); }
+    if(cat.cat){ $('fCat').value = normCat(cat.cat); $('fCatC').value = cat.catCustom || ''; toggleCustomCat('fCat','fCatC'); }
     const kp = findKnownProduct(code); formNutri = kp && kp.nutri || null;
     sfx('select');
     showToast(`🎯 تم التعرف على «${cat.item}» من رقم الصنف!`);
@@ -4923,9 +5148,11 @@ function enter(){
   unsub3=db.doc('config/barcodes').onSnapshot(s=>{if(s.exists)Object.assign(BARCODES, s.data()||{})},()=>{});
   startProductsListener();
   unsub4=db.doc('config/ai').onSnapshot(s=>{
-    if(s.exists && s.data().key){
-      AI_KEY = s.data().key.trim();
-      try{ localStorage.setItem('geminiApiKey', AI_KEY); }catch(e){}
+    if(s.exists){
+      const d0 = s.data() || {};
+      if(d0.key){ AI_KEY = d0.key.trim(); try{ localStorage.setItem('geminiApiKey', AI_KEY); }catch(e){} }
+      if(d0.groq !== undefined) lsSet('groqApiKey', String(d0.groq || '').trim());
+      if(d0.key2 !== undefined) lsSet('geminiApiKey2', String(d0.key2 || '').trim());
       updateRcptKeyStatusUI();
     }
   },()=>{});
