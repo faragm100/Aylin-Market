@@ -833,6 +833,7 @@ label { display: block; font-size: 12.5px; font-weight: 600; color: var(--mu); m
     <button class="back-btn" id="rcptKeyBtn" type="button" style="font-size:11.5px;padding:6px 10px"></button>
   </div>
   <p class="sub" style="margin-top:0">صوّر الفاتورة مسطّحة وبإضاءة جيدة. يقرأ Gemini كل صنف، ثم يتحقق التطبيق من الحسابات والأكواد ويربطها بقاعدة المنتجات:</p>
+  <button class="back-btn" id="rcptFixBtn" type="button" style="font-size:11.5px;padding:6px 10px;margin-bottom:4px">🧠 التصحيحات المتعلّمة (<span id="fixCnt">0</span>)</button>
 
   <div id="rcptApiKeyBox" class="ins-card" style="margin-top:8px;border-color:var(--gold)" hidden>
     <div style="font-weight:700;font-size:13.5px;margin-bottom:4px">🤖 مفتاح Gemini API</div>
@@ -1150,6 +1151,7 @@ label { display: block; font-size: 12.5px; font-weight: 600; color: var(--mu); m
 </div>
 <button class="btn g" id="muCntry" type="button">🌍 تغيير الدولة والعملة</button>
 <button class="btn g" id="muBudget" type="button">🎯 تحديد الميزانية الشهرية المستهدفة</button>
+<button class="btn g" id="muMsp" type="button"></button>
 <button class="btn g" id="muAiKey" type="button">🤖 إعداد مفتاح الذكاء الاصطناعي للفواتير (Gemini API)</button>
 <button class="btn g" id="muDb" type="button">🗄️ قاعدة المنتجات (<span id="dbCount">0</span>) — استيراد ومسح</button>
 <button class="btn g" id="muTrash" type="button">🗑️ سلة المهملات (<span id="trashBadge">0</span>)</button>
@@ -1165,6 +1167,27 @@ label { display: block; font-size: 12.5px; font-weight: 600; color: var(--mu); m
 <p class="sub" id="muMsg" style="margin-top:8px;text-align:center"></p>
 <button class="btn g danger" id="muOut" type="button">تسجيل خروج</button>
 <button class="btn" id="muX" type="button" style="margin-top:14px">إغلاق</button></div></div>
+
+<!-- ملخص المشوار بعد حفظ الفاتورة -->
+<div class="sheet" id="tripSh" style="z-index:39"><div class="wrap">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+    <h1 style="margin:4px 0 2px">🧾 ملخص المشوار</h1>
+    <button class="back-btn" id="tripX" type="button" style="padding:6px 10px;font-size:12px">✕</button>
+  </div>
+  <div id="tripBody"></div>
+  <button class="btn" id="tripDone" type="button" style="margin-top:10px">تم ✓</button>
+</div></div>
+
+<!-- تصحيحات أسماء الفواتير المتعلّمة -->
+<div class="sheet" id="fixSh" style="z-index:40"><div class="wrap">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+    <h1 style="margin:4px 0 2px">🧠 تصحيحات الفواتير المتعلّمة</h1>
+    <button class="back-btn" id="fixX" type="button" style="padding:6px 10px;font-size:12px">✕</button>
+  </div>
+  <p class="sub" id="fixIntro"></p>
+  <div id="fixList"></div>
+  <button class="btn g" id="fixClose" type="button" style="margin-top:10px">إغلاق</button>
+</div></div>
 
 <!-- نافذة عرض مشتريات التحليل (Drill-Down) -->
 <div class="sheet" id="drillSh" style="z-index:38"><div class="wrap">
@@ -1820,6 +1843,12 @@ $('toastUndo').onclick = async () => {
 
 let pinned = new Set(JSON.parse(localStorage.getItem('pinnedItems')||'[]'));
 let cart = new Set(JSON.parse(localStorage.getItem('cartItems')||'[]'));
+let restockSnooze = {};
+let ocrFixes = {};
+let showMemberSplit = false;
+try{ restockSnooze = JSON.parse(localStorage.getItem('restockSnoozeV1')||'{}') || {}; }catch(e){}
+try{ ocrFixes = JSON.parse(localStorage.getItem('ocrFixesV1')||'{}') || {}; }catch(e){}
+try{ showMemberSplit = localStorage.getItem('aylinMemberSplitV1') === '1'; }catch(e){}
 let selected = new Set();
 let activeFilter = 'all';
 let sortBy = 'date';
@@ -1828,6 +1857,8 @@ function saveMeta(syncRemote = true){
   try{
     localStorage.setItem('pinnedItems', JSON.stringify([...pinned]));
     localStorage.setItem('cartItems', JSON.stringify([...cart]));
+    localStorage.setItem('restockSnoozeV1', JSON.stringify(restockSnooze));
+    localStorage.setItem('ocrFixesV1', JSON.stringify(ocrFixes));
   }catch(e){}
   if(syncRemote && db && auth.currentUser){
     const budgets = {};
@@ -1838,6 +1869,8 @@ function saveMeta(syncRemote = true){
     db.doc('config/meta').set({
       pinned: [...pinned],
       cart: [...cart],
+      restockSnooze,
+      ocrFixes,
       budgets,
       updated: Date.now(),
       by: who()
@@ -2272,7 +2305,7 @@ function itemView(rows){
             ${cnt>1?`<span class="cnt-badge">${cnt} ${esc(t('unitPack'))}</span>`:''}
             ${isBest?`<span class="tag">${esc(t('cheapest'))}</span>`:''}
           </div>
-          <div class="sub">${cnt>1?(cnt+' × '):''}${num(p.qty)} ${uLabel(p.unit)} · ${fd(p.date)}${p.store?' · 📍 '+esc(p.store):''}</div>
+          <div class="sub">${cnt>1?(cnt+' × '):''}${num(p.qty)} ${uLabel(p.unit)} · ${fd(p.date)}${p.store?' · 📍 '+esc(p.store):''}${p.by?' · 👤 '+esc(p.by):''}</div>
           ${p.barcode?`<div style="margin-top:2px"><span class="code-pill"># ${esc(p.barcode)}</span></div>`:''}
           ${cnt>1?`<div class="sub" style="color:var(--ink);font-weight:600">${L('سعر الوحدة:','Unit Price:')} ${num(pUnitPrice(p))} ${esc(sym)}</div>`:''}
           ${p.note?`<div class="sub" style="color:var(--ac)">📝 ${esc(p.note)}</div>`:''}
@@ -2341,7 +2374,8 @@ function restockList(){
     const left = Math.round(expectedDays - since);
     if(left <= 3) res.push({ item: k, left, iv: Math.round(expectedDays), since });
   }
-  return res.sort((a, b) => a.left - b.left).slice(0, 6);
+  const visible = res.filter(r => { const until = restockSnooze[normItemKey(r.item)]; return !(until && until >= t0); });
+  return visible.sort((a, b) => a.left - b.left).slice(0, 6);
 }
 
 function priceRises(){
@@ -2786,7 +2820,7 @@ function analyticsExtraHtml(mRecs, totalSpend, budget){
 
   // أصناف قربت تخلص (كل صف يوديك لصفحة تفاصيل الصنف)
   const rs = restockList();
-  const rsHtml = rs.length ? `<h2>${esc(L('🔔 أصناف قربت تخلص عندك', '🔔 Probably running low'))}</h2><div class="ins-card">${rs.map(r => `<div class="bar-row drill-go" data-item="${esc(r.item)}"><div class="bar-top"><span>${esc(r.item)}</span><span style="color:${r.left <= 0 ? 'var(--err-c)' : 'var(--hit)'}">${r.left <= 0 ? esc(L('فات ميعادها بـ ' + Math.abs(r.left) + ' يوم', 'overdue ' + Math.abs(r.left) + 'd')) : esc(L('متوقع بعد ' + r.left + ' يوم', 'in ' + r.left + 'd'))} ‹</span></div><div class="sub">${esc(L('بتشتريه كل ~' + r.iv + ' يوم · آخر مرة من ' + r.since + ' يوم', 'Every ~' + r.iv + 'd · last ' + r.since + 'd ago'))}</div></div>`).join('')}</div>` : '';
+  const rsHtml = rs.length ? `<h2>${esc(L('🔔 أصناف قربت تخلص عندك', '🔔 Probably running low'))}</h2><div class="ins-card">${rs.map(r => `<div class="bar-row drill-go" data-item="${esc(r.item)}"><div class="bar-top"><span>${esc(r.item)}</span><span style="color:${r.left <= 0 ? 'var(--err-c)' : 'var(--hit)'}">${r.left <= 0 ? esc(L('فات ميعادها بـ ' + Math.abs(r.left) + ' يوم', 'overdue ' + Math.abs(r.left) + 'd')) : esc(L('متوقع بعد ' + r.left + ' يوم', 'in ' + r.left + 'd'))} ‹</span></div><div class="sub">${esc(L('بتشتريه كل ~' + r.iv + ' يوم · آخر مرة من ' + r.since + ' يوم', 'Every ~' + r.iv + 'd · last ' + r.since + 'd ago'))}</div><div style="display:flex;gap:6px;margin-top:6px"><button class="back-btn" data-rsadd="${esc(r.item)}" type="button" style="background:var(--ac);color:#fff;border:0;padding:5px 10px;font-size:12px">🛒 ${esc(L('ضيفه للقايمة', 'Add to list'))}</button><button class="back-btn" data-rssnooze="${esc(r.item)}" data-iv="${r.iv}" type="button" style="padding:5px 10px;font-size:12px">✋ ${esc(L('لسه موجود', 'Still have it'))}</button></div></div>`).join('')}</div>` : '';
 
   // تقرير المستشار الذكي (Gemini) المحفوظ دائماً بدون استهلاك API
   const savedRep = SAVED_REPORTS[repKey()];
@@ -3072,6 +3106,8 @@ function insightsView(){
       }).join('') : `<div class="sub" style="text-align:center;padding:12px">—</div>`}
     </div>
 
+    ${memberSplitHtml(mRecs, totalSpend, sym)}
+
     <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin:16px 0 10px;flex-wrap:wrap">
       <h2 style="margin:0">${esc(t('monthlyLog'))} (${mRecs.length})</h2>
       <div style="display:flex;gap:5px;flex-wrap:wrap">
@@ -3088,7 +3124,7 @@ function insightsView(){
           ${thumb(p, p.item, true)}
           <div style="min-width:0">
             <div class="item-title"><span>${esc(p.item)}</span>${cnt>1?`<span class="cnt-badge">×${cnt}</span>`:''}</div>
-            <div class="sub">${esc(p.brand||t('noBrand'))} · ${cnt>1?(cnt+'×'):''}${num(p.qty)} ${uLabel(p.unit)}${p.store?' · 📍 '+esc(p.store):''}${p.date && p.date !== d ? ' · 🗓️ ' + fd(p.date) : ''}</div>
+            <div class="sub">${esc(p.brand||t('noBrand'))} · ${cnt>1?(cnt+'×'):''}${num(p.qty)} ${uLabel(p.unit)}${p.store?' · 📍 '+esc(p.store):''}${p.date && p.date !== d ? ' · 🗓️ ' + fd(p.date) : ''}${p.by?' · 👤 '+esc(p.by):''}</div>
             <div class="sub">${catKeyInfo(catKeyOf(p)).ic === '📦' && catCustomOf(p) ? '🏷️' : catInfo(catOf(p)).ic} ${esc(catCustomOf(p) || catLabel(catOf(p)))}${p.barcode?` · <span class="code-pill"># ${esc(p.barcode)}</span>`:''}</div>
           </div>
           <div class="pr">${num(p.price)} <small style="font-size:11px">${esc(sym)}</small>${cnt>1?`<div class="sub">${num(pUnitPrice(p))}/${esc(t('unitPack'))}</div>`:''}</div>
@@ -3101,6 +3137,24 @@ function insightsView(){
       </details>`;
     }).join('')}
   </div>`;
+}
+
+// 👥 ملخص مصروف كل فرد (اختياري من القائمة)
+function memberSplitHtml(mRecs, totalSpend, sym){
+  if(!showMemberSplit) return '';
+  const byMap = new Map();
+  let noBy = 0;
+  for(const p of mRecs){
+    const b = String(p.by || '').trim();
+    if(!b){ noBy++; continue; }
+    byMap.set(b, (byMap.get(b) || 0) + (+p.price || 0));
+  }
+  if(byMap.size < 2) return '';
+  const rows = [...byMap.entries()].sort((a, b) => b[1] - a[1]);
+  return `<h2>${esc(L('👥 مصروف مسجل باسم كل فرد في البيت', '👥 Spend recorded by each member'))}</h2><div class="ins-card"><div class="sub" style="margin-bottom:8px">ℹ️ ${esc(L('حسب اللي سجّل الشراء في التطبيق، مش بالضرورة اللي دفع أو استهلك.', 'Based on who logged the purchase in the app, not necessarily who paid or consumed it.'))}</div>${rows.map(([b, amt]) => {
+    const share = totalSpend > 0 ? Math.round((amt / totalSpend) * 100) : 0;
+    return `<div class="bar-row"><div class="bar-top"><span>👤 ${esc(b)}</span><span>${num(amt)} ${esc(sym)} (${share}%)</span></div><div class="prog-track" style="height:7px;margin:4px 0 0"><div class="prog-fill" style="width:${Math.max(4, share)}%;background:var(--ac2)"></div></div></div>`;
+  }).join('')}${noBy ? `<div class="sub" style="margin-top:6px">ℹ️ ${esc(L(noBy + ' سجل بدون اسم مسجّل (قبل الإضافة دي) مش ظاهر هنا.', noBy + ' record(s) without a recorder name (from before this feature) are not shown.'))}</div>` : ''}</div>`;
 }
 
 // ========= الشاشة 3: قائمة التسوق والنواقص =========
@@ -3727,6 +3781,7 @@ function buildReceiptRow(raw){
   const hasExplicitSize = hasSizeFromAi || sz.unit !== 'pc' || sz.qty !== 1;
   const item = known ? known.item : (sz.cleanName || nameIn || '');
   const row = {
+    rawItem: nameIn,
     checked: !raw.is_return,
     isReturn: !!raw.is_return,
     code: code || (known ? known.code : ''),
@@ -3743,6 +3798,52 @@ function buildReceiptRow(raw){
   };
   if(raw.is_return) flags.push({ lvl: 'info', txt: L('↩️ مرتجع — غير محسوب في المشتريات', '↩️ Return — not counted') });
   return row;
+}
+
+// ========= تعلّم تصحيحات أسماء الفواتير لكل متجر =========
+function ocrFixStoreKey(){
+  const v = $('rStore') ? String($('rStore').value || '') : '';
+  return normItemKey(canonStore(v) || '') || '*';
+}
+function applyOcrFixes(){
+  try{
+    const sk = ocrFixStoreKey();
+    const entry = ocrFixes[sk];
+    const map = entry && entry.map;
+    if(!map) return;
+    let applied = 0;
+    for(const row of rcptItems){
+      if(!row || !row.rawItem) continue;
+      const fix = map[normItemKey(row.rawItem)];
+      if(fix && fix.to && normItemKey(row.item) !== normItemKey(fix.to)){
+        row.item = fix.to;
+        row.fixApplied = true;
+        row.flags = (row.flags || []).filter(f => !f.autoFix);
+        row.flags.push({ lvl: 'info', autoFix: true, txt: L('🧠 صُحّح الاسم تلقائياً من تصحيحاتك السابقة لهذا المتجر', '🧠 Name auto-corrected from your saved fixes for this store') });
+        applied++;
+      }
+    }
+    if(applied) rcptMeta.notes.push(L(`🧠 طُبّقت ${applied} تصحيحات محفوظة لهذا المتجر — راجعها كالعادة.`, `🧠 Applied ${applied} saved fix(es) for this store - review as usual.`));
+  }catch(e){}
+}
+function learnOcrFix(row){
+  try{
+    if(!row || !row.rawItem) return;
+    const from = normItemKey(row.rawItem), to = String(row.item || '').trim();
+    if(!to || normItemKey(to) === from) return;
+    const sk = ocrFixStoreKey();
+    if(!ocrFixes[sk]) ocrFixes[sk] = { label: canonStore(($('rStore') && $('rStore').value) || '') || '', map: {} };
+    if(!ocrFixes[sk].map) ocrFixes[sk].map = {};
+    ocrFixes[sk].map[from] = { to, ts: Date.now() };
+    const all = [];
+    Object.entries(ocrFixes).forEach(([k, e]) => Object.entries((e && e.map) || {}).forEach(([f, v]) => all.push([k, f, (v && v.ts) || 0])));
+    if(all.length > 300){
+      all.sort((a, b) => a[2] - b[2]);
+      for(const [k, f] of all.slice(0, all.length - 300)){ if(ocrFixes[k] && ocrFixes[k].map) delete ocrFixes[k].map[f]; }
+    }
+    saveMeta(); paintFixBtn();
+    showToast(L('🧠 اتعلّمت التصحيح ده لهذا المتجر', '🧠 Learned this fix for this store'));
+  }catch(e){}
 }
 
 function printedNet(){
@@ -4138,6 +4239,7 @@ function applyReceiptHeader(data){
   let date = (rcptMeta.qr && rcptMeta.qr.date) || normalizeDate(data && data.date);
   if(!date){ date = today(); if(data) rcptMeta.notes.push(L('تعذرت قراءة تاريخ الفاتورة — تم استخدام تاريخ اليوم، عدّله إن لزم.', 'Receipt date not readable — today used; adjust if needed.')); }
   $('rDate').value = date;
+  applyOcrFixes();
 }
 async function processReceiptImageFile(file){
   try{
@@ -4157,6 +4259,7 @@ function openReceiptScannerSheet(){
   $('rcptProgBox').hidden = true;
   $('rcptErrMsg').hidden = true;
   if(!$('rDate').value) $('rDate').value = today();
+  paintFixBtn();
   $('rcptSh').classList.add('on');
 }
 
@@ -4396,8 +4499,13 @@ $('rcptItemsList').addEventListener('change', e => {
   }
   else if(c.contains('r-item')){
     const row = rcptItems[idx];
+    if(row.fixApplied){
+      try{ const sk0 = ocrFixStoreKey(); if(ocrFixes[sk0] && ocrFixes[sk0].map) delete ocrFixes[sk0].map[normItemKey(row.rawItem)]; saveMeta(); paintFixBtn(); }catch(x){}
+      row.fixApplied = false;
+    }
     if(!row.code){ const k = matchCatalogByCodeOrName('', row.item); if(k && k.matchType === 'name'){ row.item = k.item; row.cat = k.cat || row.cat; row.matchType = 'name'; renderReceiptItemsTable(); } }
     else if(!row.cat || row.cat === 'other') row.cat = guessCategory(row.item, row.brand);
+    learnOcrFix(row);
   }
 });
 $('rcptItemsList').addEventListener('click', e => {
@@ -4432,6 +4540,7 @@ $('rSaveAllBtn').onclick = async () => {
   }
   $('rSaveAllBtn').disabled = true;
   const m = groups(P);
+  const preSaveP = P.slice();
   const baseTs = Date.now();
   try{
     const ops = [];
@@ -4476,12 +4585,82 @@ $('rSaveAllBtn').onclick = async () => {
     closeModalById('rcptSh');
     sfx('success');
     showToast(L(`تم تسجيل ${n} أصناف في أماكنها ✨`, `Saved ${n} receipt items ✨`));
+    try{
+      const tripTotal = valid.reduce((a, it) => a + (+it.price || 0), 0);
+      let avgTrip = 0, prevTrips = 0, forgot = [];
+      if(store){
+        const stNorm = normItemKey(store);
+        const tripMap = {};
+        for(const p of preSaveP){ if(normItemKey(p.store || '') !== stNorm || !p.date) continue; tripMap[p.date] = (tripMap[p.date] || 0) + (+p.price || 0); }
+        const tt = Object.values(tripMap).filter(v => v > 0);
+        prevTrips = tt.length;
+        avgTrip = prevTrips ? tt.reduce((a, b) => a + b, 0) / prevTrips : 0;
+        const inReceipt = new Set(valid.map(it => normItemKey(it.item)));
+        const cntMap = new Map();
+        for(const p of preSaveP){
+          if(normItemKey(p.store || '') !== stNorm) continue;
+          const k = normItemKey(p.item);
+          if(!k || inReceipt.has(k) || cart.has(p.item)) continue;
+          if(!cntMap.has(k)) cntMap.set(k, { item: p.item, n: 0 });
+          cntMap.get(k).n++;
+        }
+        forgot = [...cntMap.values()].filter(x => x.n >= 2).sort((a, b) => b.n - a.n).slice(0, 5);
+      }
+      openTripSummary({ total: tripTotal, count: valid.length, sym: curSym(), store, avg: avgTrip, prevTrips, diffPct: avgTrip > 0 ? Math.round((tripTotal - avgTrip) / avgTrip * 100) : 0, forgot });
+    }catch(e){}
   }catch(err){
     sfx('delete');
     showToast(L('حدث خطأ أثناء الحفظ — لم يُحفظ شيء، أعد المحاولة', 'Save failed — nothing was saved, retry'));
   }finally{ $('rSaveAllBtn').disabled = false; }
 };
 $('rcptCloseBtn').onclick = () => { sfx('tap'); closeModalById('rcptSh'); };
+
+// ========= ملخص المشوار بعد حفظ الفاتورة (مقارنة بالمتوسط + نسيت حاجة؟) =========
+function openTripSummary(sum){
+  const body = $('tripBody');
+  if(!body) return;
+  let html = `<div class="ins-card" style="margin-top:10px"><div style="font-weight:700;font-size:15px">${esc(L('المشوار ده: ', 'This trip: '))}${num(sum.total)} ${esc(sum.sym)} (${sum.count} ${esc(L('صنف', 'items'))})</div>`;
+  if(sum.prevTrips >= 1 && sum.avg > 0){
+    const dir = sum.diffPct > 3 ? 'up' : (sum.diffPct < -3 ? 'down' : 'same');
+    const col = dir === 'up' ? 'var(--err-c)' : (dir === 'down' ? 'var(--ok)' : 'var(--mu)');
+    const txt = dir === 'up' ? L(`أعلى من متوسط مشاويرك من «${sum.store}» (${num(sum.avg)} ${sum.sym}) بـ ${sum.diffPct}%`, `Above your usual "${sum.store}" trip (${num(sum.avg)} ${sum.sym}) by ${sum.diffPct}%`)
+      : dir === 'down' ? L(`أقل من متوسط مشاويرك من «${sum.store}» (${num(sum.avg)} ${sum.sym}) بـ ${Math.abs(sum.diffPct)}%`, `Below your usual "${sum.store}" trip (${num(sum.avg)} ${sum.sym}) by ${Math.abs(sum.diffPct)}%`)
+      : L(`قريب من متوسط مشاويرك من «${sum.store}» (${num(sum.avg)} ${sum.sym})`, `Close to your usual "${sum.store}" trip (${num(sum.avg)} ${sum.sym})`);
+    html += `<div class="sub" style="color:${col};font-weight:600;margin-top:4px">${dir === 'up' ? '▲' : dir === 'down' ? '▼' : '≈'} ${esc(txt)}</div>`;
+  } else if(sum.store){
+    html += `<div class="sub" style="margin-top:4px">${esc(L('أول مشوار مسجل من «' + sum.store + '» — المقارنة بالمتوسط تبدأ من المشوار الجاي.', 'First logged trip from "' + sum.store + '" - average comparison starts next trip.'))}</div>`;
+  }
+  html += `</div>`;
+  if(sum.forgot.length){
+    html += `<h2 style="margin-top:14px">${esc(L('🤔 نسيت حاجة؟', '🤔 Forgot something?'))}</h2><div class="sub" style="margin-bottom:6px">${esc(L('بتجيبهم عادة من «' + sum.store + '» ومش موجودين في الفاتورة دي:', 'You usually buy these from "' + sum.store + '" and they are not on this receipt:'))}</div><div class="ins-card">${sum.forgot.map(f => `<div class="bar-row" style="display:flex;justify-content:space-between;align-items:center;gap:6px"><span style="min-width:0">${esc(f.item)} <span class="sub">(${f.n}×)</span></span><button class="back-btn" data-tripadd="${esc(f.item)}" type="button" style="background:var(--ac);color:#fff;border:0;padding:5px 10px;font-size:12px;white-space:nowrap">🛒 ${esc(L('ضيفه للقايمة', 'Add to list'))}</button></div>`).join('')}</div>`;
+  }
+  body.innerHTML = html;
+  pushAppHistory('tripSh');
+  $('tripSh').classList.add('on');
+}
+$('tripX').onclick = () => { sfx('tap'); closeModalById('tripSh'); };
+$('tripDone').onclick = () => { sfx('success'); closeModalById('tripSh'); };
+
+// ========= مراجعة تصحيحات أسماء الفواتير المتعلّمة =========
+function fixCount(){ return Object.values(ocrFixes).reduce((a, e) => a + Object.keys((e && e.map) || {}).length, 0); }
+function paintFixBtn(){ const c = $('fixCnt'); if(c) c.textContent = fixCount(); }
+function renderFixList(){
+  const box = $('fixList'); if(!box) return;
+  const intro = $('fixIntro'); if(intro) intro.textContent = L('لما تعدّل اسم صنف اتقرا غلط من فاتورة، التطبيق بيحفظ الربط لنفس المتجر ويصححه تلقائياً المرة الجاية. امسح أي ربط مش مظبوط.', 'When you correct a misread item name on a receipt, the app remembers it for that store and auto-corrects next time. Remove any wrong link here.');
+  const stores = Object.keys(ocrFixes).filter(k => ocrFixes[k] && ocrFixes[k].map && Object.keys(ocrFixes[k].map).length);
+  if(!stores.length){
+    box.innerHTML = `<div class="empty" style="padding:18px">${esc(L('لا توجد تصحيحات محفوظة بعد.', 'No saved fixes yet.'))}</div>`;
+    return;
+  }
+  box.innerHTML = stores.map(k => {
+    const label = ocrFixes[k].label || (k === '*' ? L('بدون متجر محدد', 'No specific store') : k);
+    return `<h2 style="margin-top:10px">${esc(label)}</h2><div class="ins-card">${Object.entries(ocrFixes[k].map).map(([from, v]) => `<div class="bar-row" style="display:flex;justify-content:space-between;align-items:center;gap:6px"><span style="min-width:0"><span class="sub">«${esc(from)}»</span> ← <b>${esc(v.to)}</b></span><button class="act-btn" data-fixdel="${esc(k)}|${esc(from)}" type="button" style="color:var(--err-c)">✕</button></div>`).join('')}</div>`;
+  }).join('');
+}
+$('rcptFixBtn').onclick = () => { sfx('open'); pushAppHistory('fixSh'); renderFixList(); $('fixSh').classList.add('on'); };
+$('fixX').onclick = () => { sfx('tap'); closeModalById('fixSh'); };
+$('fixClose').onclick = () => { sfx('tap'); closeModalById('fixSh'); };
+paintFixBtn();
 
 
 // ========= ماسح الباركود ورقم الصنف الذكي =========
@@ -5058,27 +5237,37 @@ function updateLiveCalc(sourceField){
   }
 
   const bar = $('fCalcBar');
+  const sym = curSym();
+  const itemName = $('fItem').value.trim();
+  const histRows = itemName ? (findGroupRows(groups(P), itemName) || []) : [];
+  const same = histRows.filter(p => (U[p.unit] || U.g).base === u.base && !(edit && edit.id === p.id));
+  let refHtml = '';
+  if(same.length){
+    const minH = Math.min(...same.map(ppu));
+    const bestRec = same.find(p => Math.abs(ppu(p) - minH) < 0.001) || same[0];
+    const lastRec = same[0];
+    refHtml = `<div style="color:var(--mu)">💡 ${lang==='ar' ? `أرخص ${bLabel(u.base)} سجلته: <b style="color:var(--ok)">${num(minH)} ${sym}</b>${bestRec.store ? ' في ' + esc(bestRec.store) : ''}${bestRec.date ? ' (' + fd(bestRec.date) + ')' : ''} · آخر مرة: ${num(ppu(lastRec))} ${sym}` : `Best ${bLabel(u.base)} you logged: <b style="color:var(--ok)">${num(minH)} ${sym}</b>${bestRec.store ? ' at ' + esc(bestRec.store) : ''}${bestRec.date ? ' (' + fd(bestRec.date) + ')' : ''} · last: ${num(ppu(lastRec))} ${sym}`}</div>`;
+  }
   if(qty > 0 && tp > 0){
     const totalBase = cnt * qty * u.f;
     const netPpu = totalBase > 0 ? (tp / totalBase) : 0;
-    const sym = curSym();
     let cmpHtml = '';
-    const itemName = $('fItem').value.trim();
-    const existing = groups(P).get(itemName);
-    if(existing && existing.length){
-      const same = existing.filter(p=>(U[p.unit]||U.g).base===u.base);
-      if(same.length){
-        const minHist = Math.min(...same.map(ppu));
-        if(netPpu <= minHist * 1.005){
-          cmpHtml = `<div style="color:var(--ok);font-weight:700">★ ${lang==='ar'?'ممتاز! هذا أرخص سعر سجلته لهذا البند على الإطلاق!':'Awesome! This is your lowest price ever for this item!'}</div>`;
-        } else {
-          const diffPct = Math.round(((netPpu - minHist)/minHist)*100);
-          cmpHtml = `<div style="color:var(--hit)">ℹ️ ${lang==='ar'?`أغلى بـ ${diffPct}% من أرخص سعر سجلته (${num(minHist)} ${sym}/${bLabel(u.base)})`:`${diffPct}% higher than your best price (${num(minHist)} ${sym}/${bLabel(u.base)})`}</div>`;
+    if(same.length){
+      const minHist = Math.min(...same.map(ppu));
+      if(netPpu <= minHist * 1.005){
+        cmpHtml = `<div style="color:var(--ok);font-weight:700">★ ${lang==='ar'?'ممتاز! هذا أرخص سعر سجلته لهذا البند على الإطلاق!':'Awesome! This is your lowest price ever for this item!'}</div>`;
+      } else if(same.length >= 2){
+        const med = median(same.slice(0, 4).map(ppu));
+        if(med > 0 && netPpu > med * 1.1){
+          cmpHtml = `<div style="color:var(--err-c)">⚠️ ${lang==='ar' ? `أغلى بـ ${Math.round((netPpu / med - 1) * 100)}% من معتادك الأخير (${num(med)} ${sym}/${bLabel(u.base)}) — اتأكد قبل الحفظ` : `${Math.round((netPpu / med - 1) * 100)}% above your recent typical price (${num(med)} ${sym}/${bLabel(u.base)}) - double-check before saving`}</div>`;
         }
       }
     }
     bar.innerHTML = `<div>📦 ${lang==='ar'?'الكمية الكلية:':'Total Qty:'} <b>${cnt} ${esc(t('unitPack'))} × ${num(qty)} ${uLabel($('fUnit').value)} = ${num(totalBase)} ${bLabel(u.base)}</b></div>
-      <div>⚖️ ${esc(t('netPpu'))} ${bLabel(u.base)}: <b>${num(netPpu)} ${esc(sym)} / ${bLabel(u.base)}</b></div>${cmpHtml}`;
+      <div>⚖️ ${esc(t('netPpu'))} ${bLabel(u.base)}: <b>${num(netPpu)} ${esc(sym)} / ${bLabel(u.base)}</b></div>${refHtml}${cmpHtml}`;
+    bar.hidden = false;
+  } else if(refHtml){
+    bar.innerHTML = refHtml;
     bar.hidden = false;
   } else {
     bar.hidden = true;
@@ -5620,6 +5809,47 @@ document.addEventListener('click',async e=>{
     }
     return;
   }
+  const rsAdd = e.target.closest('[data-rsadd]');
+  if(rsAdd){
+    e.stopPropagation();
+    const it = rsAdd.dataset.rsadd;
+    cart.add(it); saveMeta(); sfx('success');
+    const cb0 = $('cartBadge'); if(cb0){ cb0.textContent = cart.size; cb0.hidden = cart.size === 0; }
+    showToast(L('أُضيف «' + it + '» لقائمة التسوق 🛒', 'Added "' + it + '" to the shopping list 🛒'));
+    render(); return;
+  }
+  const rsSnz = e.target.closest('[data-rssnooze]');
+  if(rsSnz){
+    e.stopPropagation();
+    const it = rsSnz.dataset.rssnooze;
+    const days = Math.max(3, +rsSnz.dataset.iv || 7);
+    const ud = new Date(Date.now() + days * 864e5);
+    const untilStr = ud.getFullYear() + '-' + String(ud.getMonth() + 1).padStart(2, '0') + '-' + String(ud.getDate()).padStart(2, '0');
+    restockSnooze[normItemKey(it)] = untilStr;
+    const t00 = today();
+    Object.keys(restockSnooze).forEach(k => { if(restockSnooze[k] < t00) delete restockSnooze[k]; });
+    saveMeta(); sfx('tap');
+    showToast(L('حاضر، هفتكرك بيه تاني بعد ' + days + ' يوم', 'Got it - will remind you again in ' + days + 'd'));
+    render(); return;
+  }
+  const trAdd = e.target.closest('[data-tripadd]');
+  if(trAdd){
+    e.stopPropagation();
+    const it = trAdd.dataset.tripadd;
+    cart.add(it); saveMeta(); sfx('success');
+    const cb1 = $('cartBadge'); if(cb1){ cb1.textContent = cart.size; cb1.hidden = cart.size === 0; }
+    showToast(L('أُضيف «' + it + '» لقائمة التسوق 🛒', 'Added "' + it + '" to the shopping list 🛒'));
+    const rowEl = trAdd.closest('.bar-row'); if(rowEl) rowEl.remove();
+    return;
+  }
+  const fxDel = e.target.closest('[data-fixdel]');
+  if(fxDel){
+    e.stopPropagation();
+    const parts = fxDel.dataset.fixdel.split('|');
+    const sk = parts.shift(), fk = parts.join('|');
+    if(ocrFixes[sk] && ocrFixes[sk].map){ delete ocrFixes[sk].map[fk]; if(!Object.keys(ocrFixes[sk].map).length) delete ocrFixes[sk]; }
+    saveMeta(); sfx('delete'); renderFixList(); paintFixBtn(); return;
+  }
   const rmCart = e.target.closest('[data-rmcart]');
   if(rmCart){
     e.stopPropagation();
@@ -5924,6 +6154,8 @@ function enter(){
     const d = s.data() || {};
     if(Array.isArray(d.pinned)) pinned = new Set(d.pinned);
     if(Array.isArray(d.cart)) cart = new Set(d.cart);
+    if(d.restockSnooze && typeof d.restockSnooze === 'object') restockSnooze = d.restockSnooze;
+    if(d.ocrFixes && typeof d.ocrFixes === 'object') ocrFixes = d.ocrFixes;
     if(d.budgets && typeof d.budgets === 'object'){
       Object.entries(d.budgets).forEach(([c, v]) => { if(+v > 0) try{ localStorage.setItem('budget_' + c, +v); }catch(e){} });
     }
@@ -5962,6 +6194,9 @@ auth.onAuthStateChanged(u=>{
 });
 
 $('muX').onclick=()=>{sfx('tap');closeModalById('mu')};
+const paintMspBtn=()=>{const b=$('muMsp');if(b)b.textContent=L('👥 مصروف مسجل باسم كل فرد في التحليلات: ','👥 Per-member recorded spend in insights: ')+(showMemberSplit?L('شغال ✓','On ✓'):L('مطفي','Off'))};
+$('muMsp').onclick=()=>{sfx('tap');showMemberSplit=!showMemberSplit;try{localStorage.setItem('aylinMemberSplitV1',showMemberSplit?'1':'0')}catch(e){}paintMspBtn()};
+paintMspBtn();
 $('muMb').onclick=async()=>{sfx('open');pushAppHistory('mb');$('mb').classList.add('on');$('mbErr').textContent='';renderMembers(await loadMembers())};
 $('mbX').onclick=()=>{sfx('tap');closeModalById('mb')};
 async function loadMembers(){try{const s=await db.doc('config/members').get();return s.exists?(s.data().emails||[]):[]}catch(e){$('mbErr').textContent='تعذر تحميل القائمة.';return[]}}
@@ -5973,7 +6208,7 @@ $('mbAdd').onclick=async()=>{
   try{await db.doc('config/members').set({emails:l});$('mbE').value='';sfx('success');renderMembers(l)}catch(x){$('mbErr').textContent='تعذر الحفظ.'}
 };
 document.addEventListener('click',async e=>{
-  if(e.target.closest('#mn')){sfx('open');pushAppHistory('mu');$('muMsg').textContent='';$('mu').classList.add('on');return}
+  if(e.target.closest('#mn')){sfx('open');pushAppHistory('mu');$('muMsg').textContent='';paintMspBtn();$('mu').classList.add('on');return}
   const r=e.target.closest('[data-rm]');if(!r)return;
   const l=(await loadMembers()).filter(x=>x!==r.dataset.rm);
   try{await db.doc('config/members').set({emails:l});sfx('delete');renderMembers(l)}catch(x){$('mbErr').textContent='تعذر الحذف.'}
@@ -6087,4 +6322,4 @@ $('dlIcons').onclick=async()=>{
 paintBrand();render();
 </script>
 </body>
-</html>
+  </html>
