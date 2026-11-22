@@ -5,6 +5,7 @@
   const OWNER_UID = 'PQzokv2oTVgcN7afESwk1b7qFKI3';
   const CCY = {SAR:'ريال', EGP:'جنيه', USD:'دولار'};
   const CCY_FULL = {SAR:'ريال سعودي', EGP:'جنيه مصري', USD:'دولار أمريكي'};
+  const CCY_DEF = {SAR:'الريال السعودي', EGP:'الجنيه المصري', USD:'الدولار الأمريكي'};
   const CCY_ORDER = ['SAR','EGP','USD'];
   // Only purchase countries with a fixed known currency auto-count. GL mode uses a
   // free-text custom symbol with no currency on the record, so GL and AE never auto-count.
@@ -114,17 +115,17 @@
   function header(){return `<div class="finance-wrap"><header><div><h1>حسابي الخاص</h1><span class="f-muted">دخلك ومصاريفك وفلوسك، كل عملة لوحدها · للمالك فقط</span></div><button type="button" class="f-light" data-f="close">إغلاق</button></header><div id="fStatus" role="status" aria-live="polite" class="f-status"></div>`;}
   function purchases(){return financePurchases;}
   function setupCard(ccy){
-    return `<div class="f-card"><h2>رصيدك بالـ${CCY_FULL[ccy]}</h2><p class="f-muted">لو عندك فلوس بالـ${CCY[ccy]}، اكتب المبلغ اللي معاك فعلًا في أول يوم هتسجل منه، قبل أي دخل أو مصروف في اليوم ده. لو هتبدأ من الصفر اكتب 0. وتقدر تعدّل الرقم ده في أي وقت.</p><form class="f-setup" data-ccy="${ccy}"><div class="f-grid f-form"><label>الفلوس اللي معاك بالـ${CCY[ccy]}<input type="number" name="opening" step="0.01" required inputmode="decimal" placeholder="مثال: 0 أو 10000"></label><label>أول يوم في الحساب<input type="date" name="start" required max="${nowDate()}" value="${nowDate()}"></label></div><button type="submit">ابدأ حساب الـ${CCY[ccy]}</button></form></div>`;
+    return `<div class="f-card"><h2>رصيدك ب${CCY_DEF[ccy]}</h2><p class="f-muted">لو عندك فلوس بال${CCY[ccy]}، اكتب المبلغ اللي معاك فعلًا في أول يوم هتسجل منه، قبل أي دخل أو مصروف في اليوم ده. لو هتبدأ من الصفر اكتب 0. وتقدر تعدّل الرقم ده في أي وقت.</p><form class="f-setup" data-ccy="${ccy}"><div class="f-grid f-form"><label>الفلوس اللي معاك بال${CCY[ccy]}<input type="number" name="opening" step="0.01" required inputmode="decimal" placeholder="مثال: 0 أو 10000"></label><label>أول يوم في الحساب<input type="date" name="start" required max="${nowDate()}" value="${nowDate()}"></label></div><button type="submit">ابدأ حساب ال${CCY[ccy]}</button></form></div>`;
   }
   function accountCard(ccy){
     const acc=data.accounts[ccy], s=summary(data,purchases(),ccy,selectedMonth), snap=data.snapshots[ccy+':'+selectedMonth];
-    let html=`<div class="f-card"><h2>الـ${CCY_FULL[ccy]}</h2>`;
+    let html=`<div class="f-card"><h2>${CCY_DEF[ccy]}</h2>`;
     if(openingEdit===ccy){
-      html+=`<form class="f-opening" data-ccy="${ccy}"><div class="f-grid f-form"><label>رصيد البداية بالـ${CCY[ccy]}<input type="number" name="opening" step="0.01" required inputmode="decimal" value="${(acc.opening/100).toFixed(2)}"></label><label>أول يوم في الحساب<input type="date" name="start" required max="${nowDate()}" value="${escF(acc.start)}"></label></div><div class="f-actions"><button type="submit">حفظ رصيد البداية</button><button type="button" class="f-light" data-f="cancelOpening">إلغاء</button></div></form>`;
+      html+=`<form class="f-opening" data-ccy="${ccy}"><div class="f-grid f-form"><label>رصيد البداية بال${CCY[ccy]}<input type="number" name="opening" step="0.01" required inputmode="decimal" value="${(acc.opening/100).toFixed(2)}"></label><label>أول يوم في الحساب<input type="date" name="start" required max="${nowDate()}" value="${escF(acc.start)}"></label></div><div class="f-actions"><button type="submit">حفظ رصيد البداية</button><button type="button" class="f-light" data-f="cancelOpening">إلغاء</button></div></form>`;
     } else {
       html+=`<p class="f-muted">رصيد البداية: ${money(acc.opening,ccy)} من ${escF(acc.start)} <button type="button" class="f-light" data-opening="${ccy}" style="min-height:32px;padding:3px 10px;font-size:12px">تعديل</button></p>`;
     }
-    html+=`<div class="f-grid"><div class="f-kpi">فلوس داخلة الشهر ده<strong>${money(s.income,ccy)}</strong></div><div class="f-kpi">مصاريف إضافية<strong>${money(s.extra,ccy)}</strong></div><div class="f-kpi">مشتريات التطبيق (${s.count})<strong>${money(s.shopping,ccy)}</strong></div><div class="f-kpi">تحويلات (${money(s.trIn,ccy)} داخلة / ${money(s.trOut,ccy)} خارجة)<strong>${money(s.trIn-s.trOut,ccy)}</strong></div><div class="f-kpi f-total f-full">رصيدك بالـ${CCY[ccy]} حتى نهاية الشهر${selectedMonth===nowDate().slice(0,7)?'، بالمسجل حتى اليوم':''}<strong>${money(s.balance,ccy)}</strong></div></div>`;
+    html+=`<div class="f-grid"><div class="f-kpi">فلوس داخلة الشهر ده<strong>${money(s.income,ccy)}</strong></div><div class="f-kpi">مصاريف إضافية<strong>${money(s.extra,ccy)}</strong></div><div class="f-kpi">مشتريات التطبيق (${s.count})<strong>${money(s.shopping,ccy)}</strong></div><div class="f-kpi">تحويلات (${money(s.trIn,ccy)} داخلة / ${money(s.trOut,ccy)} خارجة)<strong>${money(s.trIn-s.trOut,ccy)}</strong></div><div class="f-kpi f-total f-full">رصيدك بال${CCY[ccy]} حتى نهاية الشهر${selectedMonth===nowDate().slice(0,7)?'، بالمسجل حتى اليوم':''}<strong>${money(s.balance,ccy)}</strong></div></div>`;
     if(s.untracked) html+=`<div class="f-alert">في ${s.untracked} مشتريات بالوضع الدولي أو بالدرهم في الشهر ده مش بتتحسب في أي رصيد، لأن عملتها مش ثابتة في التطبيق. لو كانت بإحدى عملاتك التلاتة، سجّلها بنفسك كـ«فلوس خارجة» في العملة الصح.</div>`;
     html+=`<details><summary>ملخص كل شهر ولقطاته</summary><div class="f-table"><table><thead><tr><th>الشهر</th><th>صافي الشهر</th><th>الرصيد</th><th>لقطة مثبتة</th></tr></thead><tbody>`;
     let cursor=acc.start.slice(0,7), last=nowDate().slice(0,7), guard=0;
@@ -214,7 +215,7 @@
         const ccy=f.dataset.ccy,start=fields.get('start');
         if(!Object.hasOwn(CCY,ccy)||next.accounts[ccy])throw Error('الحساب موجود بالفعل');
         if(!iso(start)||start>nowDate()||start<'2000-01-01')throw Error('اختر تاريخ بداية صحيحًا من 2000 وحتى اليوم');
-        next.accounts[ccy]={start,opening:cents(fields.get('opening'))};selectedMonth=nowDate().slice(0,7);save(next,'تم حفظ بداية حساب الـ'+CCY[ccy]+'.');
+        next.accounts[ccy]={start,opening:cents(fields.get('opening'))};selectedMonth=nowDate().slice(0,7);save(next,'تم حفظ بداية حساب '+CCY[ccy]+'.');
       } else if(f.classList.contains('f-opening')){
         const ccy=f.dataset.ccy,start=fields.get('start');
         if(!Object.hasOwn(CCY,ccy)||!next.accounts[ccy])throw Error('الحساب غير موجود');
@@ -228,7 +229,7 @@
         if(type==='transfer'){
           const toAccount=fields.get('toAccount');
           if(!next.accounts[toAccount]||toAccount===account)throw Error('اختر حسابين مختلفين للتحويل');
-          if(date<next.accounts[toAccount].start)throw Error('التاريخ قبل بداية حساب الـ'+CCY[toAccount]);
+          if(date<next.accounts[toAccount].start)throw Error('التاريخ قبل بداية حساب '+CCY[toAccount]);
           entry.toAccount=toAccount;entry.toAmount=cents(fields.get('toAmount'));
           if(entry.toAmount<=0)throw Error('راجع مبلغ التحويل');
           entry.note=String(fields.get('note')||'').trim()||`تحويل من ${CCY_FULL[account]} إلى ${CCY_FULL[toAccount]}`;
