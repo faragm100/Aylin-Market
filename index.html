@@ -138,32 +138,29 @@ input, select, button, textarea { font: inherit; color: inherit; }
   border: 2px solid #fff;
 }
 
-/* شعار آيلين المتحرك: حركة حية للصورة + يد طفلة طبيعية تدي بوسة بإيدها الأول وبعدين تلوّح باي باي */
+/* شعار آيلين المتحرك: حركة حية للصورة + يد طفلة طبيعية تخرج من حدود الدائرة وتلوّح باي باي */
 .lgo-wrap{position:relative;display:block;width:54px;height:54px;flex:0 0 54px;overflow:visible;z-index:3}
 .lg-hero .lgo-wrap{width:92px;height:92px;flex:0 0 92px;margin:0 auto}
-.lgo-frame{position:relative;display:block;width:100%;height:100%;border-radius:50%;overflow:hidden;border:2.5px solid #fff;background:linear-gradient(135deg,var(--ac),var(--ac2));animation:goldHalo 3.5s infinite ease-in-out,lgoPopAlive 7s ease-in-out infinite;transform-origin:50% 65%}
+.lgo-frame{position:relative;display:block;width:100%;height:100%;border-radius:50%;overflow:hidden;border:2.5px solid #fff;background:linear-gradient(135deg,var(--ac),var(--ac2));animation:goldHalo 3.5s infinite ease-in-out,lgoPopAlive 4.8s ease-in-out infinite;transform-origin:50% 65%}
 .lg-hero .lgo-frame{border-width:3px}
-.lgo-frame .lgo{width:100% !important;height:100% !important;max-width:100%;max-height:100%;border:0;animation:lgoSmileZoom 7s ease-in-out infinite;transform-origin:50% 42%;display:block;object-fit:cover;border-radius:50%}
+.lgo-frame .lgo{width:100% !important;height:100% !important;max-width:100%;max-height:100%;border:0;animation:lgoSmileZoom 4.8s ease-in-out infinite;transform-origin:50% 42%;display:block;object-fit:cover;border-radius:50%}
 .lgo-wrap.is-anim .lgo-frame{animation:goldHalo 3.5s infinite ease-in-out}
 .lgo-wrap.is-anim .lgo-frame .lgo{animation:none}
 .lgo-wrap.is-popout{width:74px;height:74px;flex:0 0 74px;margin:-10px 0 -8px}
 .lg-hero .lgo-wrap.is-popout{width:128px;height:128px;flex:0 0 128px;margin:0 auto}
 .lgo-wrap.is-popout .lgo-frame{border:0;border-radius:0;overflow:visible;background:transparent;box-shadow:none;animation:none}
 .lgo-wrap.is-popout .lgo-frame .lgo{border-radius:0;object-fit:contain;background:transparent;animation:none;filter:drop-shadow(0 4px 10px rgba(24,4,16,.38))}
-.lgo-spark{position:absolute;top:-5px;inset-inline-start:-4px;font-size:12px;color:var(--gold-lt);opacity:0;pointer-events:none;animation:lgoSpark 7s ease-in-out infinite;filter:drop-shadow(0 0 4px rgba(255,225,130,.9))}
-.lgo-hand{position:absolute;bottom:-5px;inset-inline-end:-10px;width:26px;height:30px;transform-origin:38% 88%;opacity:0;pointer-events:none;z-index:5;--hkx:22px;--hky:-12px;animation:lgoHandOut 7s ease-in-out infinite;filter:drop-shadow(0 3px 5px rgba(30,6,20,.45))}
-.lg-hero .lgo-hand{width:42px;height:48px;bottom:-7px;inset-inline-end:-16px;--hkx:30px;--hky:-18px}
-.lgo-kiss{position:absolute;top:56%;inset-inline-start:50%;font-size:13px;line-height:1;margin-inline-start:-7px;margin-top:-7px;opacity:0;pointer-events:none;z-index:7;transform:translate(0,0) scale(.3);animation:lgoKissFly 7s ease-in-out infinite;filter:drop-shadow(0 2px 4px rgba(120,10,60,.45))}
-.lg-hero .lgo-kiss{font-size:21px;margin-inline-start:-11px;margin-top:-11px}
-.lgo-bye{position:absolute;top:-9px;inset-inline-end:-16px;font-size:9.5px;font-weight:800;background:linear-gradient(135deg,#fff7dc,var(--gold));color:#3b142c;border:1px solid #fff;border-radius:12px 12px 12px 3px;padding:1.5px 6px;white-space:nowrap;opacity:0;transform:scale(.4) translateY(4px);transform-origin:20% 100%;animation:lgoBye 7s ease-in-out infinite;pointer-events:none;z-index:6;box-shadow:0 3px 10px rgba(0,0,0,.28)}
+.lgo-spark{position:absolute;top:-5px;inset-inline-start:-4px;font-size:12px;color:var(--gold-lt);opacity:0;pointer-events:none;animation:lgoSpark 4.8s ease-in-out infinite;filter:drop-shadow(0 0 4px rgba(255,225,130,.9))}
+.lgo-hand{position:absolute;bottom:-5px;inset-inline-end:-10px;width:26px;height:30px;transform-origin:38% 88%;opacity:0;pointer-events:none;z-index:5;animation:lgoHandOut 4.8s ease-in-out infinite;filter:drop-shadow(0 3px 5px rgba(30,6,20,.45))}
+.lg-hero .lgo-hand{width:42px;height:48px;bottom:-7px;inset-inline-end:-16px}
+.lgo-bye{position:absolute;top:-9px;inset-inline-end:-16px;font-size:9.5px;font-weight:800;background:linear-gradient(135deg,#fff7dc,var(--gold));color:#3b142c;border:1px solid #fff;border-radius:12px 12px 12px 3px;padding:1.5px 6px;white-space:nowrap;opacity:0;transform:scale(.4) translateY(4px);transform-origin:20% 100%;animation:lgoBye 4.8s ease-in-out infinite;pointer-events:none;z-index:6;box-shadow:0 3px 10px rgba(0,0,0,.28)}
 .lg-hero .lgo-bye{font-size:12px;top:-10px;inset-inline-end:-26px;padding:3px 9px}
-@keyframes lgoPopAlive{0%,6%,100%{transform:translateY(0) rotate(0) scale(1)}11%{transform:translateY(-2px) rotate(-4deg) scale(1.06)}17%{transform:translateY(-3px) rotate(4deg) scale(1.08)}23%{transform:translateY(-2px) rotate(-3deg) scale(1.06)}29%{transform:translateY(-2px) rotate(3deg) scale(1.07)}35%{transform:translateY(-1px) rotate(-1deg) scale(1.03)}41%{transform:translateY(0) rotate(0) scale(1)}52%{transform:translateY(-2px) rotate(2deg) scale(1.04)}63%{transform:translateY(-1px) rotate(-1deg) scale(1.02)}72%{transform:translateY(0) rotate(0) scale(1)}}
-@keyframes lgoSmileZoom{0%,7%,100%{transform:scale(1);filter:brightness(1)}13%,36%{transform:scale(1.12) translateY(-1px);filter:brightness(1.07) saturate(1.06)}45%{transform:scale(1);filter:brightness(1)}55%,68%{transform:scale(1.06);filter:brightness(1.04)}78%{transform:scale(1);filter:brightness(1)}}
-@keyframes lgoHandOut{0%,5%{opacity:0;transform:translate(8px,10px) scale(.35) rotate(-25deg)}9%{opacity:1;transform:translate(var(--hkx),var(--hky)) scale(.95) rotate(-32deg)}13%{opacity:1;transform:translate(var(--hkx),var(--hky)) scale(1.05) rotate(-6deg)}16%{opacity:1;transform:translate(var(--hkx),var(--hky)) scale(1.12) rotate(2deg)}19%{opacity:1;transform:translate(var(--hkx),var(--hky)) scale(1.05) rotate(-5deg)}22%{opacity:1;transform:translate(var(--hkx),var(--hky)) scale(1.1) rotate(2deg)}26%{opacity:1;transform:translate(calc(var(--hkx)*.45),calc(var(--hky)*.62)) scale(1.06) rotate(20deg)}31%{opacity:1;transform:translate(2px,-2px) scale(1.02) rotate(10deg)}36%{opacity:1;transform:translate(0,0) scale(1) rotate(-6deg)}41%{opacity:1;transform:translate(0,-1px) scale(1.05) rotate(16deg)}46%{opacity:1;transform:translate(0,-1px) scale(1.06) rotate(-18deg)}51%{opacity:1;transform:translate(0,-1px) scale(1.06) rotate(22deg)}56%{opacity:1;transform:translate(0,-1px) scale(1.06) rotate(-16deg)}61%{opacity:1;transform:translate(0,-1px) scale(1.05) rotate(18deg)}66%{opacity:1;transform:translate(0,0) scale(1.04) rotate(-10deg)}71%{opacity:1;transform:translate(0,0) scale(1.02) rotate(6deg)}76%{opacity:1;transform:translate(0,0) scale(1) rotate(0)}83%,100%{opacity:0;transform:translate(6px,8px) scale(.45) rotate(-20deg)}}
-@keyframes lgoKissFly{0%,12.5%{opacity:0;transform:translate(0,0) scale(.3) rotate(0)}15.5%{opacity:1;transform:translate(0,0) scale(.75) rotate(0)}19%{opacity:1;transform:translate(0,-1px) scale(1) rotate(0)}23%{opacity:1;transform:translate(7px,-12px) scale(1.12) rotate(-12deg)}28%{opacity:.95;transform:translate(13px,-23px) scale(1.18) rotate(-20deg)}34%,100%{opacity:0;transform:translate(19px,-33px) scale(1.22) rotate(-26deg)}}
-@keyframes lgoBye{0%,40%{opacity:0;transform:scale(.4) translateY(5px)}46%{opacity:1;transform:scale(1.1) translateY(0)}52%,70%{opacity:1;transform:scale(1) translateY(0)}77%,100%{opacity:0;transform:scale(.5) translateY(3px)}}
-@keyframes lgoSpark{0%,11%,40%,100%{opacity:0;transform:scale(.4) rotate(0)}17%,29%{opacity:1;transform:scale(1.15) rotate(20deg)}}
-@media (prefers-reduced-motion: reduce){.lgo-frame,.lgo-frame .lgo,.lgo-hand,.lgo-bye,.lgo-spark,.lgo-kiss{animation:none!important}.lgo-hand,.lgo-bye,.lgo-spark,.lgo-kiss{display:none}}
+@keyframes lgoPopAlive{0%,56%,100%{transform:translateY(0) rotate(0) scale(1)}62%{transform:translateY(-2px) rotate(-4deg) scale(1.07)}68%{transform:translateY(-3px) rotate(4deg) scale(1.09)}74%{transform:translateY(-2px) rotate(-3deg) scale(1.07)}80%{transform:translateY(-2px) rotate(3deg) scale(1.08)}88%{transform:translateY(-1px) rotate(-1deg) scale(1.03)}95%{transform:translateY(0) rotate(0) scale(1)}}
+@keyframes lgoSmileZoom{0%,56%,100%{transform:scale(1);filter:brightness(1)}64%,86%{transform:scale(1.12) translateY(-1px);filter:brightness(1.07) saturate(1.06)}95%{transform:scale(1);filter:brightness(1)}}
+@keyframes lgoHandOut{0%,56%{opacity:0;transform:translate(8px,10px) scale(.35) rotate(-25deg)}62%{opacity:1;transform:translate(0,0) scale(1.04) rotate(8deg)}67%{opacity:1;transform:translate(0,-1px) scale(1.06) rotate(-18deg)}72%{opacity:1;transform:translate(0,-1px) scale(1.06) rotate(22deg)}77%{opacity:1;transform:translate(0,-1px) scale(1.06) rotate(-16deg)}82%{opacity:1;transform:translate(0,-1px) scale(1.05) rotate(18deg)}88%{opacity:1;transform:translate(0,0) scale(1) rotate(-6deg)}95%,100%{opacity:0;transform:translate(6px,8px) scale(.45) rotate(-20deg)}}
+@keyframes lgoBye{0%,58%{opacity:0;transform:scale(.4) translateY(5px)}64%{opacity:1;transform:scale(1.1) translateY(0)}70%,88%{opacity:1;transform:scale(1) translateY(0)}95%,100%{opacity:0;transform:scale(.5) translateY(3px)}}
+@keyframes lgoSpark{0%,60%,92%,100%{opacity:0;transform:scale(.4) rotate(0)}70%,82%{opacity:1;transform:scale(1.15) rotate(20deg)}}
+@media (prefers-reduced-motion: reduce){.lgo-frame,.lgo-frame .lgo,.lgo-hand,.lgo-bye,.lgo-spark{animation:none!important}.lgo-hand,.lgo-bye,.lgo-spark{display:none}}
 .brand-txt { min-width: 0; flex: 1; }
 .bn {
   font-size: 20px; font-weight: 700; line-height: 1.2; color: #fff;
@@ -1992,7 +1989,7 @@ const brandHtml=()=>{
     : `<img class="lgo" src="${LOGO}" alt="Aylin Market" onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src='./icon-192.png';const w=this.closest('.lgo-wrap');if(w){w.classList.remove('is-popout');w.classList.add('is-anim');}}">`;
   const overlay = isAnimMedia
     ? ''
-    : `<span class="lgo-spark" aria-hidden="true">✦</span>${BABY_HAND_SVG}<span class="lgo-kiss" aria-hidden="true">💋</span><span class="lgo-bye" aria-hidden="true">${esc(L('باي باي','Bye!'))}</span>`;
+    : `<span class="lgo-spark" aria-hidden="true">✦</span>${BABY_HAND_SVG}<span class="lgo-bye" aria-hidden="true">${esc(L('باي باي','Bye!'))}</span>`;
   const wrapCls = isPopout ? ' is-popout' : (isAnimMedia ? ' is-anim' : '');
   return `<span class="lgo-wrap${wrapCls}"><span class="lgo-frame">${mediaEl}</span>${overlay}</span><div class="brand-txt"><div class="bn">Aylin Market</div><div class="bs">${esc(t('subTitle'))}</div></div>`;
 };
