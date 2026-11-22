@@ -8,7 +8,24 @@ service cloud.firestore {
          request.auth.token.email.lower() in get(/databases/$(database)/documents/config/members).data.emails)
       );
     }
+    // Private finance is isolated from all shared household collections.
+    match /privateFinance/{ownerId} {
+      function ownsFinance() {
+        return request.auth != null
+          && request.auth.uid == 'PQzokv2oTVgcN7afESwk1b7qFKI3'
+          && ownerId == request.auth.uid;
+      }
+      allow read, delete: if ownsFinance();
+      allow create, update: if ownsFinance()
+        && request.resource.data.keys().hasOnly(['schemaVersion', 'payload'])
+        && request.resource.data.schemaVersion == 1
+        && request.resource.data.payload is string
+        && request.resource.data.payload.size() < 700000;
+    }
     match /purchases/{id} {
+      allow read, write: if isAllowed();
+    }
+    match /products/{id} {
       allow read, write: if isAllowed();
     }
     match /catalog/{id} {
